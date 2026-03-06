@@ -9,10 +9,25 @@
 from .MyADC import MyADC         # from myADC.py import class myADC
 from .MyBT import MyBT           # from myBT.py import class myBT
 from .MyDigital import MyDigital # from myDigital.py import class myDigital
-from .MyOLED import MyOLED       # from myOLED.py import class myOLED
-from .MyPixel import MyPixel     # from myPixel.py import class myPixel
-from .MyRTC import MyRTC         # from myRTC.py import class myRTC
 from .MyStore import MyStore     # from myStore.py import class myStore
+
+try:
+    from .MyOLED import MyOLED   # from myOLED.py import class myOLED (requires I2C)
+except Exception as e:
+    print("[components] MyOLED failed to load:", e)
+    MyOLED = None
+
+try:
+    from .MyPixel import MyPixel # from myPixel.py import class myPixel (requires NeoPixel)
+except Exception as e:
+    print("[components] MyPixel failed to load:", e)
+    MyPixel = None
+
+try:
+    from .MyRTC import MyRTC     # from myRTC.py import class myRTC (requires I2C)
+except Exception as e:
+    print("[components] MyRTC failed to load:", e)
+    MyRTC = None
 
 # __all__ defines what gets imported when someone does:
 #   from components import *

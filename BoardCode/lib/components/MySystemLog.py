@@ -1,7 +1,6 @@
 # lib/components/MySystemLog.py
 # Minimal logger: prefer SD (/sd), else console. Uses components.MySD for mounting.
 import Settings
-from components import MySD  # ← NEW
 from components import TimeUtil
 
 DEBUG = 10
@@ -279,6 +278,7 @@ class _TeeSink:
 
 def setup_system_log(autosync=True, keep_open=True, quiet=False):
     """Initialize logging. Returns True if logging to SD, else False (console-only)."""
+    from components import MySD
     filename = Settings.system_log_filename
     max_lines = getattr(Settings, "system_log_max_lines", None)
     global _sink, _sd_ok, _log_path
@@ -327,6 +327,7 @@ def teardown():
 
 def clear_system_log():
     """Erase the system log file if using SD; recreate sink after clearing."""
+    from components import MySD
     global _sink, _sd_ok, _log_path
     if not (_sd_ok and _log_path and MySD.is_mounted()):
         print("[MySystemLog] No SD log to clear")
@@ -387,4 +388,5 @@ def get_memory_log(last_n=None):
     return _mem_buf[-last_n:] if (last_n and last_n > 0) else list(_mem_buf)
 
 def sd_available():
+    from components import MySD
     return _sd_ok and MySD.is_mounted()

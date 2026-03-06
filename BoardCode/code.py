@@ -1,8 +1,5 @@
 import os
 
-
-import Tests
-
 tests_to_run = []
 #tests_to_run = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -17,7 +14,9 @@ tests_to_run = []
 # 7 -> set/get RTC time
 # 8 -> RFID module
 
-if len(tests_to_run) > 0: hp, log = Tests.main(tests_to_run)
+if len(tests_to_run) > 0:
+    import Tests
+    hp, log = Tests.main(tests_to_run)
 
 
 import MainLoop
@@ -41,4 +40,4 @@ if clear_system_log: delete_file(system_log_filename)
 if clear_lick_data: delete_file(lick_data_filename)
 
 
-else: MainLoop.main_loop(level=INFO)
+MainLoop.main_loop(level=INFO)

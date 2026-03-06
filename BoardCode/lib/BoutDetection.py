@@ -177,22 +177,17 @@ class BoutTracker:
         end_water_level = end_water if end_water is not None else self.current_bout_licks[-1][1]
         water_delta = end_water_level - start_water if start_water is not None else None
         
-        # Check minimum water consumption using extent (max - min during bout)
-        # Positive extent means water level fluctuated (consumption causes fluctuation)
-        if self.min_water_delta > 0 and water_extent is not None and water_extent <= self.min_water_delta:
-            # Not enough water level fluctuation, don't count this bout
-            # Note: water_extent = max - min, so larger values indicate more activity/consumption
-            # We want water_extent > min_water_delta to keep the bout
-            # Only filter if min_water_delta > 0 (enabled)
-            self._reset_bout_tracking()
-            return
-        
         # Water extent (max - min during bout)
         if self.current_bout_licks and start_water is not None:
             water_levels = [start_water] + [w for _, w in self.current_bout_licks]
             water_extent = max(water_levels) - min(water_levels)
         else:
             water_extent = None
+
+        # Check minimum water consumption using extent (max - min during bout)
+        if self.min_water_delta > 0 and water_extent is not None and water_extent <= self.min_water_delta:
+            self._reset_bout_tracking()
+            return
         
         # Store bout summary
         self.last_bout_summary = {

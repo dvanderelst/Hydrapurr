@@ -4,7 +4,6 @@ import board
 import storage
 import sdcardio
 from components import MySystemLog
-from components import MyPixel
 
 MOUNT_POINT = "/sd"
 
@@ -12,18 +11,6 @@ MOUNT_POINT = "/sd"
 DEFAULT_CS = getattr(board, "D10", None)
 
 # --- Core helpers ---
-
-def blink_ok():
-    pix = MyPixel()
-    pix.blink('green', times=3, duration=0.5)
-    del(pix)
-    time.sleep(1)
-
-def blink_error():
-    pix = MyPixel()
-    pix.blink('red', times=3, duration=0.5)
-    del(pix)
-    time.sleep(1)
 
 def is_mounted():
     """True iff /sd is an active filesystem mount (not just a folder)."""
@@ -71,8 +58,7 @@ def unmount(quiet=False):
         MySystemLog.info("[SD] not mounted")
         return True
     try:
-        vfs = storage.getmount(MOUNT_POINT)
-        storage.umount(vfs)
+        storage.umount(MOUNT_POINT)
         MySystemLog.info("[SD] unmounted")
         return True
     except Exception as e:
