@@ -27,7 +27,7 @@ class HydraPurr:
         self.bluetooth = MyBT()
         # Defines the lick sensor
         self.lick = MyADC(1)
-        self.lick_threshold = 2.0
+        self.lick_threshold = Settings.lick_threshold
         # Storing the storage files
         self.stores = {}
         # Defines the RTC for timekeeping
@@ -106,7 +106,7 @@ class HydraPurr:
         filename = None
         if kind == "licks": filename = Settings.lick_data_filename
         if kind == "system": filename = Settings.system_log_filename
-        print(kind, filename)
+        info(f'[HydraPurr] Sending data kind={kind} filename={filename}')
         if filename is None: return
 
         selected_storage = self.select_data_log(filename)
@@ -135,7 +135,7 @@ class HydraPurr:
         # Optional: announce end
         bytes_out += self.bluetooth.send(f"END,{kind},lines,{lines},bytes,{bytes_out}")
         info(f"[HydraPurr] Bluetooth sent {kind} data: {lines} lines, {bytes_out} bytes")
-        print(f"[HydraPurr] Bluetooth sent {kind} data: {lines} lines, {bytes_out} bytes")
+        info(f"[HydraPurr] Bluetooth sent {kind} data: {lines} lines {bytes_out} bytes")
 
     # --- RTC time ---
     def set_time(self, yr=None, mt=None, dy=None, hr=None, mn=None, sc=None):

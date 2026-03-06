@@ -51,7 +51,7 @@ class LickSensor:
             auto_header=["cat_name", "state", "lick", "bout", "water"],
             max_lines=Settings.data_log_max_lines
         )
-        self.lick_threshold = 2.0  # Voltage threshold for contact detection
+        self.lick_threshold = Settings.lick_threshold
         
         # Core detection algorithm
         if min_water_delta is None:
@@ -71,7 +71,7 @@ class LickSensor:
         Process a raw ADC sample and update lick/bout detection.
         
         Args:
-            raw_adc_value: Raw ADC value from contact sensor (0-65535)
+            raw_adc_value: Voltage from contact sensor (0.0–3.3V)
             cat_name: Name of cat (optional, uses active cat if None)
             
         Returns:
@@ -171,7 +171,7 @@ class LickSensor:
         water_level = self.water_sensor.mean(10)
         return [
             cat_name,
-            self.bout_manager.get_state(cat_name),  # This method needs to be added
+            self.bout_manager.get_state(cat_name),
             self.get_lick_count(cat_name),
             self.get_bout_count(cat_name),
             water_level

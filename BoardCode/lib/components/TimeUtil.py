@@ -12,8 +12,15 @@ def init_timebase():
     if timebase_ready:
         return True
     if rtc is None:
-        from components.MyRTC import MyRTC
-        rtc = MyRTC()
+        try:
+            from components.MyRTC import MyRTC
+            rtc = MyRTC()
+        except Exception as e:
+            print(f"[TimeUtil] RTC init failed: {e}")
+            boot_mono_ms = monotonic_ms()
+            boot_epoch = 0
+            timebase_ready = True
+            return False
     boot_mono_ms = monotonic_ms()
     try:
         boot_epoch = int(_time.mktime(rtc.now()))

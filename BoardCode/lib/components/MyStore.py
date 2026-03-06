@@ -1,5 +1,5 @@
 # lib/components/MyStore.py
-import os, board  # sdcardio/storage no longer needed here
+import os
 import Settings
 from components import MySD  # ← NEW: centralize SD ops
 from components import TimeUtil
@@ -10,7 +10,6 @@ from components import TimeUtil
 path_separator = os.sep
 separator = ','
 mount_point = '/sd'
-sd_is_mounted = False
 time_labels = ["time", "mono_ms"]
 
 # ---------------------------------------------------------------------
@@ -33,10 +32,7 @@ def ensure_dir_recursive(path):
 
 def mount_sd():
     """Compat wrapper to the new SD module; preserves old API."""
-    global sd_is_mounted
-    ok = bool(MySD.mount_sd_card())
-    sd_is_mounted = ok
-    return ok
+    return bool(MySD.mount_sd_card())
 
 def normalize_to_sd(name):
     if not name:

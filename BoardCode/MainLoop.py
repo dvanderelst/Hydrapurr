@@ -9,8 +9,6 @@ from LickSensor import LickSensor
 from TagReader import TagReader     # new non-blocking, scheduled-reset version
 from HydraPurr import HydraPurr
 
-def now_ms(): return int(time.monotonic() * 1000)
-
 # A small helper to update the screen
 def update_screen(hp,ctr, current_cat):
     bout_count = ctr.get_bout_count()
@@ -44,10 +42,8 @@ def main_loop(level=DEBUG):
     info("[Main Loop] Starting monitoring loop")
     while True:
         cat_changed = False
-        state_changed = False
         bout_changed = False
         
-        #current_time = now_ms()
         hydrapurr.heartbeat()
         
         # --- Check for data requests
@@ -113,17 +109,15 @@ def main_loop(level=DEBUG):
             #     bout_changed = True
         
         if bout_count >= deployment_bout_count:
-            # update before feeding to make sure user sees the count reached
-            update_screen(hydrapurr, counter, current_cat)
-
+            update_screen(hydrapurr, counter, current_cat)  # show count reached
             info(f'[Main Loop] Deployment bout count {deployment_bout_count} reached, for {current_cat}')
             hydrapurr.feeder_on()
             time.sleep(Settings.deployment_duration_ms/1000)
             hydrapurr.feeder_off()
             counter.reset_counts()
-            bout_changed = True
+            update_screen(hydrapurr, counter, current_cat)  # show reset to 0
 
         # --- Update screen --------------------------------------
-        if cat_changed or bout_changed: update_screen(hydrapurr,counter, current_cat)
+        elif cat_changed or bout_changed: update_screen(hydrapurr, counter, current_cat)
 
-            
+        time.sleep(0.001)

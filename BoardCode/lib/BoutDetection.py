@@ -120,9 +120,9 @@ class BoutTracker:
             gap = timestamp_ms - self.last_lick_end_ms
             if gap >= self.max_bout_gap_ms:
                 if self.lick_count >= self.min_licks_per_bout:
-                    self.bout_count += 1
-                    bout_closed = True
-                    self._finalize_bout(timestamp_ms, water_level)
+                    if self._finalize_bout(timestamp_ms, water_level):
+                        self.bout_count += 1
+                        bout_closed = True
                 self._reset_bout_tracking()
                 self.lick_count = 0
         
@@ -164,9 +164,9 @@ class BoutTracker:
             self.current_bout_start_water = water_level
     
     def _finalize_bout(self, end_time, end_water):
-        """Calculate and store bout statistics"""
+        """Calculate and store bout statistics. Returns True if bout was kept, False if filtered."""
         if self.current_bout_start_ms is None or len(self.current_bout_licks) == 0:
-            return
+            return True  # bout happened, just no data to summarize
         
         # Calculate bout statistics
         bout_duration = end_time - self.current_bout_start_ms
@@ -186,9 +186,8 @@ class BoutTracker:
 
         # Check minimum water consumption using extent (max - min during bout)
         if self.min_water_delta > 0 and water_extent is not None and water_extent <= self.min_water_delta:
-            self._reset_bout_tracking()
-            return
-        
+            return False
+
         # Store bout summary
         self.last_bout_summary = {
             'cat_name': self.cat_name,
@@ -202,6 +201,7 @@ class BoutTracker:
             'water_extent': water_extent,
             'lick_durations': [d for d, _ in self.current_bout_licks]
         }
+        return True
     
     def _reset_bout_tracking(self):
         """Reset bout tracking variables"""
@@ -223,8 +223,8 @@ class BoutTracker:
         
         if self.lick_count > 0:
             if self.lick_count >= self.min_licks_per_bout:
-                self.bout_count += 1
-                self._finalize_bout(timestamp_ms, water_level)
+                if self._finalize_bout(timestamp_ms, water_level):
+                    self.bout_count += 1
             self._reset_bout_tracking()
             self.lick_count = 0
         
@@ -244,7 +244,6 @@ class BoutTracker:
             self.lick_count = 0
         if reset_bouts:
             self.bout_count = 0
-        if reset_bouts:
             self._reset_bout_tracking()
     
     def get_last_bout_summary(self):
@@ -330,7 +329,8 @@ class BoutManager:
             'max_lick_ms': first_tracker.max_lick_ms,
             'min_licks_per_bout': first_tracker.min_licks_per_bout,
             'max_bout_gap_ms': first_tracker.max_bout_gap_ms,
-            'debounce_ms': first_tracker.debounce_ms
+            'debounce_ms': first_tracker.debounce_ms,
+            'min_water_delta': first_tracker.min_water_delta
         }
     
     def set_active_cat(self, cat_name):
@@ -368,6 +368,12 @@ class BoutManager:
         cat_name = cat_name or self.active_cat
         tracker = self.trackers.get(cat_name)
         return tracker.bout_count if tracker else 0
+
+    def get_state(self, cat_name=None):
+        """Get current binary sensor state for specified cat"""
+        cat_name = cat_name or self.active_cat
+        tracker = self.trackers.get(cat_name)
+        return tracker.state if tracker else 0
     
     def reset_counts(self, cat_name=None):
         """Reset counts for specified cat"""

@@ -9,6 +9,7 @@ def get_name(tag_key):
 
 def get_age(tag_key):
     cats = Settings.cats
+    if tag_key not in cats: return None
     return cats[tag_key]['age']
 
 def get_all_names():

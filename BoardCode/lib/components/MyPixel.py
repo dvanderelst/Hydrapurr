@@ -77,11 +77,6 @@ class MyPixel:
         if brightness is not None:
             if not 0 <= brightness <= 1.0:
                 raise ValueError("Brightness must be between 0.0 and 1.0")
-            
-            # Scale the color based on brightness
-            color = tuple(int(c * brightness) for c in color)
-            
-            # Update the pixel's overall brightness
             self.pixels.brightness = brightness
         
         # Set the color
@@ -122,13 +117,11 @@ class MyPixel:
     def blink(self, color_name, times=3, duration=0.5):
         """
         Make the NeoPixel blink a specified number of times.
-        
+
         :param color_name: Name of the preset color to blink
         :param times: Number of blinks (default: 3)
         :param duration: Duration of each blink in seconds (default: 0.5)
         """
-        import time
-        
         for _ in range(times):
             self.set_color(color_name)
             time.sleep(duration)
@@ -138,12 +131,10 @@ class MyPixel:
     def rainbow_cycle(self, cycles=5, delay=0.05):
         """
         Create a rainbow cycle effect.
-        
+
         :param cycles: Number of rainbow cycles (default: 5)
         :param delay: Delay between color changes (default: 0.05)
         """
-        import time
-        
         for _ in range(cycles):
             for j in range(255):
                 self.pixels.fill(self._wheel(j & 255))
