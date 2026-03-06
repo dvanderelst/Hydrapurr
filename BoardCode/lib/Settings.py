@@ -14,7 +14,7 @@ deployment_duration_ms = 2000
 min_lick_ms = 50
 max_lick_ms = 150
 min_licks_per_bout = 3
-max_bout_gap_ms = 12000
+max_bout_gap_ms = 5
 min_water_delta_per_bout = 0.0  # Minimum water extent (mm) to count a bout (0 = disabled)
                                 # Uses extent = max_water_level - min_water_level during bout
                                 # Positive extent = water level fluctuated during bout
