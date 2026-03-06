@@ -1,0 +1,9 @@
+*.idea*
+*.sync_trash*
+*__pycache__**
+*.Trash*
+*old*
+*.html*
+*System Volume Information*
+BluetoothDownloader/builds/
+ProcessLickData/data/
