@@ -55,7 +55,7 @@ class LickSensor:
         
         # Core detection algorithm
         if min_water_delta is None:
-            min_water_delta = getattr(Settings, 'min_water_delta_per_bout', 0.1)
+            min_water_delta = getattr(Settings, 'min_water_delta_per_bout', 0.0)
         
         self.bout_manager = BoutManager(
             cat_names=cat_names,

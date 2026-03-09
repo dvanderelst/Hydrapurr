@@ -123,19 +123,17 @@ class HydraPurr:
             lines += 1
             time.sleep(0.002)
 
-            # # every 100 lines, give receiver a chance to say STOP
-            # if (lines % 100) == 0:
-            #     # non-blocking check for inbound command
-            #     cmd = self.bluetooth.poll()
-            #     if cmd and cmd.strip().upper() == "STOP":
-            #         self.bluetooth.send(f"ABORT,{kind},at_line,{lines}")
-            #         debug(f"[HydraPurr] Bluetooth aborted {kind} at line {lines}")
-            #         return
+            # every 100 lines, give receiver a chance to say STOP
+            if (lines % 100) == 0:
+                cmd = self.bluetooth.poll()
+                if cmd and cmd.strip().upper() == "STOP":
+                    self.bluetooth.send(f"ABORT,{kind},at_line,{lines}")
+                    debug(f"[HydraPurr] Bluetooth aborted {kind} at line {lines}")
+                    return
 
         # Optional: announce end
         bytes_out += self.bluetooth.send(f"END,{kind},lines,{lines},bytes,{bytes_out}")
         info(f"[HydraPurr] Bluetooth sent {kind} data: {lines} lines, {bytes_out} bytes")
-        info(f"[HydraPurr] Bluetooth sent {kind} data: {lines} lines {bytes_out} bytes")
 
     # --- RTC time ---
     def set_time(self, yr=None, mt=None, dy=None, hr=None, mn=None, sc=None):

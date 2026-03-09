@@ -39,6 +39,8 @@ def main_loop(level=DEBUG):
     previous_bout_count = 0
     previous_printed_tag = None
 
+    deployment_bout_count = Settings.deployment_bout_count
+
     info("[Main Loop] Starting monitoring loop")
     while True:
         cat_changed = False
@@ -85,10 +87,8 @@ def main_loop(level=DEBUG):
                 bout_changed = True
 
 
-        deployment_bout_count = Settings.deployment_bout_count
         bout_count = counter.get_bout_count()
 
-        # Access rich bout information for smarter feeding decisions
         if bout_changed:
             bout_summary = counter.get_last_bout_summary()
             if bout_summary is not None:
@@ -96,18 +96,8 @@ def main_loop(level=DEBUG):
                 duration_ms = bout_summary.get('duration_ms', 0)
                 water_extent = bout_summary.get('water_extent', 0)
                 water_delta = bout_summary.get('water_delta', 0)
-
                 info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}mm delta={water_delta:.3f}mm')
-            
-            # Example: Only feed if bout shows significant water consumption
-            # if water_extent > Settings.min_water_delta_per_bout:
-            #     info(f'[Main Loop] Significant consumption detected, feeding {current_cat}')
-            #     hydrapurr.feeder_on()
-            #     time.sleep(Settings.deployment_duration_ms/1000)
-            #     hydrapurr.feeder_off()
-            #     counter.reset_counts()
-            #     bout_changed = True
-        
+
         if bout_count >= deployment_bout_count:
             update_screen(hydrapurr, counter, current_cat)  # show count reached
             info(f'[Main Loop] Deployment bout count {deployment_bout_count} reached, for {current_cat}')
