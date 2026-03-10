@@ -105,6 +105,7 @@ def main_loop(level=DEBUG):
             time.sleep(Settings.deployment_duration_ms/1000)
             hydrapurr.feeder_off()
             counter.reset_counts()
+            previous_bout_count = 0
             update_screen(hydrapurr, counter, current_cat)  # show reset to 0
 
         # --- Update screen --------------------------------------

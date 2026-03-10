@@ -26,7 +26,7 @@ Side-effects:
 Consider reading the water level only on lick events, or using a single `read()`
 instead of `mean(10)` and averaging over the bout in software.
 
-## MainLoop.py — `previous_bout_count` not reset after feeder fires
+## ~~MainLoop.py — `previous_bout_count` not reset after feeder fires~~ RESOLVED
 After `counter.reset_counts()` in the feeder-trigger branch, `previous_bout_count`
 still holds the old deployment threshold value. On the very next loop iteration the
 state string changes (counts reset to 0), `bout_count` is now 0, and
