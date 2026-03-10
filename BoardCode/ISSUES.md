@@ -49,7 +49,7 @@ readings are only appended when `water_level is not None`; `end_bout()` called f
 switch time is not appended. In the extreme case where a whole bout is finalized
 this way, it is counted even if water filtering is enabled.
 
-## BoutDetection.py — offline inter-bout gap measured offset-to-offset instead of offset-to-onset
+## ~~BoutDetection.py — offline inter-bout gap measured offset-to-offset instead of offset-to-onset~~ RESOLVED
 In `_process_lick_events()`, `gap_ms = offset_time - last_offset_time` measures the
 time between the end of the last lick of one group and the end of the first lick of
 the next group. This includes the duration of the opening lick of the new bout,

@@ -472,14 +472,14 @@ class BoutManager:
                     # datetime object
                     duration = (offset_time - onset_time).total_seconds() * 1000
                     if last_offset_time is not None:
-                        gap_ms = (offset_time - last_offset_time).total_seconds() * 1000
+                        gap_ms = (onset_time - last_offset_time).total_seconds() * 1000
                     else:
                         gap_ms = None
                 else:
                     # numeric timestamp (mono_ms)
                     duration = offset_time - onset_time
                     if last_offset_time is not None:
-                        gap_ms = offset_time - last_offset_time
+                        gap_ms = onset_time - last_offset_time
                     else:
                         gap_ms = None
                 
