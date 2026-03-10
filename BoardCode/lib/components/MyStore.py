@@ -3,6 +3,7 @@ import os
 import Settings
 from components import MySD  # ← NEW: centralize SD ops
 from components import TimeUtil
+from components.FileUtil import count_lines, next_rotation_path, escape_csv, parse_csv_line
 
 # ---------------------------------------------------------------------
 # Global variables and constants
@@ -77,45 +78,6 @@ def write_line(path, line):
     except OSError as e:
         print(f"Warning: Unable to write line. {e}"); return False
 
-def _escape_csv_cell(value):
-    if value is None:
-        return ""
-    s = str(value)
-    if any(c in s for c in [",", "\"", "\n", "\r"]):
-        s = "\"" + s.replace("\"", "\"\"") + "\""
-    return s
-
-def _parse_csv_line(line, sep=","):
-    fields = []
-    if line is None:
-        return fields
-    s = str(line)
-    cur = []
-    in_quotes = False
-    i = 0
-    while i < len(s):
-        ch = s[i]
-        if in_quotes:
-            if ch == "\"":
-                if i + 1 < len(s) and s[i + 1] == "\"":
-                    cur.append("\"")
-                    i += 1
-                else:
-                    in_quotes = False
-            else:
-                cur.append(ch)
-        else:
-            if ch == "\"":
-                in_quotes = True
-            elif ch == sep:
-                fields.append("".join(cur))
-                cur = []
-            else:
-                cur.append(ch)
-        i += 1
-    fields.append("".join(cur))
-    return fields
-
 def _coerce_cell(text):
     if text is None or text == "":
         return "" if text == "" else None
@@ -131,7 +93,7 @@ def write_list(path, lst):
         print("Warning: SD not mounted; write_list skipped")
         return False
     try:
-        with open(path, 'a') as f: f.write(separator.join(_escape_csv_cell(x) for x in lst) + '\n'); return True
+        with open(path, 'a') as f: f.write(separator.join(escape_csv(x) for x in lst) + '\n'); return True
     except OSError as e:
         print(f"Warning: Unable to write list. {e}"); return False
 
@@ -145,7 +107,7 @@ def read_lines(path, split=True):
         out = []
         for s in lines:
             row = []
-            for x in _parse_csv_line(s, separator):
+            for x in parse_csv_line(s, separator):
                 row.append(_coerce_cell(x))
             out.append(row)
         return out
@@ -177,30 +139,6 @@ def print_directory(path=mount_point, tabs=0):
         if isdir: print_directory(full, tabs + 1)
 
 # ---------------------------------------------------------------------
-# Rotation helpers
-# ---------------------------------------------------------------------
-def _count_lines(path, stop_at=None):
-    try:
-        count = 0
-        with open(path, "r") as f:
-            for _ in f:
-                count += 1
-                if stop_at is not None and count >= stop_at:
-                    break
-        return count
-    except OSError:
-        return 0
-
-def _next_rotation_path(path, max_tries=10000):
-    for i in range(1, max_tries + 1):
-        candidate = f"{path}.{i}"
-        try:
-            os.stat(candidate)
-        except OSError:
-            return candidate
-    return None
-
-# ---------------------------------------------------------------------
 # Time handling
 # ---------------------------------------------------------------------
 def timestamp(fmt='iso', with_ms=True):
@@ -224,7 +162,7 @@ class MyStore:
         if MySD.is_mounted() and not file_exists(self.file_path): create_file(self.file_path)
         if auto_header: self.header(auto_header, label=self.time_label)
         if MySD.is_mounted() and self._max_lines:
-            total = _count_lines(self.file_path, stop_at=self._max_lines + 1)
+            total = count_lines(self.file_path, stop_at=self._max_lines + 1)
             self._line_count = max(total - 1, 0) if self._header else total
             if self._line_count >= self._max_lines:
                 self._rotate_file()
@@ -255,7 +193,7 @@ class MyStore:
             return False
         if not file_exists(self.file_path):
             return create_file(self.file_path)
-        rotated = _next_rotation_path(self.file_path)
+        rotated = next_rotation_path(self.file_path)
         if rotated is None:
             print("Warning: No rotation slot available; rotate skipped")
             return False
@@ -297,7 +235,7 @@ class MyStore:
                         yield line
                     else:
                         parts = []
-                        for x in _parse_csv_line(line, separator):
+                        for x in parse_csv_line(line, separator):
                             parts.append(_coerce_cell(x))
                         yield parts
         except OSError as e:

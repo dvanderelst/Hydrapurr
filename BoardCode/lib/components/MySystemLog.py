@@ -2,6 +2,7 @@
 # Minimal logger: prefer SD (/sd), else console. Uses components.MySD for mounting.
 import Settings
 from components import TimeUtil
+from components.FileUtil import count_lines, next_rotation_path, escape_csv
 
 DEBUG = 10
 INFO  = 20
@@ -22,31 +23,6 @@ _mem_max = 500  # number of recent lines to keep
 # ---------------- basics ----------------
 
 _csv_lines = True  # If True: "time,mono_ms,LEVEL,msg"; else legacy "[time] LEVEL: msg"
-
-def _count_lines(path, stop_at=None):
-    try:
-        count = 0
-        with open(path, "r") as f:
-            for _ in f:
-                count += 1
-                if stop_at is not None and count >= stop_at:
-                    break
-        return count
-    except Exception:
-        return 0
-
-def _next_rotation_path(path, max_tries=10000):
-    try:
-        import os
-        for i in range(1, max_tries + 1):
-            candidate = f"{path}.{i}"
-            try:
-                os.stat(candidate)
-            except OSError:
-                return candidate
-    except Exception:
-        return None
-    return None
 
 def set_csv_lines(flag):
     """If True, lines are 'time,mono_ms,LEVEL,msg'. If False, keep bracket style."""
@@ -72,21 +48,13 @@ def set_mem_max(n):
     except:
         pass
 
-def _escape_csv(text):
-    if text is None:
-        return ""
-    s = str(text)
-    if any(c in s for c in [",", "\"", "\n", "\r"]):
-        s = "\"" + s.replace("\"", "\"\"") + "\""
-    return s
-
 def _fmt(level_name, msg):
     # Normalize level text and choose format
     lvl = (level_name or "").strip()
     ts, mono = TimeUtil.timestamp_pair('iso', True)
     if _csv_lines:
         # CSV-style with monotonic wall time + raw monotonic (ms)
-        return f"{ts},{mono},{_escape_csv(lvl)},{_escape_csv(msg)}"
+        return f"{ts},{mono},{escape_csv(lvl)},{escape_csv(msg)}"
     else:
         # Legacy bracketed style
         return f"[{ts}] {lvl}: {msg}"
@@ -180,7 +148,7 @@ class _SDSink:
         self._line_count = 0
         self._fh = open(self.path, "a") if keep_open else None
         if self._max_lines:
-            total = _count_lines(self.path, stop_at=self._max_lines + 1)
+            total = count_lines(self.path, stop_at=self._max_lines + 1)
             self._line_count = total
             if self._line_count >= self._max_lines:
                 self._rotate_file()
@@ -240,7 +208,7 @@ class _SDSink:
                 self._fh.close()
         except:
             pass
-        rotated = _next_rotation_path(self.path)
+        rotated = next_rotation_path(self.path)
         if rotated is None:
             try: print("[MySystemLog] No rotation slot available; rotate skipped")
             except: pass

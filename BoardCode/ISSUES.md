@@ -9,9 +9,9 @@ Needs non-blocking BT send or chunked transmission.
 Default `eom_char='*'` will corrupt messages if data ever contains `*`.
 Already configurable via constructor. Consider switching to `\n`.
 
-## MyStore.py / MySystemLog.py — duplicated helpers
-`_count_lines`, `_next_rotation_path`, and CSV escape logic exist in both files.
-Not bugs, but changes must be made in two places.
+## ~~MyStore.py / MySystemLog.py — duplicated helpers~~ RESOLVED
+Extracted `count_lines`, `next_rotation_path`, `escape_csv`, and `parse_csv_line`
+into `lib/components/FileUtil.py`. Both files now import from there.
 
 ## MyADC.py / LickSensor.py — water sensor read blocks ~10ms every loop iteration
 `LickSensor.update()` calls `self.water_sensor.mean(10)` unconditionally on every
