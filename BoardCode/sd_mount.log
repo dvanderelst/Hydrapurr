@@ -1,0 +1,2 @@
+[000005] trying SPI mount cs=board.D10 baud=8000000
+[000006] OK: mounted at /sd

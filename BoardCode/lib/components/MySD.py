@@ -5,6 +5,17 @@ import storage
 import sdcardio
 from components import MySystemLog
 
+DIAG_LOG = "/sd_mount.log"
+
+def _diag(msg):
+    """Append a diagnostic line to the local filesystem (CIRCUITPY)."""
+    try:
+        mono = int(time.monotonic())
+        with open(DIAG_LOG, "a") as f:
+            f.write(f"[{mono:06d}] {msg}\n")
+    except Exception:
+        pass
+
 MOUNT_POINT = "/sd"
 
 # --- Pin defaults for Feather + Adalogger FeatherWing (CS = D10) ---
@@ -32,7 +43,9 @@ def mount_sd_card(cs_pin=DEFAULT_CS, spi=None, baudrate=8_000_000, quiet=False):
         return True
 
     if cs_pin is None:
+        msg = "FAIL: no CS pin (board.D10 not available)"
         MySystemLog.error("[SD] ERROR: No CS pin (cs_pin) provided and board.D10 not available.")
+        _diag(msg)
         return False
 
     try:
@@ -42,14 +55,17 @@ def mount_sd_card(cs_pin=DEFAULT_CS, spi=None, baudrate=8_000_000, quiet=False):
         except OSError:
             pass
 
+        _diag(f"trying SPI mount cs={cs_pin} baud={baudrate}")
         spi = spi or board.SPI()
         sd = sdcardio.SDCard(spi, cs_pin, baudrate=baudrate)
         vfs = storage.VfsFat(sd)
         storage.mount(vfs, MOUNT_POINT)
         MySystemLog.info("[SD] mounted OK at /sd")
+        _diag("OK: mounted at /sd")
         return True
     except Exception as e:
         MySystemLog.error("[SD] mount failed:", repr(e))
+        _diag(f"FAIL: {repr(e)}")
         return False
 
 def unmount(quiet=False):
