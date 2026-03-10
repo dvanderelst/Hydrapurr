@@ -34,6 +34,11 @@ def main_loop(level=DEBUG, sd_ok=True):
     hydrapurr.write_line(1, 'OK' if sd_ok else 'FAILED')
     hydrapurr.show_screen()
     time.sleep(3)
+    clock = hydrapurr.get_time(as_string=False)
+    hydrapurr.write_line(0, f"{clock['day']:02d}/{clock['month']:02d}/{clock['year']}")
+    hydrapurr.write_line(1, f"{clock['hour']:02d}:{clock['minute']:02d}:{clock['second']:02d}")
+    hydrapurr.show_screen()
+    time.sleep(3)
     reader = TagReader()
     counter = LickSensor(cat_names=all_cat_names)
     info("[Main Loop] Objects created")
@@ -103,7 +108,9 @@ def main_loop(level=DEBUG, sd_ok=True):
                 counter.reset_counts(switched_from)
                 update_screen(hydrapurr, counter, switched_from, switched_from)  # show reset to 0
 
-        counter.update(raw_lick_value)
+        result = counter.update(raw_lick_value)
+        if result['previous_state'] == 0 and result['current_state'] == 1:
+            info(f'[Main Loop] Lick start ({result["cat_name"]})')
         current_lick_state_string = counter.get_state_string()
         if current_lick_state_string != previous_lick_state_string:
             debug('[Main Loop] ' + current_lick_state_string)
