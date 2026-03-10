@@ -92,7 +92,11 @@ class LickSensor:
         
         # Get current timestamp and water level
         timestamp_ms = now()
-        water_level = self.water_sensor.mean(10)  # Average 10 samples
+        if binary_state == 1:
+            n = getattr(Settings, 'water_samples', 1)
+            water_level = self.water_sensor.read() if n <= 1 else self.water_sensor.mean(n)
+        else:
+            water_level = None
         
         # Process through core algorithm
         result = self.bout_manager.process_sample(

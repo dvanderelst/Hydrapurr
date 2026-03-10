@@ -13,7 +13,7 @@ Already configurable via constructor. Consider switching to `\n`.
 Extracted `count_lines`, `next_rotation_path`, `escape_csv`, and `parse_csv_line`
 into `lib/components/FileUtil.py`. Both files now import from there.
 
-## MyADC.py / LickSensor.py — water sensor read blocks ~10ms every loop iteration
+## ~~MyADC.py / LickSensor.py — water sensor read blocks ~10ms every loop iteration~~ RESOLVED
 `LickSensor.update()` calls `self.water_sensor.mean(10)` unconditionally on every
 loop iteration. With the default `sample_delay=0.001`, that is 10 × 1ms = ~10ms of
 blocking before any lick or RFID processing. Combined with the 1ms sleep at the end

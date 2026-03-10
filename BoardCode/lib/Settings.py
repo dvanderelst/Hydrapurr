@@ -16,6 +16,10 @@ min_lick_ms = 50
 max_lick_ms = 150
 min_licks_per_bout = 3
 max_bout_gap_ms = 1000
+water_samples = 1               # Samples averaged per water-level reading.
+                                # 1 = single read (~0ms, default); higher values add
+                                # 1ms blocking per extra sample (via MyADC.mean) but
+                                # reduce noise. Only read during lick contact.
 min_water_delta_per_bout = 0.0  # Minimum water extent (mm) to count a bout (0 = disabled)
                                 # Uses extent = max_water_level - min_water_level during bout
                                 # Positive extent = water level fluctuated during bout
