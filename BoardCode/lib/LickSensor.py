@@ -125,7 +125,9 @@ class LickSensor:
     
     def set_active_cat(self, cat_name):
         """Set the active cat (finalizes previous cat's bout)"""
-        self.bout_manager.set_active_cat(cat_name)
+        n = getattr(Settings, 'water_samples', 1)
+        water_level = self.water_sensor.read() if n <= 1 else self.water_sensor.mean(n)
+        self.bout_manager.set_active_cat(cat_name, water_level=water_level)
     
     def get_last_bout_summary(self, cat_name=None):
         """Get summary of last completed bout for specified cat"""

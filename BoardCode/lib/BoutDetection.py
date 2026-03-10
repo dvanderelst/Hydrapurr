@@ -333,16 +333,16 @@ class BoutManager:
             'min_water_delta': first_tracker.min_water_delta
         }
     
-    def set_active_cat(self, cat_name):
+    def set_active_cat(self, cat_name, water_level=None):
         """Switch the active cat"""
         if cat_name == self.active_cat:
             return
-        
+
         # Finalize previous cat's bout
         if self.active_cat in self.trackers:
             timestamp = now()
-            self.trackers[self.active_cat].end_bout(timestamp)
-        
+            self.trackers[self.active_cat].end_bout(timestamp, water_level=water_level)
+
         self.active_cat = cat_name
     
     def get_last_bout_summary(self, cat_name=None):

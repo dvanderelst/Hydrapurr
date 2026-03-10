@@ -41,7 +41,7 @@ increment that cat's `bout_count`. But the feeder threshold check that follows r
 reaches `deployment_bout_count` exactly when a cat-switch occurs (RFID timeout or
 new tag read), the feeder never fires until cat A is active again.
 
-## BoutDetection.py — `_finalize_bout` bypasses water filter when lick list is empty
+## ~~BoutDetection.py — `_finalize_bout` bypasses water filter when lick list is empty~~ RESOLVED
 `_finalize_bout()` returns `True` early (counting the bout) when
 `current_bout_licks` is empty, without evaluating `min_water_delta`. Lick water
 readings are only appended when `water_level is not None`; `end_bout()` called from
