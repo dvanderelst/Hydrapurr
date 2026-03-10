@@ -29,3 +29,4 @@ Monitor cat drinking behaviour at a shared water fountain and automatically disp
 - Runs on CircuitPython (RP2040 / Raspberry Pi Pico-class board).
 - No OS, limited RAM — no pandas on device; `BoutDetection.py` gracefully falls back when pandas is absent.
 - Most I/O is non-blocking; the main loop sleeps only 1 ms per iteration. Intentional exceptions: the feeder relay blocks for `deployment_duration_ms` (detection pauses while food is dispensed), and BT data streaming blocks while transmitting.
+- The SD card (`/sd`) is not accessible during interactive REPL sessions — only the CIRCUITPY filesystem is available. Tests and any interactive code must not depend on SD card operations.
