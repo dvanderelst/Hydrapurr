@@ -20,7 +20,7 @@ water_samples = 1               # Samples averaged per water-level reading.
                                 # 1 = single read (~0ms, default); higher values add
                                 # 1ms blocking per extra sample (via MyADC.mean) but
                                 # reduce noise. Only read during lick contact.
-min_water_extent_per_bout = 0.0 # Minimum water extent (mm) to count a bout (0 = disabled)
+min_water_extent_per_bout = 0.0 # Minimum water extent (V) to count a bout (0 = disabled)
                                 # extent = max_water_level - min_water_level during bout
                                 # Pass bouts with extent > threshold, filter bouts with extent <= threshold
                                 # Set to 0.0 to disable water consumption filtering

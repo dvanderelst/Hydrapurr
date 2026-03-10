@@ -99,7 +99,7 @@ def main_loop(level=DEBUG, sd_ok=True):
                     duration_ms = bout_summary.get('duration_ms', 0)
                     water_extent = bout_summary.get('water_extent') or 0
                     water_delta = bout_summary.get('water_delta') or 0
-                    info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}mm delta={water_delta:.3f}mm')
+                    info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}V delta={water_delta:.3f}V')
                 update_screen(hydrapurr, counter, switched_from, switched_from)  # show count reached
                 info(f'[Main Loop] Deployment bout count {deployment_bout_count} reached, for {switched_from}')
                 hydrapurr.feeder_on()
@@ -130,7 +130,7 @@ def main_loop(level=DEBUG, sd_ok=True):
                 duration_ms = bout_summary.get('duration_ms', 0)
                 water_extent = bout_summary.get('water_extent') or 0
                 water_delta = bout_summary.get('water_delta') or 0
-                info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}mm delta={water_delta:.3f}mm')
+                info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}V delta={water_delta:.3f}V')
 
         if bout_count >= deployment_bout_count:
             update_screen(hydrapurr, counter, current_cat)  # show count reached
