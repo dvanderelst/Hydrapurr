@@ -1,58 +1,55 @@
 # Outstanding Issues
 
+## ~~MainLoop.py — spurious "Cat switched None → unknown" log entry on startup~~ RESOLVED
+`previous_active_cat` initialises to `None` but `BoutManager.active_cat` starts as
+`'unknown'`. On the first iteration with no RFID tag, `current_cat = 'unknown'` and
+`'unknown' != None` triggers a cat-switch log entry. No functional effect (feeder
+check is skipped since `switched_from = None`), but the log is misleading.
+Fix: initialise `previous_active_cat = 'unknown'`.
+
+## ~~LickSensor.py / BoutDetection.py — bout-close SD log entry records lick_count = 0~~ RESOLVED
+When a bout closes, `BoutTracker.process_sample` resets `lick_count = 0` before
+returning. `BoutManager` then returns `'lick_count': tracker.lick_count` = 0, and
+`LickSensor` logs that to the SD card. The "bout closed" row in `licks.dat` always
+shows lick=0 instead of the count of licks in the bout. The actual count is in
+`last_bout_summary['lick_count']` but is not written to the log at that moment.
+For offline analysis this means the bout lick count must be reconstructed from
+preceding rows rather than read directly from the bout-close entry.
+
 ## HydraPurr.py — BT send blocks main loop
 `bluetooth_send_data()` has a `time.sleep(0.002)` per line.
 At 2000 lines = ~4s freeze: no lick detection, no RFID, no heartbeat.
 Needs non-blocking BT send or chunked transmission.
 
+## ~~MainLoop.py — `update_screen` shows wrong bout count in `switched_from` feeder path~~ RESOLVED
+## ~~LickSensor.py — water level is `None` on every falling edge, breaking water tracking~~ RESOLVED
+
+## ~~LickSensor.py — `_last_water` stale after cat switch~~ RESOLVED
+`set_active_cat` reads the water sensor and passes the value to `end_bout`, but does
+not update `self._last_water`. The new active cat's first bout inherits the previous
+cat's last contact reading as `current_bout_start_water`.
+Fix: add `self._last_water = water_level` in `set_active_cat` after the sensor read.
+
+## ~~MainLoop.py — `water_extent` / `water_delta` can be `None`, crashing f-string format~~ RESOLVED
+`bout_summary.get('water_extent', 0)` returns `0` only when the key is absent.
+`_finalize_bout` always stores the key but sometimes with value `None`; calling
+`f'{None:.3f}'` raises `TypeError`. Affects both the `bout_changed` log block and the
+`switched_from` log block. Fix: use `or 0` when reading these values from the summary.
+
 ## MyBT.py — EOM delimiter
 Default `eom_char='*'` will corrupt messages if data ever contains `*`.
 Already configurable via constructor. Consider switching to `\n`.
 
-## ~~MyStore.py / MySystemLog.py — duplicated helpers~~ RESOLVED
-Extracted `count_lines`, `next_rotation_path`, `escape_csv`, and `parse_csv_line`
-into `lib/components/FileUtil.py`. Both files now import from there.
+## ~~MainLoop.py — `switched_from` feeder path missing screen feedback and bout summary log~~ RESOLVED
+When the departing cat's bout triggers the feeder at a cat-switch, the code fires
+the relay and resets the count but does not: (a) update the screen before/after to
+show the threshold was reached, or (b) log the bout summary. The normal feeder path
+does both. Inconsistent user-visible behaviour.
 
-## ~~MyADC.py / LickSensor.py — water sensor read blocks ~10ms every loop iteration~~ RESOLVED
-`LickSensor.update()` calls `self.water_sensor.mean(10)` unconditionally on every
-loop iteration. With the default `sample_delay=0.001`, that is 10 × 1ms = ~10ms of
-blocking before any lick or RFID processing. Combined with the 1ms sleep at the end
-of the main loop, the effective sample rate is ~90 Hz instead of ~1000 Hz.
-Side-effects:
-- The 5ms debounce window (`BoutTracker.debounce_ms`) cannot function at finer
-  than ~11ms resolution, so debounce is effectively ~11ms.
-- Lick duration estimates are limited to ~11ms granularity.
-- Water level is read even during long idle periods with no lick activity.
-Consider reading the water level only on lick events, or using a single `read()`
-instead of `mean(10)` and averaging over the bout in software.
-
-## ~~MainLoop.py — `previous_bout_count` not reset after feeder fires~~ RESOLVED
-After `counter.reset_counts()` in the feeder-trigger branch, `previous_bout_count`
-still holds the old deployment threshold value. On the very next loop iteration the
-state string changes (counts reset to 0), `bout_count` is now 0, and
-`previous_bout_count != bout_count` triggers `bout_changed = True`. This causes the
-last bout summary to be logged a second time and triggers an extra screen update.
-Fix: add `previous_bout_count = 0` immediately after `counter.reset_counts()`.
-
-## ~~MainLoop.py / BoutManager.py — final bout at cat-switch is not checked for feeder threshold~~ RESOLVED
-`set_active_cat(new_cat)` calls `end_bout()` on the previous cat, which can
-increment that cat's `bout_count`. But the feeder threshold check that follows reads
-`counter.get_bout_count()` for the *new* active cat, not the previous one. If cat A
-reaches `deployment_bout_count` exactly when a cat-switch occurs (RFID timeout or
-new tag read), the feeder never fires until cat A is active again.
-
-## ~~BoutDetection.py — `_finalize_bout` bypasses water filter when lick list is empty~~ RESOLVED
-`_finalize_bout()` returns `True` early (counting the bout) when
-`current_bout_licks` is empty, without evaluating `min_water_delta`. Lick water
-readings are only appended when `water_level is not None`; `end_bout()` called from
-`BoutManager.set_active_cat()` passes no water level, so any lick in progress at
-switch time is not appended. In the extreme case where a whole bout is finalized
-this way, it is counted even if water filtering is enabled.
-
-## ~~BoutDetection.py — offline inter-bout gap measured offset-to-offset instead of offset-to-onset~~ RESOLVED
-In `_process_lick_events()`, `gap_ms = offset_time - last_offset_time` measures the
-time between the end of the last lick of one group and the end of the first lick of
-the next group. This includes the duration of the opening lick of the new bout,
-systematically underestimating the quiet gap by ~50–150ms. With
-`max_bout_gap_ms=1000` this is unlikely to cause incorrect grouping in practice, but
-the semantics are slightly wrong. Should use onset-to-onset or offset-to-onset.
+## ~~BoutDetection.py — `_finalize_bout` early return still bypasses water filter~~ RESOLVED
+`_finalize_bout` returns `True` early when `current_bout_licks` is empty, without
+evaluating `min_water_delta`. `_track_lick` only appends to `current_bout_licks`
+when `water_level is not None`, so a water sensor failure during a bout would leave
+the list empty and allow the bout to count unfiltered. The root cause (missing
+water_level at cat-switch) was fixed, but the bypass path remains for the sensor
+failure scenario.

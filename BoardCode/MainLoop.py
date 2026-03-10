@@ -10,8 +10,8 @@ from TagReader import TagReader     # new non-blocking, scheduled-reset version
 from HydraPurr import HydraPurr
 
 # A small helper to update the screen
-def update_screen(hp,ctr, current_cat):
-    bout_count = ctr.get_bout_count()
+def update_screen(hp, ctr, current_cat, cat_name=None):
+    bout_count = ctr.get_bout_count(cat_name)
     line0 = current_cat
     line1 = f'[B] {bout_count}'
     hp.write_line(0, line0)
@@ -35,7 +35,7 @@ def main_loop(level=DEBUG):
 
     # Presence/attribution state
     previous_lick_state_string = None
-    previous_active_cat = None  # no cat at start
+    previous_active_cat = 'unknown'  # matches BoutManager's initial active_cat
     previous_bout_count = 0
     previous_printed_tag = None
 
@@ -83,11 +83,20 @@ def main_loop(level=DEBUG):
         if switched_from is not None:
             prev_bouts = counter.get_bout_count(switched_from)
             if prev_bouts >= deployment_bout_count:
+                bout_summary = counter.get_last_bout_summary(switched_from)
+                if bout_summary is not None:
+                    lick_count = bout_summary.get('lick_count', 0)
+                    duration_ms = bout_summary.get('duration_ms', 0)
+                    water_extent = bout_summary.get('water_extent') or 0
+                    water_delta = bout_summary.get('water_delta') or 0
+                    info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}mm delta={water_delta:.3f}mm')
+                update_screen(hydrapurr, counter, switched_from, switched_from)  # show count reached
                 info(f'[Main Loop] Deployment bout count {deployment_bout_count} reached, for {switched_from}')
                 hydrapurr.feeder_on()
                 time.sleep(Settings.deployment_duration_ms/1000)
                 hydrapurr.feeder_off()
                 counter.reset_counts(switched_from)
+                update_screen(hydrapurr, counter, switched_from, switched_from)  # show reset to 0
 
         counter.update(raw_lick_value)
         current_lick_state_string = counter.get_state_string()
@@ -107,8 +116,8 @@ def main_loop(level=DEBUG):
             if bout_summary is not None:
                 lick_count = bout_summary.get('lick_count', 0)
                 duration_ms = bout_summary.get('duration_ms', 0)
-                water_extent = bout_summary.get('water_extent', 0)
-                water_delta = bout_summary.get('water_delta', 0)
+                water_extent = bout_summary.get('water_extent') or 0
+                water_delta = bout_summary.get('water_delta') or 0
                 info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}mm delta={water_delta:.3f}mm')
 
         if bout_count >= deployment_bout_count:

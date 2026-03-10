@@ -46,6 +46,7 @@ class LickSensor:
         """
         # Hardware components
         self.water_sensor = MyADC(0)  # Water level sensor on channel 0
+        self._last_water = None       # Cache: last reading while contact was active
         self.data_store = MyStore(
             Settings.lick_data_filename,
             auto_header=["cat_name", "state", "lick", "bout", "water"],
@@ -94,9 +95,8 @@ class LickSensor:
         timestamp_ms = now()
         if binary_state == 1:
             n = getattr(Settings, 'water_samples', 1)
-            water_level = self.water_sensor.read() if n <= 1 else self.water_sensor.mean(n)
-        else:
-            water_level = None
+            self._last_water = self.water_sensor.read() if n <= 1 else self.water_sensor.mean(n)
+        water_level = self._last_water  # valid on falling edge: uses last reading from contact
         
         # Process through core algorithm
         result = self.bout_manager.process_sample(
@@ -105,10 +105,14 @@ class LickSensor:
         
         # Log to SD card if state changed (lick added or bout closed)
         if result['lick_added'] or result['bout_closed']:
+            # On bout close lick_count is already reset to 0; use summary for true count
+            log_lick_count = result['lick_count']
+            if result['bout_closed'] and result.get('bout_summary'):
+                log_lick_count = result['bout_summary'].get('lick_count', 0)
             self._log_to_sd_card(
                 result['cat_name'],
                 result['current_state'],
-                result['lick_count'],
+                log_lick_count,
                 result['bout_count'],
                 water_level
             )
@@ -125,8 +129,11 @@ class LickSensor:
     
     def set_active_cat(self, cat_name):
         """Set the active cat (finalizes previous cat's bout)"""
+        if cat_name == self.bout_manager.active_cat:
+            return
         n = getattr(Settings, 'water_samples', 1)
         water_level = self.water_sensor.read() if n <= 1 else self.water_sensor.mean(n)
+        self._last_water = water_level
         self.bout_manager.set_active_cat(cat_name, water_level=water_level)
     
     def get_last_bout_summary(self, cat_name=None):
@@ -174,7 +181,8 @@ class LickSensor:
     def get_state_data(self, cat_name=None):
         """Get state data (backward compatibility)"""
         cat_name = cat_name or self.bout_manager.active_cat
-        water_level = self.water_sensor.mean(10)
+        n = getattr(Settings, 'water_samples', 1)
+        water_level = self.water_sensor.read() if n <= 1 else self.water_sensor.mean(n)
         return [
             cat_name,
             self.bout_manager.get_state(cat_name),
