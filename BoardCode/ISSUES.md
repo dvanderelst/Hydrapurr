@@ -34,7 +34,7 @@ state string changes (counts reset to 0), `bout_count` is now 0, and
 last bout summary to be logged a second time and triggers an extra screen update.
 Fix: add `previous_bout_count = 0` immediately after `counter.reset_counts()`.
 
-## MainLoop.py / BoutManager.py — final bout at cat-switch is not checked for feeder threshold
+## ~~MainLoop.py / BoutManager.py — final bout at cat-switch is not checked for feeder threshold~~ RESOLVED
 `set_active_cat(new_cat)` calls `end_bout()` on the previous cat, which can
 increment that cat's `bout_count`. But the feeder threshold check that follows reads
 `counter.get_bout_count()` for the *new* active cat, not the previous one. If cat A

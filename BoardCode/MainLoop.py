@@ -66,16 +66,29 @@ def main_loop(level=DEBUG):
             previous_printed_tag = tag_key
             
         current_cat = Cats.get_name(tag_key)
+        switched_from = None
         if current_cat != previous_active_cat:
             p = ("%-10s" % str(previous_active_cat))
             c = ("%-10s" % str(current_cat))
             info(f'[Main Loop] Cat switched {p}-> {c}')
+            switched_from = previous_active_cat
             previous_active_cat = current_cat
             cat_changed = True
-        
+
         # --- Process the lick --------------------------------------
         raw_lick_value = hydrapurr.read_lick(binary=False)
-        counter.set_active_cat(current_cat)
+        counter.set_active_cat(current_cat)  # finalises switched_from's bout if cat changed
+
+        # Check if the departing cat crossed the threshold when their bout was finalised
+        if switched_from is not None:
+            prev_bouts = counter.get_bout_count(switched_from)
+            if prev_bouts >= deployment_bout_count:
+                info(f'[Main Loop] Deployment bout count {deployment_bout_count} reached, for {switched_from}')
+                hydrapurr.feeder_on()
+                time.sleep(Settings.deployment_duration_ms/1000)
+                hydrapurr.feeder_off()
+                counter.reset_counts(switched_from)
+
         counter.update(raw_lick_value)
         current_lick_state_string = counter.get_state_string()
         if current_lick_state_string != previous_lick_state_string:
