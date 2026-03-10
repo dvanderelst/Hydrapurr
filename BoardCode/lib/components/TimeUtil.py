@@ -59,7 +59,7 @@ def _wall_time_from_mono(mono_now, fmt='iso', with_ms=True):
     try:
         t = _time.localtime(base_seconds)
     except Exception:
-        t = rtc.now()
+        t = rtc.now() if rtc is not None else _time.localtime(0)
     base = _format_time(t, fmt)
     return f"{base}.{frac_ms:03d}" if with_ms else base
 

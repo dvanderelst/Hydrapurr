@@ -54,7 +54,7 @@ class BoutTracker:
     
     def __init__(self, cat_name, min_lick_ms=50, max_lick_ms=150,
                  min_licks_per_bout=3, max_bout_gap_ms=12000, debounce_ms=5,
-                 min_water_delta=0.0):
+                 min_water_extent=0.0):
         """Initialize bout tracker for a specific cat"""
         self.cat_name = cat_name
         
@@ -64,7 +64,7 @@ class BoutTracker:
         self.min_licks_per_bout = min_licks_per_bout
         self.max_bout_gap_ms = max_bout_gap_ms
         self.debounce_ms = debounce_ms
-        self.min_water_delta = min_water_delta
+        self.min_water_extent = min_water_extent
         
         # State tracking
         self.state = 0  # Current debounced state (0 or 1)
@@ -166,7 +166,7 @@ class BoutTracker:
     def _finalize_bout(self, end_time, end_water):
         """Calculate and store bout statistics. Returns True if bout was kept, False if filtered."""
         if self.current_bout_start_ms is None or len(self.current_bout_licks) == 0:
-            return self.min_water_delta <= 0  # no water data: pass only if filter is disabled
+            return self.min_water_extent <= 0  # no water data: pass only if filter is disabled
         
         # Calculate bout statistics
         bout_duration = end_time - self.current_bout_start_ms
@@ -185,7 +185,7 @@ class BoutTracker:
             water_extent = None
 
         # Check minimum water consumption using extent (max - min during bout)
-        if self.min_water_delta > 0 and water_extent is not None and water_extent <= self.min_water_delta:
+        if self.min_water_extent > 0 and water_extent is not None and water_extent <= self.min_water_extent:
             return False
 
         # Store bout summary
@@ -330,7 +330,7 @@ class BoutManager:
             'min_licks_per_bout': first_tracker.min_licks_per_bout,
             'max_bout_gap_ms': first_tracker.max_bout_gap_ms,
             'debounce_ms': first_tracker.debounce_ms,
-            'min_water_delta': first_tracker.min_water_delta
+            'min_water_extent': first_tracker.min_water_extent
         }
     
     def set_active_cat(self, cat_name, water_level=None):
@@ -381,7 +381,7 @@ class BoutManager:
         if cat_name in self.trackers:
             self.trackers[cat_name].reset_counts()
     
-    def process_dataframe(self, df, group_gap_ms=None, min_group_size=None, min_water_delta=None):
+    def process_dataframe(self, df, group_gap_ms=None, min_group_size=None, min_water_extent=None):
         """
         Batch process a dataframe of lick data (offline analysis).
         
@@ -401,21 +401,21 @@ class BoutManager:
         tracker = next(iter(self.trackers.values()))
         group_gap_ms = group_gap_ms or tracker.max_bout_gap_ms
         min_group_size = min_group_size or tracker.min_licks_per_bout
-        min_water_delta = min_water_delta or tracker.min_water_delta
-        
+        min_water_extent = min_water_extent or tracker.min_water_extent
+
         # Filter to keep only state transitions
         lick_events = self._filter_lick_events(df)
-        
+
         # Process events
-        results = self._process_lick_events(lick_events, group_gap_ms, min_water_delta)
+        results = self._process_lick_events(lick_events, group_gap_ms)
         results_df = pd.DataFrame(
             results,
             columns=['index', 'time', 'duration', 'water', 'water_delta', 'group']
         )
-        
+
         # Apply minimum group size and water consumption filtering
         if min_group_size > 1 and not results_df.empty:
-            results_df = self._filter_small_groups(results_df, min_group_size, min_water_delta)
+            results_df = self._filter_small_groups(results_df, min_group_size, min_water_extent)
         
         # Add group index
         results_df = self._add_group_indices(results_df)
@@ -444,7 +444,7 @@ class BoutManager:
         
         return pd.DataFrame(retained_lines)
     
-    def _process_lick_events(self, lick_events, group_gap_ms, min_water_delta):
+    def _process_lick_events(self, lick_events, group_gap_ms):
         """Process lick events into bouts"""
         results = []
         previous_state = 0
@@ -499,7 +499,7 @@ class BoutManager:
         
         return results
     
-    def _filter_small_groups(self, results_df, min_group_size, min_water_delta):
+    def _filter_small_groups(self, results_df, min_group_size, min_water_extent):
         """Filter out groups with fewer than min_group_size licks or insufficient water consumption"""
         if results_df.empty:
             return results_df
@@ -511,13 +511,11 @@ class BoutManager:
         
         # Then filter by water extent (max - min during bout)
         # Positive extent means water level fluctuated (consumption causes fluctuation)
-        if min_water_delta > 0:  # Only filter if enabled
+        if min_water_extent > 0:  # Only filter if enabled
             grouped = results_df.dropna(subset=["group"]).groupby("group")
             for group_id, group_df in grouped:
-                # Calculate water extent for this bout (max - min water level)
                 water_extent = group_df["water"].max() - group_df["water"].min()
-                # If water extent is not large enough, filter out this group
-                if water_extent <= min_water_delta:  # Not enough fluctuation
+                if water_extent <= min_water_extent:
                     results_df.loc[results_df["group"] == group_id, "group"] = np.nan
         
         kept_groups = sorted(results_df["group"].dropna().unique())
