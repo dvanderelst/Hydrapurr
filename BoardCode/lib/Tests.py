@@ -2,8 +2,7 @@ import time
 import traceback
 from HydraPurr import HydraPurr
 from TagReader import TagReader
-from components.MySystemLog import setup_system_log, set_system_log_level, DEBUG, info
-from components.MySystemLog import read_log
+from components.MySystemLog import set_system_log_level, DEBUG, info
 
 def test_log(number, message, function=info):
     line = f"[Test {number}] {message}"
@@ -11,7 +10,6 @@ def test_log(number, message, function=info):
 
 def main(selected_tests):
     set_system_log_level(DEBUG)
-    setup_system_log()
     info("[Run Tests] Start")
     hp = HydraPurr()
 
@@ -46,11 +44,10 @@ def main(selected_tests):
 
             elif test == 3:
                 test_log(3, "Water level reading")
-                # Water level is now handled by LickCounter, not HydraPurr
-                from LickCounter import LickCounter
-                lc = LickCounter(['test'])
+                from components.MyADC import MyADC
+                water_sensor = MyADC(0)
                 for i in range(10):
-                    water_level = lc.water_level.mean(50, 0.001)
+                    water_level = water_sensor.read()
                     test_log(3, f"Water level: {water_level}")
                     time.sleep(1)
                 test_log(3, "Done")
@@ -74,46 +71,18 @@ def main(selected_tests):
                 test_log(5, "Done")
 
             elif test == 6:
-                info(6, "SD logging")
-                fname1 = "hydra_test1.csv"
-                fname2 = "hydra_test2.csv"
-                hp.create_data_log(fname1)
-                hp.create_data_log(fname2)
-                
-                hp.empty_data_log(fname1)
-                hp.empty_data_log(fname2)
-                   
-                hp.add_data(fname1, ['one', 1, 2, 3])
-                hp.add_data(fname1, ['two', 4, 5, 6])
-                hp.add_data(fname1, ['three', 7, 8, 9])
-                
-                hp.add_data(fname2, ['one', 1, 2, 3])
-                hp.add_data(fname2, ['two', 4, 5, 6])
-                hp.add_data(fname2, ['three', 7, 8, 9])
-                
-                rows1 = hp.read_data_log(fname1)
-                rows2 = hp.read_data_log(fname2)
-                test_log(6, f"Contents of {fname1}:")
-                for r in rows1: test_log(6, str(r))
-                test_log(6, f"Contents of {fname2}:")
-                for r in rows2: test_log(6, str(r))
-
-                test_log(6, "Done")
-
-            elif test == 7:
                 # RTC set/get
-                test_log(7, "Setting RTC")
-                # Partial set: only update some fields (HydraPurr handles keeping others)  :contentReference[oaicite:3]{index=3}
+                test_log(6, "Setting RTC")
                 hp.set_time(mn=30, sc=0)
                 logline1 = " Current time (string):" + str(hp.get_time(as_string=True))
                 logline2 = " Current time (dict):" + str(hp.get_time(as_string=False))
-                test_log(7, logline1)
-                test_log(7, logline2)
-                test_log(7, "Done")
+                test_log(6, logline1)
+                test_log(6, logline2)
+                test_log(6, "Done")
 
-            elif test == 8:
+            elif test == 7:
                 start_time = time.time()
-                test_log(8, 'RFID reader')
+                test_log(7, 'RFID reader')
                 reader = TagReader()
                 reader.reset_now()
                 while True:
@@ -121,13 +90,10 @@ def main(selected_tests):
                     current_time = time.time()
                     elapsed_time = current_time - start_time
                     if elapsed_time > 10: break
-                test_log(8, "Done")
+                test_log(7, "Done")
 
         except Exception as e:
             info(f"[ERROR] Test {test} raised: {e}")
             traceback.print_exception(e)
         time.sleep(2)
-    log = read_log()
-    return hp, log
-
- 
+    return hp

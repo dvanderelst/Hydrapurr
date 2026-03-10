@@ -1,4 +1,5 @@
 import time
+import traceback
 
 import Cats
 import Settings
@@ -19,7 +20,7 @@ def update_screen(hp, ctr, current_cat, cat_name=None):
     hp.show_screen()
 
 
-def main_loop(level=DEBUG):
+def main_loop(level=DEBUG, sd_ok=True):
     info("[Main Loop] Start")
     set_system_log_level(level)
     setup_system_log()
@@ -29,6 +30,10 @@ def main_loop(level=DEBUG):
     info(f'[Main Loop] all defined cats: {all_cat_names}')
     # Hardware / objects
     hydrapurr = HydraPurr()
+    hydrapurr.write_line(0, 'SD card')
+    hydrapurr.write_line(1, 'OK' if sd_ok else 'FAILED')
+    hydrapurr.show_screen()
+    time.sleep(3)
     reader = TagReader()
     counter = LickSensor(cat_names=all_cat_names)
     info("[Main Loop] Objects created")
@@ -43,9 +48,10 @@ def main_loop(level=DEBUG):
 
     info("[Main Loop] Starting monitoring loop")
     while True:
+      try:
         cat_changed = False
         bout_changed = False
-        
+
         hydrapurr.heartbeat()
         
         # --- Check for data requests
@@ -54,7 +60,6 @@ def main_loop(level=DEBUG):
             info(f'[Main Loop] Processing command: {command}')
             if command == 'licks': hydrapurr.bluetooth_send_data(kind='licks')
             if command == 'system': hydrapurr.bluetooth_send_data(kind='system')
-            info(f'[Main Loop] Processed command: {command}')
 
         # --- Get the active cat --------------------------------------
         pkt = reader.poll_active()
@@ -101,7 +106,7 @@ def main_loop(level=DEBUG):
         counter.update(raw_lick_value)
         current_lick_state_string = counter.get_state_string()
         if current_lick_state_string != previous_lick_state_string:
-            info('[Main Loop] ' + current_lick_state_string)
+            debug('[Main Loop] ' + current_lick_state_string)
             previous_lick_state_string = current_lick_state_string
             bout_count = counter.get_bout_count()
             if previous_bout_count != bout_count:
@@ -134,3 +139,7 @@ def main_loop(level=DEBUG):
         elif cat_changed or bout_changed: update_screen(hydrapurr, counter, current_cat)
 
         time.sleep(0.001)
+      except Exception as e:
+        error(f'[Main Loop] Unhandled exception: {e}')
+        traceback.print_exception(e)
+        raise

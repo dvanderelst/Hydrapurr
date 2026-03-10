@@ -8,13 +8,12 @@ tests_to_run = []
 # 3 -> water level reading
 # 4 -> Bluetooth module
 # 5 -> lick detection
-# 6 -> writing to SD (log file)
-# 7 -> set/get RTC time
-# 8 -> RFID module
+# 6 -> set/get RTC time
+# 7 -> RFID module
 
 if len(tests_to_run) > 0:
     import Tests
-    hp, log = Tests.main(tests_to_run)
+    Tests.main(tests_to_run)
 
 
 import MainLoop
@@ -25,7 +24,7 @@ from components.MySD import quick_self_test, mount_sd_card
 
 print('Running...')
 
-mount_sd_card()
+sd_ok = mount_sd_card()
 #quick_self_test()  # Debug-only
 
 clear_system_log = Settings.clear_system_log_on_start
@@ -38,4 +37,4 @@ if clear_system_log: delete_file(system_log_filename)
 if clear_lick_data: delete_file(lick_data_filename)
 
 
-MainLoop.main_loop(level=INFO)
+MainLoop.main_loop(level=INFO, sd_ok=sd_ok)
