@@ -109,8 +109,16 @@ def main_loop(level=DEBUG, sd_ok=True):
                 update_screen(hydrapurr, counter, switched_from, switched_from)  # show reset to 0
 
         result = counter.update(raw_lick_value)
-        if result['previous_state'] == 0 and result['current_state'] == 1:
-            info(f'[Main Loop] Lick start ({result["cat_name"]})')
+        if result['previous_state'] == 1 and result['current_state'] == 0:
+            dur = result['state_duration_ms']
+            if result['lick_added']:
+                info(f'[Main Loop] Lick ({result["cat_name"]}) {dur}ms')
+            else:
+                if dur < Settings.min_lick_ms:
+                    status = f'SKIP <{Settings.min_lick_ms}ms'
+                else:
+                    status = f'SKIP >{Settings.max_lick_ms}ms'
+                debug(f'[Main Loop] Lick ({result["cat_name"]}) {dur}ms {status}')
         current_lick_state_string = counter.get_state_string()
         if current_lick_state_string != previous_lick_state_string:
             debug('[Main Loop] ' + current_lick_state_string)

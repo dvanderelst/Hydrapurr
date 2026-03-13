@@ -49,7 +49,7 @@ class LickSensor:
         self._last_water = None       # Cache: last reading while contact was active
         self.data_store = MyStore(
             Settings.lick_data_filename,
-            auto_header=["cat_name", "state", "lick", "bout", "water"],
+            auto_header=["cat_name", "state", "lick", "bout", "water", "duration_ms"],
             max_lines=Settings.data_log_max_lines
         )
         self.lick_threshold = Settings.lick_threshold
@@ -114,7 +114,8 @@ class LickSensor:
                 result['current_state'],
                 log_lick_count,
                 result['bout_count'],
-                water_level
+                water_level,
+                result['state_duration_ms']
             )
         
         # Add water level to results
@@ -122,9 +123,9 @@ class LickSensor:
         
         return result
     
-    def _log_to_sd_card(self, cat_name, state, lick_count, bout_count, water_level):
+    def _log_to_sd_card(self, cat_name, state, lick_count, bout_count, water_level, duration_ms=None):
         """Log event data to SD card"""
-        data = [cat_name, state, lick_count, bout_count, water_level]
+        data = [cat_name, state, lick_count, bout_count, water_level, duration_ms]
         self.data_store.add(data)
     
     def set_active_cat(self, cat_name):
