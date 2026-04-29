@@ -6,9 +6,6 @@ This module provides the hardware-specific implementation that:
 - Logs data to SD card
 - Uses BoutDetection for the core algorithm
 - Provides clean interface to MainLoop
-
-The LickSensor class replaces the old LickCounter, providing the same
-interface but with enhanced bout tracking capabilities.
 """
 
 import time
@@ -41,8 +38,9 @@ class LickSensor:
 
         Args:
             cat_names: List of cat names to track (default: ['unknown'])
-            min_water_extent: Minimum water extent (max-min, mm) to count a bout
-                              If None, uses Settings.min_water_extent_per_bout
+            min_water_extent: Minimum water-level voltage swing (max-min, V)
+                              required to count a bout. If None, uses
+                              Settings.min_water_extent_per_bout.
         """
         # Hardware components
         self.water_sensor = MyADC(0)  # Water level sensor on channel 0
@@ -64,15 +62,17 @@ class LickSensor:
             max_lick_ms=Settings.max_lick_ms,
             min_licks_per_bout=Settings.min_licks_per_bout,
             max_bout_gap_ms=Settings.max_bout_gap_ms,
+            debounce_ms=Settings.debounce_ms,
             min_water_extent=min_water_extent
         )
     
-    def update(self, raw_adc_value, cat_name=None):
+    def update(self, lick_voltage, cat_name=None):
         """
-        Process a raw ADC sample and update lick/bout detection.
-        
+        Process a contact-sensor sample and update lick/bout detection.
+
         Args:
-            raw_adc_value: Voltage from contact sensor (0.0–3.3V)
+            lick_voltage: Voltage from contact sensor (0.0–3.3 V), already
+                converted from raw ADC by MyADC.read().
             cat_name: Name of cat (optional, uses active cat if None)
             
         Returns:
@@ -88,8 +88,8 @@ class LickSensor:
                 - bout_summary: Summary of last completed bout (if any)
                 - water_level: Current water level
         """
-        # Convert raw ADC to binary state
-        binary_state = 1 if raw_adc_value < self.lick_threshold else 0
+        # Convert voltage to binary contact state
+        binary_state = 1 if lick_voltage < self.lick_threshold else 0
         
         # Get current timestamp and water level
         timestamp_ms = now()
@@ -128,7 +128,11 @@ class LickSensor:
         self.data_store.add(data)
     
     def set_active_cat(self, cat_name):
-        """Set the active cat (finalizes previous cat's bout)"""
+        """Set the active cat. When switching to a known cat (not 'unknown'),
+        finalises the previous cat's in-progress bout via end_bout. Always
+        runs close_if_stale on the new active cat's tracker so a returning
+        cat's pre-absence bout is closed with a duration that excludes the
+        absence."""
         if cat_name == self.bout_manager.active_cat:
             return
         n = getattr(Settings, 'water_samples', 1)
@@ -169,27 +173,10 @@ class LickSensor:
         """Read the logged data from SD card"""
         return self.data_store.read()
     
-    # Backward compatibility methods
     def get_state_string(self, cat_name=None):
-        """Get state string (backward compatibility)"""
+        """Human-readable one-liner used by MainLoop to detect tracker-state changes."""
         cat_name = cat_name or self.bout_manager.active_cat
         tracker = self.bout_manager.trackers.get(cat_name)
         if tracker:
             return tracker.get_state_string()
         return f"{cat_name}: state=0 licks=0 bouts=0"
-    
-    def get_state_data(self, cat_name=None):
-        """Get state data (backward compatibility)"""
-        cat_name = cat_name or self.bout_manager.active_cat
-        n = getattr(Settings, 'water_samples', 1)
-        water_level = self.water_sensor.read() if n <= 1 else self.water_sensor.mean(n)
-        return [
-            cat_name,
-            self.bout_manager.get_state(cat_name),
-            self.get_lick_count(cat_name),
-            self.get_bout_count(cat_name),
-            water_level
-        ]
-
-# Backward compatibility: alias LickCounter to LickSensor
-LickCounter = LickSensor

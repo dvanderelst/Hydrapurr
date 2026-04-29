@@ -7,9 +7,18 @@ data_log_max_lines = 2000
 clear_system_log_on_start = False
 clear_lick_data_on_start = False
 
+rfid_enabled = True    # When False, the RFID reader is not initialised and the device
+                       # runs in single-cat mode: every lick is attributed to
+                       # `single_cat_name` and the cat-switch logic is bypassed.
+                       # Use for single-cat households or while the RFID hardware is
+                       # being validated.
+single_cat_name = 'henk'  # Cat that owns all licks when rfid_enabled = False.
+                          # Must be one of the names registered in `cats` below
+                          # (or any string — a tracker will be created on demand).
 cat_timeout_ms = 2000  # switch to 'unknown' if no valid tag is seen for x ms.
                        # At ~333 ms RFID refresh + reset overhead, this tolerates
                        # ~6 missed read cycles before declaring a departure.
+                       # (Only used when rfid_enabled = True.)
 max_tag_read_hz = 3.0  # change here to adjust read refresh limit (Hz)
 deployment_bout_count = 5
 deployment_duration_ms = 2000
@@ -18,6 +27,7 @@ min_lick_ms = 50
 max_lick_ms = 150
 min_licks_per_bout = 3
 max_bout_gap_ms = 1000 * 60 * 5
+debounce_ms = 5                 # Debounce window for the contact-sensor state machine.
 water_samples = 1               # Samples averaged per water-level reading.
                                 # 1 = single read (~0ms, default); higher values add
                                 # 1ms blocking per extra sample (via MyADC.mean) but

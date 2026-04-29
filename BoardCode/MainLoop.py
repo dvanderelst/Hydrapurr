@@ -39,13 +39,21 @@ def main_loop(level=DEBUG, sd_ok=True):
     hydrapurr.write_line(1, f"{clock['hour']:02d}:{clock['minute']:02d}:{clock['second']:02d}")
     hydrapurr.show_screen()
     time.sleep(3)
-    reader = TagReader()
+    if Settings.rfid_enabled:
+        reader = TagReader()
+    else:
+        reader = None
+        info(f"[Main Loop] RFID disabled — single-cat mode for '{Settings.single_cat_name}'")
     counter = LickSensor(cat_names=all_cat_names)
+    if not Settings.rfid_enabled:
+        counter.set_active_cat(Settings.single_cat_name)
     info("[Main Loop] Objects created")
 
     # Presence/attribution state
     previous_lick_state_string = None
-    previous_active_cat = 'unknown'  # matches BoutManager's initial active_cat
+    previous_active_cat = (Settings.single_cat_name
+                           if not Settings.rfid_enabled
+                           else 'unknown')  # matches BoutManager's active_cat
     previous_bout_count = 0
     previous_printed_tag = None
 
@@ -67,15 +75,18 @@ def main_loop(level=DEBUG, sd_ok=True):
             if command == 'system': hydrapurr.bluetooth_send_data(kind='system')
 
         # --- Get the active cat --------------------------------------
-        pkt = reader.poll_active()
-        if pkt is None: pkt = {}
-        tag_key = pkt.get("tag_key", None)
-        
-        if tag_key is not None and previous_printed_tag != tag_key:
-            info(f'[Main Loop] Detected key {str(tag_key)}')
-            previous_printed_tag = tag_key
-            
-        current_cat = Cats.get_name(tag_key)
+        if Settings.rfid_enabled:
+            pkt = reader.poll_active()
+            if pkt is None: pkt = {}
+            tag_key = pkt.get("tag_key", None)
+
+            if tag_key is not None and previous_printed_tag != tag_key:
+                info(f'[Main Loop] Detected key {str(tag_key)}')
+                previous_printed_tag = tag_key
+
+            current_cat = Cats.get_name(tag_key)
+        else:
+            current_cat = Settings.single_cat_name
         switched_from = None
         if current_cat != previous_active_cat:
             p = ("%-10s" % str(previous_active_cat))
@@ -86,8 +97,10 @@ def main_loop(level=DEBUG, sd_ok=True):
             cat_changed = True
 
         # --- Process the lick --------------------------------------
-        raw_lick_value = hydrapurr.read_lick(binary=False)
-        counter.set_active_cat(current_cat)  # finalises switched_from's bout if cat changed
+        lick_voltage = hydrapurr.read_lick(binary=False)
+        # set_active_cat finalises switched_from's bout when switching to a known cat,
+        # and closes any stale in-progress bout on the new active tracker.
+        counter.set_active_cat(current_cat)
 
         # Check if the departing cat crossed the threshold when their bout was finalised.
         # Skip 'unknown' — that bucket accumulates misattributed licks and should never
@@ -110,7 +123,7 @@ def main_loop(level=DEBUG, sd_ok=True):
                 counter.reset_counts(switched_from)
                 update_screen(hydrapurr, counter, switched_from, switched_from)  # show reset to 0
 
-        result = counter.update(raw_lick_value)
+        result = counter.update(lick_voltage)
         if result['previous_state'] == 1 and result['current_state'] == 0:
             dur = result['state_duration_ms']
             if result['lick_added']:

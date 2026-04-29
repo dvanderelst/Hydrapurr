@@ -146,11 +146,6 @@ class BoutTracker:
         """Track an individual lick for bout summary"""
         if water_level is not None:
             self.current_bout_licks.append((duration_ms, water_level))
-        
-        # Initialize bout tracking if not already started
-        if self.current_bout_start_ms is None:
-            self.current_bout_start_ms = self.state_since
-            self.current_bout_start_water = water_level
     
     def _finalize_bout(self, end_time, end_water):
         """Calculate and store bout statistics. Returns True if bout was kept, False if filtered."""
