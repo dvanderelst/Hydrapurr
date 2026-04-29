@@ -31,18 +31,24 @@ flowchart TD
     Start([Main loop tick]) --> Poll[Poll RFID with stickiness<br/>cat_timeout_ms = 2000 ms]
     Poll --> CatChanged{New cat differs from<br/>previous active?}
     CatChanged -->|No| ReadLick
-    CatChanged -->|Yes| SetActive[set_active_cat]
-    SetActive --> SwitchDeploy{switched_from is known<br/>AND its bout_count ≥ 5?}
-    SwitchDeploy -->|Yes| Feed1[Fire feeder<br/>reset switched_from counts]
+    CatChanged -->|Yes| SetActive[set_active_cat<br/>may finalise departing<br/>cat's bout via end_bout]
+    SetActive --> SwitchDeploy{Cat-switch trigger:<br/>departing cat is known<br/>AND its bout_count ≥ 5?}
+    SwitchDeploy -->|Yes| Feed1[Fire feeder for DEPARTING cat<br/>reset that cat's counts]
     SwitchDeploy -->|No| ReadLick
     Feed1 --> ReadLick[Read lick ADC]
-    ReadLick --> Process[update → process_sample]
-    Process --> ActiveDeploy{current_cat is known<br/>AND its bout_count ≥ 5?}
-    ActiveDeploy -->|Yes| Feed2[Fire feeder<br/>reset current_cat counts]
+    ReadLick --> Process[update → process_sample<br/>routed to CURRENT cat's tracker]
+    Process --> ActiveDeploy{Active-cat trigger:<br/>current cat is known<br/>AND its bout_count ≥ 5?}
+    ActiveDeploy -->|Yes| Feed2[Fire feeder for CURRENT cat<br/>reset that cat's counts]
     ActiveDeploy -->|No| Screen[Update screen if changed]
     Feed2 --> Screen
     Screen --> Start
 ```
+
+**Two distinct deployment triggers per iteration:**
+- The **cat-switch trigger** (top diamond) evaluates only the *departing* cat (`switched_from`). It exists because `set_active_cat` may have just finalised that cat's bout via `end_bout`, possibly pushing them over threshold — we want to reward them while it's still associated with their drinking.
+- The **active-cat trigger** (bottom diamond) evaluates only the *current* cat. It catches the case where the current cat's count crossed threshold during this iteration's `process_sample` (gap-close) or during the `close_if_stale` step inside `set_active_cat` when they returned.
+
+The two triggers don't both fire for the same cat in the same iteration: `switched_from` and `current_cat` are by definition different.
 
 The RFID layer (`TagReader.poll_active`) returns the *last seen* cat within `cat_timeout_ms`. If no tag has been read for that long, it returns `None` and the cat resolves to `"unknown"`.
 
