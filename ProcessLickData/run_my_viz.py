@@ -1,21 +1,15 @@
-from library import utils
 from library import data_reader
 from analysis.BoutAnalyzer import BoutAnalyzer
 from matplotlib import pyplot as plt
 import plotly.graph_objects as go
-import os
-import sys
 
-# Load board settings so offline analysis stays in sync with board config.
-board_code_path = os.path.join(os.path.dirname(__file__), "..", "BoardCode")
-sys.path.insert(0, board_code_path)
 from lib import Settings
 
 # Show available data folders
 data_reader.print_data_folders_table()
 
 # Select data folder (change index as needed)
-data_folder_index = 1
+data_folder_index = 0
 contents = data_reader.read_data_folder(data_folder_index)
 licks = contents.licks
 system_log = contents.system_log
@@ -23,17 +17,14 @@ system_log = contents.system_log
 print(f"\nAnalyzing data folder: {contents.name}")
 print(f"Loaded {len(licks)} lick records")
 
-# NEW METHOD: Using BoutAnalyzer with 12-second bout gap (12000ms)
 print("\n--- BOUT ANALYSIS (BoutAnalyzer) ---")
 analyzer = BoutAnalyzer(settings=Settings)
-group_gap_ms = Settings.max_bout_gap_ms
 min_group_size = Settings.min_licks_per_bout
-min_water_delta = Settings.min_water_delta_per_bout
+min_water_extent = Settings.min_water_extent_per_bout
 processed, summary = analyzer.analyze_dataframe(
-    licks, 
-    group_gap_ms=group_gap_ms,
+    licks,
     min_group_size=min_group_size,
-    min_water_delta=min_water_delta
+    min_water_extent=min_water_extent,
 )
 print(f"Analysis: {len(processed)} events, {len(summary)} bouts")
 
@@ -44,8 +35,12 @@ if not summary.empty:
     print(f"   Average duration: {summary['duration'].mean():.1f}ms")
     print(f"   Average licks per bout: {summary['n'].mean():.1f}")
     print(f"   Average water change: {summary['water_delta'].mean():.3f}")
+    print(f"   Average water extent: {summary['water_extent'].mean():.3f}")
+    print(f"\nBout details:")
+    print(f"   {'Bout':>4}  {'n':>4}  {'duration(ms)':>12}  {'water_delta':>11}  {'water_extent':>12}")
+    for _, row in summary.iterrows():
+        print(f"   {int(row['group']):>4}  {int(row['n']):>4}  {row['duration']:>12.0f}  {row['water_delta']:>11.3f}  {row['water_extent']:>12.3f}")
     print(f"\nParameters used:")
-    print(f"   Bout gap: {group_gap_ms}ms ({group_gap_ms / 1000:.0f} seconds)")
     print(f"   Min licks per bout: {min_group_size}")
 
 

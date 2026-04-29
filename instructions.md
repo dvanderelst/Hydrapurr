@@ -14,6 +14,6 @@ The folder `BTDownloader` contains a prototype a BT-based method for downloading
 
 + The code in the `ProcessLickData` can be run using the `.venv` in that folder.
 
-+ The lick processing logic is kept in sync between the board code (`BoardCode`) and the data processing code (`ProcessLickData`) to ensure consistent behavior. The core lick detection and bout analysis algorithms are shared between both components, with the board code handling real-time detection and the processing code handling offline analysis of collected data. See `BoardCode/LICK_SENSOR_DATA_FLOW.md` for detailed documentation of the data flow and architecture.
++ The lick processing logic is kept in sync between the board code (`BoardCode`) and the data processing code (`ProcessLickData`) to ensure consistent behavior. Real-time detection on the device lives in `BoardCode/lib/BoutDetection.py`; offline analysis of the resulting `licks.dat` lives in `ProcessLickData/analysis/BoutAnalyzer.py`. See `BoardCode/goals.md` for an architecture overview and `ProcessLickData/datadescription.md` for the on-disk data format.
 
 **After reading these instructions, pause and ask for input from the user. Do not start coding without further instructions.**

@@ -18,7 +18,7 @@ Monitor cat drinking behaviour at a shared water fountain and automatically disp
 - `MainLoop.py` — Main polling loop: RFID → cat ID → lick ADC → bout detection → feeder → screen.
 - `HydraPurr.py` — Hardware facade: wraps all peripherals (LED, feeder relay, OLED, BT, ADC, RTC, NeoPixel, data stores).
 - `LickSensor.py` — Reads contact + water ADC, converts to binary state, feeds `BoutManager`, logs events to SD.
-- `BoutDetection.py` — Pure algorithm (no hardware deps): `BoutTracker` per cat + `BoutManager` multi-cat router. Also supports offline batch processing of logged data via pandas.
+- `BoutDetection.py` — Pure algorithm (no hardware deps): `BoutTracker` per cat + `BoutManager` multi-cat router. On-device only; offline analysis of logged data lives in `ProcessLickData/analysis/BoutAnalyzer.py`.
 - `TagReader.py` — Non-blocking RFID reader with rate-limiting, periodic reset, deduplication, and sticky "last seen" helper.
 - `Cats.py` — Resolves RFID tag keys to cat names using the `Settings.cats` dict.
 - `Settings.py` — Central configuration: filenames, thresholds, timing parameters, cat registry.

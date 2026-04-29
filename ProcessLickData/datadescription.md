@@ -2,13 +2,13 @@ This repo processes data from a cat water lick sensor device. Ech data folder `d
 
 Lick data fields
 
-- time: timestamp recorded when the state changes.
-- mono_ms: monotonic time in milliseconds since boot when the state changes.
+- time: wall-clock timestamp of the event.
+- mono_ms: monotonic time in milliseconds since boot at the event.
 - cat_name: detected cat name from the RFID reader (may be "unknown").
-- state: 1 when the cat is in contact with the sensor, 0 when not.
-- lick: number of detected licks for that event; a lick is a contact of a few hundred ms (not too short or too long).
-- bout: number of licks in a specific time window (bout count).
-- water: water level remaining in the device at that time.
+- lick: running count of valid licks within the current bout. Resets to 1 at the start of each new bout. On a bout-closure marker row, holds the total lick count of the just-closed bout.
+- bout: cumulative bout count for the active cat at that moment.
+- water: water level (V) sampled while in contact with the sensor.
+- duration_ms: for a lick row, the contact duration; for a bout-closure marker row, the silent gap that triggered the close. Lick rows are the ones with `min_lick_ms <= duration_ms <= max_lick_ms`; rows outside that window are bout-closure markers.
 
 System log format
 
