@@ -35,7 +35,7 @@ How the device interprets contact-sensor samples and decides when to feed.
 ### Definitions
 
 - **Lick**: a debounced contact event whose duration falls inside `[min_lick_ms, max_lick_ms]` (default 50–150 ms). Anything shorter or longer is discarded as noise.
-- **Bout**: a run of valid licks where consecutive licks are separated by less than `max_bout_gap_ms` (default 5 min). A bout *counts* only if it contains at least `min_licks_per_bout` licks (default 3) and (optionally) the water-level swing during the bout exceeds `min_water_extent_per_bout` (default 0.013 V).
+- **Bout**: a run of valid licks where consecutive licks are separated by less than `max_bout_gap_ms` (default 10 s — roughly one visit to the bowl). A bout *counts* only if it contains at least `min_licks_per_bout` licks (default 3) and (optionally) the water-level swing during the bout exceeds `min_water_extent_per_bout` (default 0.013 V).
 - **Deployment**: triggering the feeder relay for `deployment_duration_ms` (default 2 s). Fires when an *attributable* cat's `bout_count` reaches `deployment_bout_count` (default 5), then resets that cat's counts.
 
 ### Key parameters
@@ -44,7 +44,7 @@ How the device interprets contact-sensor samples and decides when to feed.
 | ------------------------------- | ---------------- | -------------------- |
 | `min_lick_ms` / `max_lick_ms`   | 50 / 150 ms      | `Settings.py`        |
 | `min_licks_per_bout`            | 3                | `Settings.py`        |
-| `max_bout_gap_ms`               | 300000 (5 min)   | `Settings.py`        |
+| `max_bout_gap_ms`               | 10000 (10 s)     | `Settings.py`        |
 | `min_water_extent_per_bout`     | 0.013 V          | `Settings.py`        |
 | `cat_timeout_ms`                | 2000 ms          | `Settings.py`        |
 | `deployment_bout_count`         | 5                | `Settings.py`        |
@@ -72,7 +72,7 @@ The tracker debounces the input over `debounce_ms` (5 ms) so brief electrical no
 
 #### How are bouts counted?
 
-A bout is a sequence of valid licks where consecutive licks are separated by less than `max_bout_gap_ms` (5 min). The state machine in `BoutTracker`:
+A bout is a sequence of valid licks where consecutive licks are separated by less than `max_bout_gap_ms` (10 s — corresponds to one visit to the bowl). The state machine in `BoutTracker`:
 
 - The first rising edge (0 → 1) of a drinking session sets `current_bout_start_ms`. The tracker is now "in a bout".
 - Each subsequent valid lick adds to the running list. `lick_count` is the running count within the current bout.
@@ -211,7 +211,10 @@ Comma-separated diagnostic log:
 
 ## Development
 
-- **`BoardCode`** runs on an Adafruit RP2040 Feather under CircuitPython and assumes the surrounding hardware (RFID reader, ADCs, OLED, relay, SD, BT module) is wired per the netlist in `HardwareDocs/`. You can't run it directly on a desktop without that hardware. The board contents can be kept in sync with this folder via the `DeviceSync` script (`/home/dieter/Dropbox/PythonRepos/DeviceSync`).
+- **`BoardCode`** runs on an Adafruit RP2040 Feather under CircuitPython and assumes the surrounding hardware (RFID reader, ADCs, OLED, relay, SD, BT module) is wired per the netlist in `HardwareDocs/`. You can't run it directly on a desktop without that hardware.
+- **Syncing code to the board.** Two options:
+  - `./sync2board` — repo-local script at the top of this folder. `rsync` from `BoardCode/` to the mounted CIRCUITPY drive (`/media/$USER/CIRCUITPY` by default; pass a path to override). Mirrors with `--delete`, excludes Python caches and editor metadata, runs `sync` afterwards.
+  - The standalone `DeviceSync` script at `/home/dieter/Dropbox/PythonRepos/DeviceSync` — bidirectional and supports more devices/projects.
 - **`ProcessLickData`** is desktop Python — use the `.venv` inside that folder. Entry point: `run_my_viz.py`.
 - **CircuitPython `lib/` convention.** CircuitPython auto-adds `/` and `/lib` to `sys.path` on boot, so any `.py` file or package directory directly under `lib/` is importable as a top-level module (`import adafruit_pcf8523`, `from components import MyADC`). Do **not** add `lib/__init__.py` — that turns `lib` into a package and breaks the standard CircuitPython import style. To get the same behaviour in PyCharm during desktop development, mark `lib/` as a Sources Root (Right-click → *Mark Directory as → Sources Root*).
 - The lick-processing logic is kept in sync between board and offline code: real-time detection lives in `BoardCode/lib/BoutDetection.py`; offline analysis of the resulting `licks.dat` lives in `ProcessLickData/analysis/BoutAnalyzer.py`. Both honour the same `Settings.py` parameters.

@@ -1,15 +1,5 @@
 # TODO
 
-## Reward-delay problem (open — not started)
-
-The feeder fires when `bout_count >= deployment_bout_count`, but `bout_count` only increments when a bout *closes*. Bouts close either via cat-switch `end_bout` (now constrained — see Done below) or via the `max_bout_gap_ms` quiet period (currently 5 min). Result: a cat that stays at the bowl after their 5th bout's last lick can wait up to 5 min for the reward, well outside any operant association window.
-
-**Two options floated:**
-- **A1.** Lower `max_bout_gap_ms` to ~15-30 s. One-line change; redefines a "bout" as one visit to the bowl rather than a daily session.
-- **A2.** Fire feeder mid-bout based on lick count, decoupled from bout closure. Closer to real-time reinforcement; changes the meaning of `deployment_bout_count`.
-
----
-
 ## Deferred — BT hardware swap planned
 
 The current Bluetooth module is mac-incompatible and will be replaced; not worth cleaning the existing BT code. Revisit after the swap:
@@ -21,6 +11,7 @@ The current Bluetooth module is mac-incompatible and will be replaced; not worth
 
 ## Done
 
+- ~~Reward-delay problem (A1)~~ — fixed: `max_bout_gap_ms` lowered from 5 min to 10 s in `Settings.py`. Redefines a "bout" as one visit to the bowl. Reward now follows the last lick by at most 10 s (when the cat lingers); cat-leave path still triggers near-instant via `set_active_cat → end_bout`. Settings comment captures both implications (bout semantics + reward latency).
 - ~~Inflated bout duration after long absence (B1 side effect)~~ — fixed: new `BoutTracker.close_if_stale(now_ms)` finalises a stale in-progress bout using `last_lick_end_ms` (or `current_bout_start_ms` as fallback) as the end time. Called from `BoutManager.set_active_cat` when switching into a tracker, so a returning cat's pre-absence bout is closed with a duration that reflects actual drinking, not the absence.
 - ~~"Deployment ... for unknown" log entries / spurious feeds for the `unknown` bucket~~ — fixed: both deployment branches in `MainLoop.py` now skip `unknown` (`switched_from != 'unknown'` on the cat-switch branch, `current_cat != 'unknown'` on the active-cat branch). The `unknown` tracker still accumulates misattributed counts but is no longer feeder-eligible.
 - ~~Cat-attribution: treat RFID dropout to `unknown` as "still the same cat"~~ — fixed: `BoutManager.set_active_cat` now skips `end_bout` when switching to `unknown` (`BoardCode/lib/BoutDetection.py:325-339`), and `cat_timeout_ms` bumped from 1000 ms to 2000 ms (`BoardCode/lib/Settings.py:10`) so the existing RFID stickiness keeps lick routing on the last known cat for ~6 missed-read cycles before falling through to `unknown`.

@@ -48,11 +48,9 @@ def main_loop(level=DEBUG, sd_ok=True):
     if not Settings.rfid_enabled:
         name = Settings.single_cat_name
         if not name or name == 'unknown':
-            warn(f"[Main Loop] single_cat_name={name!r} is invalid — feeder will never fire")
+            warn(f"[Main Loop] single_cat_name='{name}' is invalid — feeder will never fire")
         elif name not in all_cat_names:
-            warn(f"[Main Loop] single_cat_name {name!r} not in registered cats "
-                 f"{all_cat_names}; a tracker will be created on demand. "
-                 f"Check Settings.single_cat_name for typos.")
+            warn(f"[Main Loop] single_cat_name '{name}' not in {all_cat_names} — check Settings for typos")
         counter.set_active_cat(name)
     info("[Main Loop] Objects created")
 

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# sync2board — push BoardCode/ to the connected CircuitPython device.
+#
+# Mirrors BoardCode/ onto the mounted CIRCUITPY drive (with --delete so files
+# removed locally are also removed on the device). Excludes editor metadata
+# and Python bytecode caches.
+#
+# Usage:
+#   ./sync2board               # use auto-detected mount point
+#   ./sync2board /custom/path  # override the device path
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SOURCE="$SCRIPT_DIR/BoardCode"
+
+if [ "${1:-}" ]; then
+    DEVICE="$1"
+else
+    DEVICE="/media/$USER/CIRCUITPY"
+fi
+
+if [ ! -d "$SOURCE" ]; then
+    echo "sync2board: source not found: $SOURCE" >&2
+    exit 1
+fi
+
+if [ ! -d "$DEVICE" ]; then
+    echo "sync2board: CIRCUITPY not mounted at $DEVICE" >&2
+    echo "  Plug the board in (or pass a path: ./sync2board /path/to/CIRCUITPY)" >&2
+    exit 1
+fi
+
+echo "sync2board: $SOURCE/  →  $DEVICE/"
+rsync -av --delete \
+    --exclude='__pycache__/' \
+    --exclude='*.pyc' \
+    --exclude='.sync_trash/' \
+    --exclude='.idea/' \
+    --exclude='.DS_Store' \
+    "$SOURCE/" "$DEVICE/"
+
+# Best-effort sync to flush kernel buffers before the user unplugs.
+sync
+echo "sync2board: done"

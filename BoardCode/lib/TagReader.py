@@ -105,7 +105,7 @@ class TagReader:
     def parse_body(self, body):
         if self.parser:
             try: out=self.parser(body)
-            except Exception as e: error(f"[RFID] parser error: {e!r}"); return None
+            except Exception as e: error(f"[RFID] parser error: {e}"); return None
             if out: return out
             warn("[RFID] parser returned None"); return None
         try: txt=body.decode("ascii").strip()
