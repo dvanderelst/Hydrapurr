@@ -46,7 +46,14 @@ def main_loop(level=DEBUG, sd_ok=True):
         info(f"[Main Loop] RFID disabled — single-cat mode for '{Settings.single_cat_name}'")
     counter = LickSensor(cat_names=all_cat_names)
     if not Settings.rfid_enabled:
-        counter.set_active_cat(Settings.single_cat_name)
+        name = Settings.single_cat_name
+        if not name or name == 'unknown':
+            warn(f"[Main Loop] single_cat_name={name!r} is invalid — feeder will never fire")
+        elif name not in all_cat_names:
+            warn(f"[Main Loop] single_cat_name {name!r} not in registered cats "
+                 f"{all_cat_names}; a tracker will be created on demand. "
+                 f"Check Settings.single_cat_name for typos.")
+        counter.set_active_cat(name)
     info("[Main Loop] Objects created")
 
     # Presence/attribution state
