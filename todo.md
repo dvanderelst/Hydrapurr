@@ -10,12 +10,6 @@ The feeder fires when `bout_count >= deployment_bout_count`, but `bout_count` on
 
 ---
 
-## Verify the deployment trigger paths still behave sensibly post-attribution-fix
-
-With the attribution fix in (see Done), the cat-switch deployment branch (`MainLoop.py:93-109`) no longer fires on A → unknown — only on A → known-B. The fast-deployment-when-cat-leaves path now relies on the gap-close finalising the bout instead. Worth a sanity check on real data once new logs come in.
-
----
-
 ## Deferred — BT hardware swap planned
 
 The current Bluetooth module is mac-incompatible and will be replaced; not worth cleaning the existing BT code. Revisit after the swap:
@@ -27,6 +21,8 @@ The current Bluetooth module is mac-incompatible and will be replaced; not worth
 
 ## Done
 
+- ~~Inflated bout duration after long absence (B1 side effect)~~ — fixed: new `BoutTracker.close_if_stale(now_ms)` finalises a stale in-progress bout using `last_lick_end_ms` (or `current_bout_start_ms` as fallback) as the end time. Called from `BoutManager.set_active_cat` when switching into a tracker, so a returning cat's pre-absence bout is closed with a duration that reflects actual drinking, not the absence.
+- ~~"Deployment ... for unknown" log entries / spurious feeds for the `unknown` bucket~~ — fixed: both deployment branches in `MainLoop.py` now skip `unknown` (`switched_from != 'unknown'` on the cat-switch branch, `current_cat != 'unknown'` on the active-cat branch). The `unknown` tracker still accumulates misattributed counts but is no longer feeder-eligible.
 - ~~Cat-attribution: treat RFID dropout to `unknown` as "still the same cat"~~ — fixed: `BoutManager.set_active_cat` now skips `end_bout` when switching to `unknown` (`BoardCode/lib/BoutDetection.py:325-339`), and `cat_timeout_ms` bumped from 1000 ms to 2000 ms (`BoardCode/lib/Settings.py:10`) so the existing RFID stickiness keeps lick routing on the last known cat for ~6 missed-read cycles before falling through to `unknown`.
 - ~~Stale doc references (`goals.md` pandas mention, `datadescription.md` `state` column, broken `LICK_SENSOR_DATA_FLOW.md` link in `instructions.md`)~~ — fixed: `goals.md:21` redirects to `BoutAnalyzer.py`; `datadescription.md` rewrites the lick-data fields (drop `state`, add `duration_ms`, clarify lick vs bout-closure markers); `instructions.md:17` now points to `goals.md` and `datadescription.md`.
 - ~~Stale `last_bout_summary` reported after deployment~~ — fixed: `BoutTracker.reset_counts` now clears `last_bout_summary` (`BoardCode/lib/BoutDetection.py:235`).

@@ -226,6 +226,27 @@ class BoutTracker:
         
         return lick_finalized
     
+    def close_if_stale(self, now_ms, water_level=None):
+        """Close an in-progress bout if the gap to the cat's last activity
+        exceeds max_bout_gap_ms. Uses last_lick_end_ms (or current_bout_start_ms
+        as fallback) as the bout end time, so duration reflects the real
+        drinking window rather than including any absence."""
+        if self.current_bout_start_ms is None:
+            return False
+        ref_time = (self.last_lick_end_ms
+                    if self.last_lick_end_ms is not None
+                    else self.current_bout_start_ms)
+        if (now_ms - ref_time) < self.max_bout_gap_ms:
+            return False
+        closed = False
+        if self.lick_count >= self.min_licks_per_bout:
+            if self._finalize_bout(ref_time, water_level):
+                self.bout_count += 1
+                closed = True
+        self._reset_bout_tracking()
+        self.lick_count = 0
+        return closed
+
     def reset_counts(self, reset_licks=True, reset_bouts=True):
         """Reset counters"""
         if reset_licks:
@@ -327,14 +348,23 @@ class BoutManager:
         if cat_name == self.active_cat:
             return
 
+        timestamp = now()
+
         # Only finalise the previous cat's bout when switching TO a known cat.
         # Switching to 'unknown' is treated as a transient RFID dropout, so the
         # previous cat's bout state is preserved for resumption when (or if)
         # they're seen again. A real departure is then handled by the gap-close
         # path inside process_sample.
         if cat_name != 'unknown' and self.active_cat in self.trackers:
-            timestamp = now()
             self.trackers[self.active_cat].end_bout(timestamp, water_level=water_level)
+
+        # The cat we're switching to may carry a stale in-progress bout from
+        # before they last disappeared. If too long has passed since their
+        # last activity, close that bout now using their actual last-activity
+        # time as the end (not now), so duration reflects real drinking, not
+        # the absence.
+        if cat_name in self.trackers:
+            self.trackers[cat_name].close_if_stale(timestamp)
 
         self.active_cat = cat_name
     

@@ -89,8 +89,10 @@ def main_loop(level=DEBUG, sd_ok=True):
         raw_lick_value = hydrapurr.read_lick(binary=False)
         counter.set_active_cat(current_cat)  # finalises switched_from's bout if cat changed
 
-        # Check if the departing cat crossed the threshold when their bout was finalised
-        if switched_from is not None:
+        # Check if the departing cat crossed the threshold when their bout was finalised.
+        # Skip 'unknown' — that bucket accumulates misattributed licks and should never
+        # trigger a feeder deployment.
+        if switched_from is not None and switched_from != 'unknown':
             prev_bouts = counter.get_bout_count(switched_from)
             if prev_bouts >= deployment_bout_count:
                 bout_summary = counter.get_last_bout_summary(switched_from)
@@ -140,7 +142,7 @@ def main_loop(level=DEBUG, sd_ok=True):
                 water_delta = bout_summary.get('water_delta') or 0
                 info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}V delta={water_delta:.3f}V')
 
-        if bout_count >= deployment_bout_count:
+        if bout_count >= deployment_bout_count and current_cat != 'unknown':
             update_screen(hydrapurr, counter, current_cat)  # show count reached
             info(f'[Main Loop] Deployment bout count {deployment_bout_count} reached, for {current_cat}')
             hydrapurr.feeder_on()
