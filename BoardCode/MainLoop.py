@@ -56,6 +56,10 @@ def validate_settings():
         for p in problems:
             error(f'[Settings] {p}')
         critical(f'[Settings] {len(problems)} fatal misconfiguration(s) — halting before main loop')
+        # Sit here so the user notices via the system log / serial console
+        # rather than silently continuing with a misconfigured run.
+        while True:
+            time.sleep(60)
 
 
 def main_loop(level=DEBUG, sd_ok=True):
@@ -104,6 +108,7 @@ def main_loop(level=DEBUG, sd_ok=True):
       try:
         cat_changed = False
         bout_changed = False
+        deployed_this_tick = False
 
         hydrapurr.heartbeat()
         
@@ -161,6 +166,8 @@ def main_loop(level=DEBUG, sd_ok=True):
                 time.sleep(Settings.deployment_duration_ms/1000)
                 hydrapurr.feeder_off()
                 counter.reset_counts(switched_from)
+                previous_bout_count = 0
+                deployed_this_tick = True
                 update_screen(hydrapurr, counter, switched_from, switched_from)  # show reset to 0
 
         result = counter.update(lick_voltage)
@@ -195,7 +202,7 @@ def main_loop(level=DEBUG, sd_ok=True):
                 water_delta = bout_summary.get('water_delta') or 0
                 info(f'[Main Loop] Last bout: {lick_count} licks {duration_ms}ms extent={water_extent:.3f}V delta={water_delta:.3f}V')
 
-        if bout_count >= deployment_bout_count and current_cat != 'unknown':
+        if not deployed_this_tick and bout_count >= deployment_bout_count and current_cat != 'unknown':
             update_screen(hydrapurr, counter, current_cat)  # show count reached
             info(f'[Main Loop] Deployment bout count {deployment_bout_count} reached, for {current_cat}')
             hydrapurr.feeder_on()
