@@ -12,6 +12,10 @@ The current Bluetooth module is mac-incompatible and will be replaced; not worth
 
 - `HydraPurr.py` — `bluetooth_send_data()` has a `time.sleep(0.002)` per line. At 2000 lines = ~4s freeze: no lick detection, no RFID, no heartbeat. Needs non-blocking BT send or chunked transmission.
 - `MyBT.py` — default `eom_char='*'` will corrupt messages if data ever contains `*`. Already configurable via constructor. Consider switching to `\n`.
+- `BluetoothDownloader/library/DataUtils.py` — desktop-side aligner is broken against current schemas:
+    - Line 43: typo, `max_length_5 = max(max_length_1, len(elements[5]))` should be `max_length_5`.
+    - `align_system_data` uses `re.split(r'[\[\],]', ...)` and indexes `elements[5]`; current firmware writes 4 CSV fields (`time, mono_ms, level, message`), so this raises.
+    - `align_lick_data` indexes `elements[5]` but the current `licks.dat` schema is 5 columns (`cat_name, lick, bout, water, duration_ms` plus the prepended `time, mono_ms`); index math needs revisiting once the schemas settle post-swap.
 
 ---
 
