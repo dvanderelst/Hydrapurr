@@ -32,7 +32,12 @@ if [ ! -d "$DEVICE" ]; then
 fi
 
 echo "sync2board: $SOURCE/  →  $DEVICE/"
-rsync -av --delete \
+# --ignore-times: transfer every file regardless of size or mtime.
+# CIRCUITPY is FAT32 (2 s mtime resolution) and the device clock isn't
+# reliable, so the default "skip if size+mtime match" check can miss
+# real changes. Forcing every file is the nuclear option but the
+# project is small enough that it's instant in practice.
+rsync -av --ignore-times --delete \
     --exclude='__pycache__/' \
     --exclude='*.pyc' \
     --exclude='.sync_trash/' \
