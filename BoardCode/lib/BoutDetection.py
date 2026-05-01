@@ -1,22 +1,25 @@
 """
-BoutDetection.py - Pure lick detection algorithm
+BoutDetection.py - Lick detection algorithm (board firmware)
 
-This module contains the core bout detection algorithm that works
-identically on the microcontroller board and in offline data analysis.
+Core bout detection used by LickSensor on the device. Offline analysis
+lives in ProcessLickData/analysis/BoutAnalyzer.py and replays the same
+rules over logged data.
 
 Key Features:
 - BoutTracker: Tracks licks and forms bouts for a single cat
 - BoutManager: Manages multiple cats and routes samples appropriately
-- Pure algorithm: No hardware dependencies, no pandas requirements
-- Consistent results: Same detection logic everywhere
+- Logs bout rejections (lick-count or water-extent) through MySystemLog
+- Consistent results: same detection logic everywhere
 
 Algorithm Parameters (from Settings):
 - min_lick_ms: Minimum valid lick duration (default: 50ms)
 - max_lick_ms: Maximum valid lick duration (default: 150ms)
 - min_licks_per_bout: Minimum licks to form a bout (default: 3)
-- max_bout_gap_ms: Maximum gap between licks in a bout (default: 300000ms / 5 min)
+- max_bout_gap_ms: Maximum gap between licks in a bout (default: 10000ms / 10 s)
 - debounce_ms: Debounce time for state changes (default: 5ms)
 """
+
+from components.MySystemLog import info
 
 def now():
     """Placeholder for hardware-specific time function"""
@@ -41,7 +44,7 @@ class BoutTracker:
     """
     
     def __init__(self, cat_name, min_lick_ms=50, max_lick_ms=150,
-                 min_licks_per_bout=3, max_bout_gap_ms=300000, debounce_ms=5,
+                 min_licks_per_bout=3, max_bout_gap_ms=10000, debounce_ms=5,
                  min_water_extent=0.0):
         """Initialize bout tracker for a specific cat"""
         self.cat_name = cat_name
@@ -112,6 +115,8 @@ class BoutTracker:
                     if self._finalize_bout(timestamp_ms, water_level):
                         self.bout_count += 1
                         bout_closed = True
+                elif self.lick_count > 0:
+                    info(f'[BoutTracker] {self.cat_name}: bout dropped at gap-close - licks={self.lick_count} < min_licks_per_bout={self.min_licks_per_bout}')
                 self._reset_bout_tracking()
                 self.lick_count = 0
         
@@ -170,6 +175,7 @@ class BoutTracker:
 
         # Check minimum water consumption using extent (max - min during bout)
         if self.min_water_extent > 0 and water_extent is not None and water_extent <= self.min_water_extent:
+            info(f'[BoutTracker] {self.cat_name}: bout dropped - water_extent={water_extent:.4f}V <= min_water_extent_per_bout={self.min_water_extent}V (licks={lick_count})')
             return False
 
         # Store bout summary
@@ -208,9 +214,11 @@ class BoutTracker:
         if self.lick_count >= self.min_licks_per_bout:
             if self._finalize_bout(timestamp_ms, water_level):
                 self.bout_count += 1
+        elif self.lick_count > 0:
+            info(f'[BoutTracker] {self.cat_name}: bout dropped at end_bout - licks={self.lick_count} < min_licks_per_bout={self.min_licks_per_bout}')
         self._reset_bout_tracking()
         self.lick_count = 0
-        
+
         # Reset state
         self.state = 0
         self.candidate_state = 0
@@ -238,6 +246,8 @@ class BoutTracker:
             if self._finalize_bout(ref_time, water_level):
                 self.bout_count += 1
                 closed = True
+        elif self.lick_count > 0:
+            info(f'[BoutTracker] {self.cat_name}: bout dropped at close_if_stale - licks={self.lick_count} < min_licks_per_bout={self.min_licks_per_bout}')
         self._reset_bout_tracking()
         self.lick_count = 0
         return closed

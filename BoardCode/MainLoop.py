@@ -4,7 +4,7 @@ import traceback
 import Cats
 import Settings
 from components.MySystemLog import setup_system_log, set_system_log_level, DEBUG, INFO, WARN, ERROR
-from components.MySystemLog import debug, info, warn, error, critical
+from components.MySystemLog import debug, info, warn, error
 
 from LickSensor import LickSensor
 from TagReader import TagReader     # new non-blocking, scheduled-reset version
@@ -55,9 +55,11 @@ def validate_settings():
     if problems:
         for p in problems:
             error(f'[Settings] {p}')
-        critical(f'[Settings] {len(problems)} fatal misconfiguration(s) — halting before main loop')
+        error(f'[Settings] {len(problems)} fatal misconfiguration(s) — halting before main loop')
         # Sit here so the user notices via the system log / serial console
-        # rather than silently continuing with a misconfigured run.
+        # rather than silently continuing with a misconfigured run. Using
+        # error() (not critical()) keeps this loop reachable; critical raises
+        # and the exception would otherwise propagate past this halt.
         while True:
             time.sleep(60)
 

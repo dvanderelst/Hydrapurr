@@ -199,10 +199,8 @@ Comma-separated diagnostic log:
 
 - `time` — wall-clock timestamp.
 - `mono_ms` — monotonic time in ms since boot.
-- `ticks` — system tick counter (integer).
 - `level` — log level (`INFO`, `WARN`, `ERROR`, `DEBUG`).
-- `source` — bracketed component label, e.g. `[Main Loop]`, `[RFID]`, `[HydraPurr]`.
-- `message` — free-form text. Notable lines include cat-switch events, per-state summaries (`unknown: state=1 licks=0 bouts=0`), per-lick durations, "Last bout: …" summaries, and "Deployment bout count N reached, for X" events.
+- `message` — free-form text, typically prefixed with a bracketed component label like `[Main Loop]`, `[RFID]`, `[HydraPurr]`, or `[BoutTracker]`. The offline reader (`ProcessLickData/library/data_reader.read_system_log`) splits this prefix out into a derived `source` column. Notable lines include cat-switch events, per-state summaries (`unknown: state=1 licks=0 bouts=0`), per-lick durations, "Last bout: …" summaries, "Deployment bout count N reached, for X" events, and "bout dropped" rejection diagnostics.
 
 ### Water-level vocabulary
 

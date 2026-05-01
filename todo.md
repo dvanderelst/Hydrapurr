@@ -1,5 +1,13 @@
 # TODO
 
+## Open
+
+- **Wall time is frozen at boot.** `BoardCode/lib/components/TimeUtil.py:24-30, 51-64` samples `boot_epoch` once on first `init_timebase()`; later timestamps are `boot_epoch + (mono - boot_mono)`. If the RTC is wrong at boot, or set later via `SetTime.py`, wall timestamps stay wrong until reboot. Either re-sync `boot_epoch` inside `MyRTC.set_time`, or document the constraint. (Triggered in practice — recent log showed `2105-15-11` wall stamps; PCF8523 backup-cell may also need checking.)
+
+- **`Cats.get_name` returns `'unknown'`, `Cats.get_age` returns `None`.** `BoardCode/lib/Cats.py:5-13` — pick one convention. Empty-string cat names also slip past `validate_settings` because `if name and ...` short-circuits on falsy `name`.
+
+---
+
 ## Deferred — BT hardware swap planned
 
 The current Bluetooth module is mac-incompatible and will be replaced; not worth cleaning the existing BT code. Revisit after the swap:
@@ -11,6 +19,13 @@ The current Bluetooth module is mac-incompatible and will be replaced; not worth
 
 ## Done
 
+- ~~Silent bout rejection — surface why a bout was dropped~~ — fixed: `BoutTracker._finalize_bout` now logs an `info` line when the water-extent filter rejects a bout (with `water_extent` actual vs `min_water_extent_per_bout` threshold and lick count). The lick-count gate at all three finalisation paths (`process_sample` gap-close, `end_bout`, `close_if_stale`) now logs an `info` line when `lick_count < min_licks_per_bout` (gated on `lick_count > 0` to avoid spamming for pure noise where the bout started but produced no valid licks). `BoutDetection.py` now imports `info` from `MySystemLog`.
+- ~~`read_system_log` silently returned nothing on real recordings~~ — fixed: `ProcessLickData/library/data_reader.py:read_system_log` no longer expects a non-existent `ticks` column. Parser now uses `split(",", 3)` matching the firmware's 4-field format; verified against `data/Feb_5_26/system.log` (372 rows where the old code returned 0).
+- ~~`read_data_folder` crashed when a folder had no `licks.dat`~~ — fixed: `data_reader.py` now guards the `check_time_increases` call against `licks is None`.
+- ~~`validate_settings` halt loop was dead code~~ — fixed: `MainLoop.py` now uses `error()` instead of `critical()` so the `while True: time.sleep(60)` halt loop is reachable. Comment updated to explain why critical is avoided.
+- ~~README's `system.log` schema documented a non-existent `ticks` column~~ — fixed: `README.md` schema now lists the four real fields (`time, mono_ms, level, message`) and notes that `source` is a derived column extracted by the offline reader.
+- ~~Stale `max_bout_gap_ms=300000` default + docstring in `BoutTracker.__init__`~~ — re-fixed (the previous "Done" entry was wrong): default now `10000` and module docstring says `default: 10000ms / 10 s`, matching `Settings.py`.
+- ~~`MyStore._coerce_cell` redundancy~~ — fixed: the None/"" branch is now just `return text`.
 - ~~Reward-delay problem (A1)~~ — fixed: `max_bout_gap_ms` lowered from 5 min to 10 s in `Settings.py`. Redefines a "bout" as one visit to the bowl. Reward now follows the last lick by at most 10 s (when the cat lingers); cat-leave path still triggers near-instant via `set_active_cat → end_bout`. Settings comment captures both implications (bout semantics + reward latency).
 - ~~Inflated bout duration after long absence (B1 side effect)~~ — fixed: new `BoutTracker.close_if_stale(now_ms)` finalises a stale in-progress bout using `last_lick_end_ms` (or `current_bout_start_ms` as fallback) as the end time. Called from `BoutManager.set_active_cat` when switching into a tracker, so a returning cat's pre-absence bout is closed with a duration that reflects actual drinking, not the absence.
 - ~~"Deployment ... for unknown" log entries / spurious feeds for the `unknown` bucket~~ — fixed: both deployment branches in `MainLoop.py` now skip `unknown` (`switched_from != 'unknown'` on the cat-switch branch, `current_cat != 'unknown'` on the active-cat branch). The `unknown` tracker still accumulates misattributed counts but is no longer feeder-eligible.

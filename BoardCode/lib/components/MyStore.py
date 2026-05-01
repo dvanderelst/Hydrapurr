@@ -80,7 +80,7 @@ def write_line(path, line):
 
 def _coerce_cell(text):
     if text is None or text == "":
-        return "" if text == "" else None
+        return text
     if text.isdigit():
         return int(text)
     try:

@@ -78,10 +78,10 @@ def read_system_log(path: str | Path) -> pd.DataFrame:
             line = line.strip()
             if not line:
                 continue
-            parts = line.split(",", 4)
-            if len(parts) < 5:
+            parts = line.split(",", 3)
+            if len(parts) < 4:
                 continue
-            timestamp, mono_ms, ticks, level, remainder = parts
+            timestamp, mono_ms, level, remainder = parts
             source = None
             remainder = remainder.strip()
             if (remainder.startswith('"') and remainder.endswith('"')) or (
@@ -97,7 +97,6 @@ def read_system_log(path: str | Path) -> pd.DataFrame:
                 {
                     "time": timestamp,
                     "mono_ms": mono_ms,
-                    "ticks": ticks,
                     "level": level,
                     "source": source,
                     "message": message,
@@ -109,7 +108,6 @@ def read_system_log(path: str | Path) -> pd.DataFrame:
             data["time"], format="%Y-%m-%d %H:%M:%S.%f", errors="coerce"
         )
         data["mono_ms"] = pd.to_numeric(data["mono_ms"], errors="coerce")
-        data["ticks"] = pd.to_numeric(data["ticks"], errors="coerce")
     return data
 
 
@@ -133,7 +131,8 @@ def read_data_folder(
     licks_path = folder_path / "licks.dat"
     system_log_path = folder_path / "system.log"
     licks = read_licks_file(licks_path) if licks_path.is_file() else None
-    licks = check_time_increases(licks)
+    if licks is not None:
+        licks = check_time_increases(licks)
     system_log = read_system_log(system_log_path) if system_log_path.is_file() else None
     return DataFolderContents(
         name=folder_path.name,
