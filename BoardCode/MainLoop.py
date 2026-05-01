@@ -103,7 +103,11 @@ def main_loop(level=DEBUG, sd_ok=True):
     previous_active_cat = (Settings.single_cat_name
                            if not Settings.rfid_enabled
                            else 'unknown')  # matches BoutManager's active_cat
-    previous_bout_count = 0
+    # Per-cat bout-count snapshots. We compare new bout_count to the previous
+    # value *for that cat*, not to a single scalar — otherwise on a cat switch
+    # the comparison crosses cats and the "Last bout" log fires for the wrong
+    # cat (or fires spuriously). Default to 0 for any cat not yet seen.
+    previous_bout_counts = {}
     previous_printed_tag = None
 
     deployment_bout_count = Settings.deployment_bout_count
@@ -171,7 +175,7 @@ def main_loop(level=DEBUG, sd_ok=True):
                 time.sleep(Settings.deployment_duration_ms/1000)
                 hydrapurr.feeder_off()
                 counter.reset_counts(switched_from)
-                previous_bout_count = 0
+                previous_bout_counts[switched_from] = 0
                 deployed_this_tick = True
                 update_screen(hydrapurr, counter, switched_from, switched_from)  # show reset to 0
 
@@ -190,9 +194,9 @@ def main_loop(level=DEBUG, sd_ok=True):
         if current_lick_state_string != previous_lick_state_string:
             debug('[Main Loop] ' + current_lick_state_string)
             previous_lick_state_string = current_lick_state_string
-            bout_count = counter.get_bout_count()
-            if previous_bout_count != bout_count:
-                previous_bout_count = bout_count
+            bout_count = counter.get_bout_count(current_cat)
+            if previous_bout_counts.get(current_cat, 0) != bout_count:
+                previous_bout_counts[current_cat] = bout_count
                 bout_changed = True
 
 
@@ -214,7 +218,7 @@ def main_loop(level=DEBUG, sd_ok=True):
             time.sleep(Settings.deployment_duration_ms/1000)
             hydrapurr.feeder_off()
             counter.reset_counts()
-            previous_bout_count = 0
+            previous_bout_counts[current_cat] = 0
             update_screen(hydrapurr, counter, current_cat)  # show reset to 0
 
         # --- Update screen --------------------------------------

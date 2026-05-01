@@ -291,10 +291,13 @@ class BoutManager:
         """Initialize with list of cat names and detection parameters"""
         if cat_names is None:
             cat_names = ['unknown']
-        
+        else:
+            # Don't mutate the caller's list when we prepend 'unknown'.
+            cat_names = list(cat_names)
+
         if 'unknown' not in cat_names:
             cat_names.insert(0, 'unknown')
-        
+
         self.cat_names = cat_names
         self.trackers = {name: BoutTracker(name, **kwargs) for name in cat_names}
         self.active_cat = cat_names[0]
