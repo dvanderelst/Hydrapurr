@@ -2,9 +2,7 @@
 
 ## Open
 
-- **Wall time is frozen at boot.** `BoardCode/lib/components/TimeUtil.py:24-30, 51-64` samples `boot_epoch` once on first `init_timebase()`; later timestamps are `boot_epoch + (mono - boot_mono)`. If the RTC is wrong at boot, or set later via `SetTime.py`, wall timestamps stay wrong until reboot. Either re-sync `boot_epoch` inside `MyRTC.set_time`, or document the constraint. (Triggered in practice — recent log showed `2105-15-11` wall stamps; PCF8523 backup-cell may also need checking.)
-
-- **`Cats.get_name` returns `'unknown'`, `Cats.get_age` returns `None`.** `BoardCode/lib/Cats.py:5-13` — pick one convention. Empty-string cat names also slip past `validate_settings` because `if name and ...` short-circuits on falsy `name`.
+- **Wall time is frozen at boot — implement periodic RTC re-anchor with monotonic guard (deferred, low priority).** `BoardCode/lib/components/TimeUtil.py:24-30, 51-64` samples `boot_epoch` once on first `init_timebase()`; later timestamps are `boot_epoch + (mono - boot_mono)`. If the RTC is wrong at boot, or set later via `SetTime.py`, wall timestamps stay wrong until reboot, and over multi-day runs the extrapolation can drift up to ~50 ppm (a few seconds per day) versus the actual RTC. **Plan when revisited:** every ~60 s, re-read the RTC and re-anchor `boot_epoch`/`boot_mono_ms` — but only if the new extrapolated wall-time would be **≥** the previously-reported wall-time, so monotonicity is preserved (never step backwards). This bounds drift to one resync interval and implicitly picks up `SetTime.py` corrections within ~60 s without a reboot. **Also worth checking the PCF8523 backup-cell** — the recent `2105-15-11` boot timestamp suggests the RTC may have lost power between sessions, which a coin cell would prevent. Not urgent: current behaviour is correct as long as the RTC reads sensibly at boot, and we can resync manually with a reboot.
 
 ---
 
@@ -19,6 +17,7 @@ The current Bluetooth module is mac-incompatible and will be replaced; not worth
 
 ## Done
 
+- ~~`Cats.get_name` / `get_age` return-on-miss inconsistency + empty-name slip-through~~ — fixed: `get_age` was unused dead code and has been deleted, dissolving the inconsistency. `get_name` now also falls through to `'unknown'` when the registered name is missing or whitespace-only (defense in depth). `validate_settings` no longer silently accepts missing/whitespace cat names — it raises a clear problem at startup. The `'unknown'` sentinel itself stays, since `BoutManager` and the attribution layer in `MainLoop` rely on it.
 - ~~Silent bout rejection — surface why a bout was dropped~~ — fixed: `BoutTracker._finalize_bout` now logs an `info` line when the water-extent filter rejects a bout (with `water_extent` actual vs `min_water_extent_per_bout` threshold and lick count). The lick-count gate at all three finalisation paths (`process_sample` gap-close, `end_bout`, `close_if_stale`) now logs an `info` line when `lick_count < min_licks_per_bout` (gated on `lick_count > 0` to avoid spamming for pure noise where the bout started but produced no valid licks). `BoutDetection.py` now imports `info` from `MySystemLog`.
 - ~~`read_system_log` silently returned nothing on real recordings~~ — fixed: `ProcessLickData/library/data_reader.py:read_system_log` no longer expects a non-existent `ticks` column. Parser now uses `split(",", 3)` matching the firmware's 4-field format; verified against `data/Feb_5_26/system.log` (372 rows where the old code returned 0).
 - ~~`read_data_folder` crashed when a folder had no `licks.dat`~~ — fixed: `data_reader.py` now guards the `check_time_increases` call against `licks is None`.

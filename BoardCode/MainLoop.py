@@ -41,7 +41,10 @@ def validate_settings():
     problems = []
     for tag_key, cat_info in Settings.cats.items():
         name = cat_info.get('name')
-        if name and name.lower() == 'unknown':
+        if not name or not str(name).strip():
+            problems.append(f"cats[{tag_key}] has missing or whitespace-only name (got {name!r})")
+            continue
+        if name.lower() == 'unknown':
             problems.append(f"cats[{tag_key}] is named '{name}' — collides with RFID-miss sentinel 'unknown' (case-insensitive)")
 
     if not Settings.rfid_enabled:
