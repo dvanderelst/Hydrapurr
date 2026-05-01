@@ -4,7 +4,7 @@ import traceback
 import Cats
 import Settings
 from components.MySystemLog import setup_system_log, set_system_log_level, DEBUG, INFO, WARN, ERROR
-from components.MySystemLog import debug, info, warn, error
+from components.MySystemLog import debug, info, warn, error, critical
 
 from LickSensor import LickSensor
 from TagReader import TagReader     # new non-blocking, scheduled-reset version
@@ -20,11 +20,51 @@ def update_screen(hp, ctr, current_cat, cat_name=None):
     hp.show_screen()
 
 
+def log_settings():
+    info('[Settings] --- snapshot at startup ---')
+    for name in sorted(dir(Settings)):
+        if name.startswith('_'):
+            continue
+        value = getattr(Settings, name)
+        if callable(value):
+            continue
+        info(f'[Settings] {name} = {value}')
+    info('[Settings] --- end snapshot ---')
+
+
+def validate_settings():
+    # 'unknown' is the sentinel for an unrecognised/timed-out RFID tag.
+    # A registered cat with that name silently shares the misattribution
+    # bucket and never triggers the feeder, so refuse to start. Case-
+    # insensitive: 'Unknown'/'UNKNOWN' would technically not collide but
+    # are too easy to mistake for the sentinel.
+    problems = []
+    for tag_key, cat_info in Settings.cats.items():
+        name = cat_info.get('name')
+        if name and name.lower() == 'unknown':
+            problems.append(f"cats[{tag_key}] is named '{name}' — collides with RFID-miss sentinel 'unknown' (case-insensitive)")
+
+    if not Settings.rfid_enabled:
+        name = Settings.single_cat_name
+        all_cat_names = Cats.get_all_names()
+        if not name or name.lower() == 'unknown':
+            problems.append(f"single_cat_name='{name}' is invalid in single-cat mode")
+        elif name not in all_cat_names:
+            problems.append(f"single_cat_name '{name}' not in registered cats {all_cat_names}")
+
+    if problems:
+        for p in problems:
+            error(f'[Settings] {p}')
+        critical(f'[Settings] {len(problems)} fatal misconfiguration(s) — halting before main loop')
+
+
 def main_loop(level=DEBUG, sd_ok=True):
     info("[Main Loop] Start")
     set_system_log_level(level)
     setup_system_log()
     info("[Main Loop] System Log Started")
+    log_settings()
+    validate_settings()
 
     all_cat_names = Cats.get_all_names()
     info(f'[Main Loop] all defined cats: {all_cat_names}')
@@ -46,12 +86,7 @@ def main_loop(level=DEBUG, sd_ok=True):
         info(f"[Main Loop] RFID disabled — single-cat mode for '{Settings.single_cat_name}'")
     counter = LickSensor(cat_names=all_cat_names)
     if not Settings.rfid_enabled:
-        name = Settings.single_cat_name
-        if not name or name == 'unknown':
-            warn(f"[Main Loop] single_cat_name='{name}' is invalid — feeder will never fire")
-        elif name not in all_cat_names:
-            warn(f"[Main Loop] single_cat_name '{name}' not in {all_cat_names} — check Settings for typos")
-        counter.set_active_cat(name)
+        counter.set_active_cat(Settings.single_cat_name)
     info("[Main Loop] Objects created")
 
     # Presence/attribution state
