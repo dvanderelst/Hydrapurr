@@ -32,15 +32,12 @@ class LickSensor:
     Uses BoutManager for the core detection algorithm.
     """
     
-    def __init__(self, cat_names=None, min_water_extent=None):
+    def __init__(self, cat_names=None):
         """
         Initialize LickSensor with optional list of cat names.
 
         Args:
             cat_names: List of cat names to track (default: ['unknown'])
-            min_water_extent: Minimum water-level voltage swing (max-min, V)
-                              required to count a bout. If None, uses
-                              Settings.min_water_extent_per_bout.
         """
         # Hardware components
         self.water_sensor = MyADC(0)  # Water level sensor on channel 0
@@ -51,10 +48,6 @@ class LickSensor:
             max_lines=Settings.data_log_max_lines
         )
         self.lick_threshold = Settings.lick_threshold
-        
-        # Core detection algorithm
-        if min_water_extent is None:
-            min_water_extent = getattr(Settings, 'min_water_extent_per_bout', 0.0)
 
         self.bout_manager = BoutManager(
             cat_names=cat_names,
@@ -63,7 +56,7 @@ class LickSensor:
             min_licks_per_bout=Settings.min_licks_per_bout,
             max_bout_gap_ms=Settings.max_bout_gap_ms,
             debounce_ms=Settings.debounce_ms,
-            min_water_extent=min_water_extent
+            min_water_extent=Settings.min_water_extent_per_bout
         )
     
     def update(self, lick_voltage, cat_name=None):

@@ -18,7 +18,7 @@ if len(tests_to_run) > 0:
 
 import MainLoop
 import Settings
-from components.MySystemLog import DEBUG, INFO, WARN, ERROR 
+from components.MySystemLog import INFO
 from components.MyStore import delete_file
 from components.MySD import quick_self_test, mount_sd_card
 

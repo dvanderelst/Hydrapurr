@@ -20,12 +20,7 @@ def parser_hex_len26(body: bytes):
     try: up = body.decode("ascii").strip().upper()
     except Exception: return None
     if len(up)!=26 or any(c not in "0123456789ABCDEF" for c in up): return None
-    try: id_int_be = int(up, 16)
-    except Exception: id_int_be = None
-    pairs = [up[i:i+2] for i in range(0, 26, 2)]; rev_hex = "".join(reversed(pairs))
-    try: id_int_le = int(rev_hex, 16)
-    except Exception: id_int_le = None
-    return {"tag": up, "id_int_be": id_int_be, "id_int_le": id_int_le, "tag_key": up}
+    return {"tag": up, "tag_key": up}
 
 class TagReader:
     def __init__(self):
