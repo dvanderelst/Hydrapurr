@@ -180,6 +180,19 @@ def main_loop(level=DEBUG, sd_ok=True):
                 update_screen(hydrapurr, counter, switched_from, switched_from)  # show reset to 0
 
         result = counter.update(lick_voltage)
+
+        # No-wait deploy mode: force-close the current in-progress bout once it
+        # qualifies (enough licks + water-extent gate), so the active-cat
+        # deployment trigger below fires mid-bout rather than waiting for
+        # max_bout_gap_ms of silence. Gating on lick_added is sufficient —
+        # the water-extent series only grows on lick events, so a non-lick
+        # tick can't newly satisfy the gate.
+        if (not Settings.wait_for_bout_close
+                and result['lick_added']
+                and current_cat != 'unknown'
+                and counter.get_bout_count(current_cat) == deployment_bout_count - 1):
+            counter.try_finalize_in_progress(current_cat)
+
         if result['previous_state'] == 1 and result['current_state'] == 0:
             dur = result['state_duration_ms']
             if result['lick_added']:

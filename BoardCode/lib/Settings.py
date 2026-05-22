@@ -20,13 +20,24 @@ cat_timeout_ms = 2000  # switch to 'unknown' if no valid tag is seen for x ms.
                        # ~6 missed read cycles before declaring a departure.
                        # (Only used when rfid_enabled = True.)
 max_tag_read_hz = 3.0  # change here to adjust read refresh limit (Hz)
-deployment_bout_count = 5
+deployment_bout_count = 1
+wait_for_bout_close = True   # True  (default): feeder fires only after the
+                             #         deployment_bout_count-th bout *closes*
+                             #         (i.e. after max_bout_gap_ms of silence).
+                             #         Bout passes the full water-extent gate
+                             #         before deployment.
+                             # False: feeder fires mid-bout — as soon as the
+                             #         in-progress N-th bout reaches
+                             #         min_licks_per_bout AND the running
+                             #         water_extent clears min_water_extent_per_bout.
+                             #         Trades reward latency for the loss of the
+                             #         gap-close confirmation.
 deployment_duration_ms = 2000
 lick_threshold = 2.0
 min_lick_ms = 50
-max_lick_ms = 150
+max_lick_ms = 250
 min_licks_per_bout = 3
-max_bout_gap_ms = 10000   # 10 s. Two implications worth understanding:
+max_bout_gap_ms = 2000   # 10 s. Two implications worth understanding:
                           # 1. Bout semantics — consecutive licks separated by less
                           #    than this value belong to the same bout. Shorter values
                           #    make a "bout" mean one visit to the bowl; longer values

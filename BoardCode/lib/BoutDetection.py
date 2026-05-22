@@ -229,6 +229,25 @@ class BoutTracker:
         
         return lick_finalized
     
+    def try_finalize_in_progress(self, now_ms, water_level=None):
+        """Force-close the current in-progress bout if it has enough licks and
+        the water-extent gate passes. Used by no-wait deploy mode so the feeder
+        can fire mid-bout instead of waiting for max_bout_gap_ms of silence.
+        Returns True if the bout was finalised (bout_count incremented). Leaves
+        the bout intact when the water-extent gate fails — the cat may keep
+        drinking and clear the gate on a later lick."""
+        if self.current_bout_start_ms is None:
+            return False
+        if self.lick_count < self.min_licks_per_bout:
+            return False
+        if not self._finalize_bout(now_ms, water_level):
+            return False
+        self.bout_count += 1
+        info(f'[BoutTracker] {self.cat_name}: bout closed early (no-wait deploy) licks={self.lick_count}')
+        self._reset_bout_tracking()
+        self.lick_count = 0
+        return True
+
     def close_if_stale(self, now_ms, water_level=None):
         """Close an in-progress bout if the gap to the cat's last activity
         exceeds max_bout_gap_ms. Uses last_lick_end_ms (or current_bout_start_ms
@@ -376,6 +395,15 @@ class BoutManager:
 
         self.active_cat = cat_name
     
+    def try_finalize_in_progress(self, now_ms, water_level=None, cat_name=None):
+        """Forward to the named tracker (active cat by default). See
+        BoutTracker.try_finalize_in_progress."""
+        cat_name = cat_name or self.active_cat
+        tracker = self.trackers.get(cat_name)
+        if tracker is None:
+            return False
+        return tracker.try_finalize_in_progress(now_ms, water_level)
+
     def get_last_bout_summary(self, cat_name=None):
         """Get last bout summary for specified cat"""
         cat_name = cat_name or self.active_cat

@@ -48,6 +48,7 @@ How the device interprets contact-sensor samples and decides when to feed.
 | `min_water_extent_per_bout`     | 0.013 V          | `Settings.py`        |
 | `cat_timeout_ms`                | 2000 ms          | `Settings.py`        |
 | `deployment_bout_count`         | 5                | `Settings.py`        |
+| `wait_for_bout_close`           | `True`           | `Settings.py`        |
 | `deployment_duration_ms`        | 2000 ms          | `Settings.py`        |
 | `debounce_ms`                   | 5 ms             | `Settings.py`        |
 | RFID refresh                    | 3 Hz (~333 ms)   | `Settings.py`        |
@@ -80,7 +81,7 @@ A bout is a sequence of valid licks where consecutive licks are separated by les
   - `lick_count ≥ min_licks_per_bout` (default 3), and
   - water swing during the bout (`water_extent` = max − min) > `min_water_extent_per_bout` (default 0.013 V) — confirms real drinking caused water-level fluctuation, not just a paw resting on the sensor.
 
-There are three paths that can finalise a bout (see *Bout-closure paths* below). All three honour the same eligibility check.
+There are four paths that can finalise a bout (see *Bout-closure paths* below). All four honour the same eligibility check.
 
 #### When does deployment happen?
 
@@ -95,6 +96,15 @@ Both triggers require a *known* cat. The `unknown` tracker accumulates misattrib
 
 Deployment is blocking — the main loop sleeps for `deployment_duration_ms` while food dispenses, so no licks or RFID reads happen during that window. Intentional.
 
+#### Wait-for-bout-close vs. no-wait deploy
+
+`wait_for_bout_close` (default `True`) controls *when* within a drinking session the feeder fires:
+
+- **`True` (default)** — `bout_count` only increments when a bout closes (gap-timeout, cat switch, or stale-on-return). The active-cat trigger therefore fires after the N-th bout closes — typically `max_bout_gap_ms` of silence after the last lick — and the full water-extent gate has already been evaluated over the completed bout.
+- **`False` (no-wait)** — on each new valid lick, if the cat has already completed N-1 bouts AND the current in-progress bout has reached `min_licks_per_bout` AND the running `water_extent` clears `min_water_extent_per_bout`, the bout is force-closed (`BoutTracker.try_finalize_in_progress`) and `bout_count` bumps to N. The active-cat trigger then fires on the same iteration. Trades reward latency for the loss of the gap-close confirmation — useful when faster feedback matters more than precise bout boundaries.
+
+The cat-switch trigger is unaffected by this flag: `set_active_cat → end_bout` already closes mid-bout on departure, so cat-switch deployment timing is identical in both modes.
+
 ### Per-iteration flow (MainLoop)
 
 ```mermaid
@@ -108,7 +118,10 @@ flowchart TD
     SwitchDeploy -->|No| ReadLick
     Feed1 --> ReadLick[Read lick ADC]
     ReadLick --> Process[update → process_sample<br/>routed to CURRENT cat's tracker]
-    Process --> ActiveDeploy{Active-cat trigger:<br/>current cat is known<br/>AND its bout_count ≥ 5?}
+    Process --> EarlyDeploy{wait_for_bout_close = False<br/>AND lick_added<br/>AND current cat known<br/>AND bout_count == N-1?}
+    EarlyDeploy -->|Yes| TryFinalize[try_finalize_in_progress<br/>finalises if water_extent gate passes<br/>bumps bout_count to N]
+    TryFinalize --> ActiveDeploy
+    EarlyDeploy -->|No| ActiveDeploy{Active-cat trigger:<br/>current cat is known<br/>AND its bout_count ≥ 5?}
     ActiveDeploy -->|Yes| Feed2[Fire feeder for CURRENT cat<br/>reset that cat's counts]
     ActiveDeploy -->|No| Screen[Update screen if changed]
     Feed2 --> Screen
@@ -169,13 +182,14 @@ Three rules from this:
 
 ### Bout-closure paths
 
-| Path                | Triggered when                                              | End-time used         |
-| ------------------- | ----------------------------------------------------------- | --------------------- |
-| `process_sample`    | Active cat is silent for ≥ `max_bout_gap_ms`                | Current sample time   |
-| `end_bout`          | `set_active_cat` from any cat to a *known* cat              | Switch time           |
-| `close_if_stale`    | `set_active_cat` into a tracker with a stale ongoing bout   | `last_lick_end_ms`    |
+| Path                         | Triggered when                                                                                            | End-time used         |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------- |
+| `process_sample`             | Active cat is silent for ≥ `max_bout_gap_ms`                                                              | Current sample time   |
+| `end_bout`                   | `set_active_cat` from any cat to a *known* cat                                                            | Switch time           |
+| `close_if_stale`             | `set_active_cat` into a tracker with a stale ongoing bout                                                 | `last_lick_end_ms`    |
+| `try_finalize_in_progress`   | No-wait deploy mode: in-progress bout reaches `min_licks_per_bout` while `bout_count == N-1`              | Current sample time   |
 
-Only the `process_sample` path emits a bout-closure marker row in `licks.dat`. The other two paths finalise silently — the offline analyzer reconstructs bouts from `lick == 1` resets, so this is fine.
+Only the `process_sample` path emits a bout-closure marker row in `licks.dat`. The other three paths finalise silently — the offline analyzer reconstructs bouts from `lick == 1` resets, so this is fine.
 
 ## Data format
 

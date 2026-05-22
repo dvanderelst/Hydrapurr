@@ -152,6 +152,14 @@ class LickSensor:
     def reset_counts(self, cat_name=None):
         """Reset lick and bout counts for specified cat"""
         self.bout_manager.reset_counts(cat_name)
+
+    def try_finalize_in_progress(self, cat_name=None):
+        """Early-close the in-progress bout for the named cat (active cat by
+        default) — used by no-wait deploy mode. Uses the cached _last_water
+        (most recent in-contact sample); no fresh ADC read needed because the
+        water-extent series only grows on lick events. Returns True if a bout
+        was closed."""
+        return self.bout_manager.try_finalize_in_progress(now(), self._last_water, cat_name)
     
     def clear_log(self):
         """Clear the SD card log file"""
