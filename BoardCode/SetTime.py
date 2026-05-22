@@ -5,10 +5,10 @@ hp = HydraPurr()
 
 # To skip setting fields, set the field to None
 yr=2025
-mt=10
-dy=6
-hr=14
-mn=26
+mt=5
+dy=1
+hr=13
+mn=08
 sc=00
 
 print(hr, mn, sc)

@@ -9,7 +9,7 @@ from lib import Settings
 data_reader.print_data_folders_table()
 
 # Select data folder (change index as needed)
-data_folder_index = 0
+data_folder_index = 9
 contents = data_reader.read_data_folder(data_folder_index)
 licks = contents.licks
 system_log = contents.system_log

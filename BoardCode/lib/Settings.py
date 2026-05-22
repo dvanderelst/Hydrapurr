@@ -21,7 +21,7 @@ cat_timeout_ms = 2000  # switch to 'unknown' if no valid tag is seen for x ms.
                        # (Only used when rfid_enabled = True.)
 max_tag_read_hz = 3.0  # change here to adjust read refresh limit (Hz)
 deployment_bout_count = 1
-wait_for_bout_close = True   # True  (default): feeder fires only after the
+wait_for_bout_close = False   # True  (default): feeder fires only after the
                              #         deployment_bout_count-th bout *closes*
                              #         (i.e. after max_bout_gap_ms of silence).
                              #         Bout passes the full water-extent gate
