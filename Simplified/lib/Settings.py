@@ -51,6 +51,14 @@ raw_log_interval_ms = 10       # one row per 10 ms = 100 rows/s
 raw_log_sync_ms = 5000         # flush to the card this often; a power cut
                                # loses at most this much data
 
+# --- Download mode (D1 button, see DownloadMode.py) ------------------------------
+# The board's own WiFi network, only on while in download mode.
+download_ap_ssid = "HydraPurr"
+download_ap_password = "hydrapurr"     # WPA2: at least 8 characters
+download_timeout_ms = 15 * 60 * 1000   # back to recording after 15 min idle
+download_tx_power_dbm = 8.5            # radio power in download mode (max ~20);
+                                       # lower = smaller current spikes
+
 # =============================================================================
 # Not used by the recording version (MainLoop.py). Kept for when bout
 # detection and feeding come back (LickSensor.py, BoutDetection.py).

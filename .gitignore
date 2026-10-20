@@ -11,3 +11,6 @@ ProcessLickData/data/
 BoardCode/sd_mount.log
 
 .sync2board_last
+
+# WiFi and web-workflow passwords for the Simplified board
+Simplified/settings.toml*

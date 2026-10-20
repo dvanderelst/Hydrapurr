@@ -9,12 +9,16 @@ TouchSensor still computes a live contact state (0/1) against its tracking
 baseline. It is stored in the stream and shown on the TFT as a quick check,
 but nothing depends on it.
 
+Press D1 to pause recording and serve the SD card over the board's own WiFi
+network (DownloadMode.py); press D1 again to resume.
+
 Bout detection and feeding (BoutDetection.py, LickSensor.py) are not used in
 this version; they stay in lib/ for later.
 """
 
 import time
 import traceback
+import board
 
 import Settings
 from components import TimeUtil
@@ -25,6 +29,7 @@ from TouchSensor import TouchSensor
 from WaterSensor import WaterSensor
 from RawRecorder import RawRecorder
 from StatusDisplay import StatusDisplay
+import DownloadMode
 
 GREEN, YELLOW, RED, WHITE = 0x00FF00, 0xFFFF00, 0xFF4040, 0xFFFFFF
 
@@ -43,6 +48,19 @@ def log_settings():
             continue
         info(f'[Settings] {name} = {value}')
     info('[Settings] --- end snapshot ---')
+
+
+def log_reset_reason():
+    """Why the board last restarted: e.g. BROWNOUT (power dip), PANIC
+    (crash), POWER_ON, RESET_PIN. Read it in system.log after an unexpected
+    restart."""
+    try:
+        import microcontroller
+        import supervisor
+        info(f'[Main Loop] reset reason: {microcontroller.cpu.reset_reason}, '
+             f'safe mode reason: {supervisor.runtime.safe_mode_reason}')
+    except Exception as e:
+        warn(f'[Main Loop] could not read reset reason: {e!r}')
 
 
 def check_rtc():
@@ -83,6 +101,7 @@ def main_loop(level=INFO, sd_ok=True):
     set_system_log_level(level)
     setup_system_log()
     info('[Main Loop] Simplified HydraPurr start (recording version)')
+    log_reset_reason()
     log_settings()
 
     screen = StatusDisplay()
@@ -92,7 +111,9 @@ def main_loop(level=INFO, sd_ok=True):
     rtc_ok = check_rtc()
     screen.set_line(2, 'RTC ok' if rtc_ok else 'RTC: set time!', GREEN if rtc_ok else RED, now=True)
     screen.set_line(3, 'baseline...', now=True)
+    screen.set_line(4, 'D1 = download', now=True)
 
+    button = DownloadMode.Button(board.D1)
     touch = TouchSensor()
     water = WaterSensor()
     recorder = RawRecorder()
@@ -101,7 +122,7 @@ def main_loop(level=INFO, sd_ok=True):
         screen.set_line(4, 'need CP 10.3.1+', RED, now=True)
         time.sleep(5)
     else:
-        time.sleep(2)            # leave the startup checks on screen briefly
+        time.sleep(3)            # leave the startup checks on screen briefly
     screen.repaint()             # clear any leftovers of the boot console
 
     interval_ms = Settings.raw_log_interval_ms
@@ -121,6 +142,18 @@ def main_loop(level=INFO, sd_ok=True):
         while True:
             try:
                 t = now_ms()
+                if button.pressed(t):
+                    info('[Main Loop] D1 pressed: download mode, recording paused')
+                    recorder.close()
+                    flush()
+                    DownloadMode.run(screen, button)
+                    # Restart timing so the pause is not counted as a gap.
+                    t = now_ms()
+                    next_sample_ms = t
+                    last_sample_ms = None
+                    next_display_ms = 0
+                    last_contact_ms = -Settings.display_quiet_ms
+                    continue
                 if t >= next_sample_ms:
                     # Fixed sampling grid, so the interval doesn't drift with loop
                     # jitter; skip ahead if the loop fell behind (e.g. a flush).

@@ -49,6 +49,7 @@ Firmware (runs at boot via `code.py`):
 | `lib/Settings.py` | All parameters, BoardCode names where the meaning is the same. Recording: `raw_log_interval_ms = 10`, `raw_log_sync_ms = 5000` (flush interval = max data lost on power cut). Touch thresholds are placeholders (+10 % on, +5 % off); they only affect the live `contact` column and the display. Bout/deployment settings are kept in a marked "not used" block. |
 | `lib/TouchSensor.py` | `touchio` on D12 → 0/1. Baseline averaged at boot, then tracked (EMA, τ 30 s) only while untouched; hysteresis; contact > 5 s re-takes the baseline; big drops are followed at once. |
 | `lib/WaterSensor.py` | Sharp on A5 in volts (higher = more water). The recorder uses single reads (`read_volts`); the smoothed `update()` is for the bout version. |
+| `lib/DownloadMode.py` | **D1** button → recording pauses, the board starts its own WiFi access point (`HydraPurr` / `hydrapurr`, `Settings.download_ap_*`) and serves the SD card at `http://192.168.4.1/`: a file list with download links (`/raw/<date>/<hour>.csv`, top-level files). Whole card: `wget -r -np -nH http://192.168.4.1/`. Files are streamed in 4 KB chunks by our own route (`send_file`); the library's static file serving is off. TX power lowered to 8.5 dBm. D1 again, or 15 min without requests, → access point off, recording resumes. Uses `adafruit_httpserver` 4.8.2. |
 | `lib/RawRecorder.py` | Writes `/sd/raw/<YYYY-MM-DD>/<HH>.csv` (new file each wall-clock hour), columns `mono_ms, touch_raw, touch_baseline, contact, water_v`. Each file (and each re-open) gets a line `# start <wall time> mono_ms <n>` to anchor the rows in real time. File stays open; each row is written as it is taken, `flush()` every 5 s. ~30 B/row → ~11 MB/hour, ~260 MB/day. Hourly files avoid FAT32's 4 GB limit and the slowdown of re-opening big files to append. |
 | `lib/StatusDisplay.py` | 5 text lines on the TFT: `REC <rows>` (or NOT RECORDING in red), contact count, water V, touch raw (green on contact), baseline. Manual refresh; `refresh_all()` redraws the **whole screen** (root-group swap) when something changed. Lines padded to 19 characters. Status bar off; `release()` restores the console on shutdown. Uses `adafruit_display_text.label`. |
 | `lib/LickSensor.py`, `lib/BoutDetection.py` | Not used by the recorder; kept for the bout-detection version. `BoutDetection.py` is BoardCode's, unchanged; `LickSensor.py` is BoardCode's glue minus the ADC. |
@@ -92,6 +93,30 @@ shows it. Every row carries its own `mono_ms`, so gaps are visible offline.
 
 Offline: the first row(s) after each `# start` line can be off (water read
 0.49 V instead of ~0.9 V right after boot); skip them.
+
+### WiFi / download mode: lessons (2026-10-20)
+
+- **Never sync or use the serial port while download mode is on.** With the
+  access point active and a client connected, the board's USB drops out.
+  A sync cut off this way corrupted CIRCUITPY (fixed with
+  `storage.erase_filesystem()` + full re-sync; the SD card was unaffected).
+  Use download mode on a charger, not on the computer.
+- **Don't toggle `wifi.radio.enabled`.** Switching it off at startup made the
+  next soft reboot hang USB. The code now only starts/stops the AP.
+- **No `settings.toml` with `CIRCUITPY_WIFI_*`** on this board: CircuitPython
+  then tries to join that network at boot (the first attempt used a
+  non-existent network and led to resets). `.gitignore` covers
+  `Simplified/settings.toml*`.
+- A large download through the library's static file serving at full radio
+  power hard-faulted the board (safe mode, `HARD_FAULT`). With 8.5 dBm both
+  that path and our own chunked route worked; we keep our own route.
+- CircuitPython quirk: a plain string literal next to an f-string is treated
+  as part of the f-string, so `{...}` in it (CSS) became a placeholder →
+  `KeyError('font-family')`. Keep such literals separate.
+- Boot now logs `reset reason` and `safe mode reason` in `system.log`.
+- On the PC, ModemManager probes new serial ports and can push an ESP32 into
+  ROM download mode (USB `303a:1001`) during a reset; an udev rule with
+  `ID_MM_DEVICE_IGNORE` for vendors 239a/303a prevents that (not installed).
 
 ## Board facts: Feather ESP32-S3 Reverse TFT
 
@@ -319,3 +344,11 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
 - **2026-10-20** — Committed `Simplified/`, `sync2board` and `.gitignore`
   on branch `simplified-recorder`. `sd/placeholder.txt` had to be
   force-added: the `.gitignore` rule `*old*` matches "placeholder".
+- **2026-10-20** — Wireless data retrieval: first tried joining the home
+  WiFi via CircuitPython's web workflow (misunderstanding: the user expected
+  the board to make its own network). Switched to our own download mode
+  (D1 → access point + small web server). Problems found and fixed on the
+  way: see "WiFi / download mode: lessons". Tested by the user: page, small
+  file, 5 MB from RAM, largest raw file in chunks, and the normal links.
+  Final version (all files via our chunked route) confirmed working by the
+  user on a charger.
