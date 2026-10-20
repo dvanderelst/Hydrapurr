@@ -9,3 +9,5 @@ BluetoothDownloader/builds/
 ProcessLickData/data/
 
 BoardCode/sd_mount.log
+
+.sync2board_last

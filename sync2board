@@ -1,49 +1,165 @@
 #!/usr/bin/env bash
-# sync2board — push BoardCode/ to the connected CircuitPython device.
+# sync2board — push one of the board-code folders to a connected CircuitPython device.
 #
-# Mirrors BoardCode/ onto the mounted CIRCUITPY drive (with --delete so files
-# removed locally are also removed on the device). Excludes editor metadata
-# and Python bytecode caches.
+# The repo holds more than one program that can live on a board (BoardCode/ for
+# the full HydraPurr firmware, Simplified/ for the small test sketches), so the
+# source folder is now selected explicitly. Any top-level directory containing a
+# code.py counts as a source.
+#
+# The chosen folder is mirrored onto the mounted CIRCUITPY drive with --delete,
+# so files that are not in the source are removed from the device (including
+# lib/ contents — the confirmation step lists what would go).
 #
 # Usage:
-#   ./sync2board               # use auto-detected mount point
-#   ./sync2board /custom/path  # override the device path
+#   ./sync2board                      # pick a source from a menu
+#   ./sync2board Simplified           # push Simplified/
+#   ./sync2board BoardCode -d /mnt/x  # push to a specific mount point
+#   ./sync2board -n Simplified        # dry run, change nothing
+#   ./sync2board -y Simplified        # skip the deletion confirmation
+#   ./sync2board /media/me/CIRCUITPY  # (old form) device path, source from menu
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE="$SCRIPT_DIR/BoardCode"
+LAST_FILE="$SCRIPT_DIR/.sync2board_last"
+DEVICE="/media/$USER/CIRCUITPY"
+SOURCE_NAME=""
+DRY_RUN=0
+ASSUME_YES=0
 
-if [ "${1:-}" ]; then
-    DEVICE="$1"
+# Prompts read from the terminal when there is one, so the script still works
+# when its stdout is piped; otherwise they fall back to stdin.
+if { : < /dev/tty; } 2>/dev/null; then
+    TTY_IN=/dev/tty
 else
-    DEVICE="/media/$USER/CIRCUITPY"
+    TTY_IN=/dev/stdin
 fi
 
+ask() {  # ask <prompt> -> answer in $REPLY
+    printf '%s' "$1"
+    IFS= read -r REPLY < "$TTY_IN" || REPLY=""
+}
+
+usage() {
+    sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    exit "${1:-0}"
+}
+
+# Sources are top-level directories holding a code.py.
+SOURCES=()
+for dir in "$SCRIPT_DIR"/*/; do
+    [ -f "$dir/code.py" ] && SOURCES+=("$(basename "$dir")")
+done
+if [ ${#SOURCES[@]} -eq 0 ]; then
+    echo "sync2board: no source folders found (a source is a directory with a code.py)" >&2
+    exit 1
+fi
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)    usage 0 ;;
+        -n|--dry-run) DRY_RUN=1 ;;
+        -y|--yes)     ASSUME_YES=1 ;;
+        -d|--device)  DEVICE="${2:?-d needs a path}"; shift ;;
+        -*)           echo "sync2board: unknown option: $1" >&2; usage 1 ;;
+        */*|/*)       DEVICE="$1" ;;              # old form: a bare device path
+        *)            SOURCE_NAME="$1" ;;
+    esac
+    shift
+done
+
+# --- Pick the source ---
+if [ -z "$SOURCE_NAME" ]; then
+    if [ ${#SOURCES[@]} -eq 1 ]; then
+        SOURCE_NAME="${SOURCES[0]}"
+    else
+        default=""
+        [ -f "$LAST_FILE" ] && default="$(cat "$LAST_FILE")"
+        echo "sync2board: which folder should go on the board?"
+        for i in "${!SOURCES[@]}"; do
+            mark=" "
+            [ "${SOURCES[$i]}" = "$default" ] && mark="*"
+            printf "  %d)%s %s\n" "$((i + 1))" "$mark" "${SOURCES[$i]}"
+        done
+        prompt="  choice [1-${#SOURCES[@]}]"
+        [ -n "$default" ] && prompt="$prompt (enter = $default)"
+        ask "$prompt: "
+        choice="$REPLY"
+        if [ -z "$choice" ] && [ -n "$default" ]; then
+            SOURCE_NAME="$default"
+        elif [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le ${#SOURCES[@]} ]; then
+            SOURCE_NAME="${SOURCES[$((choice - 1))]}"
+        else
+            echo "sync2board: no valid choice, nothing done" >&2
+            exit 1
+        fi
+    fi
+fi
+
+SOURCE="$SCRIPT_DIR/$SOURCE_NAME"
 if [ ! -d "$SOURCE" ]; then
     echo "sync2board: source not found: $SOURCE" >&2
+    echo "  available: ${SOURCES[*]}" >&2
     exit 1
 fi
 
 if [ ! -d "$DEVICE" ]; then
     echo "sync2board: CIRCUITPY not mounted at $DEVICE" >&2
-    echo "  Plug the board in (or pass a path: ./sync2board /path/to/CIRCUITPY)" >&2
+    echo "  Plug the board in (or pass a path: ./sync2board $SOURCE_NAME -d /path/to/CIRCUITPY)" >&2
     exit 1
 fi
 
-echo "sync2board: $SOURCE/  →  $DEVICE/"
+echo "sync2board: $SOURCE_NAME/  →  $DEVICE/"
+# Show which board is on the other end — the repo targets more than one.
+if [ -f "$DEVICE/boot_out.txt" ]; then
+    echo "  device: $(head -n 1 "$DEVICE/boot_out.txt")"
+fi
+
 # --ignore-times: transfer every file regardless of size or mtime.
 # CIRCUITPY is FAT32 (2 s mtime resolution) and the device clock isn't
 # reliable, so the default "skip if size+mtime match" check can miss
 # real changes. Forcing every file is the nuclear option but the
 # project is small enough that it's instant in practice.
-rsync -av --ignore-times --delete \
-    --exclude='__pycache__/' \
-    --exclude='*.pyc' \
-    --exclude='.sync_trash/' \
-    --exclude='.idea/' \
-    --exclude='.DS_Store' \
-    "$SOURCE/" "$DEVICE/"
+RSYNC_ARGS=(-av --ignore-times --delete
+    --exclude='__pycache__/'
+    --exclude='*.pyc'
+    --exclude='.sync_trash/'
+    --exclude='.idea/'
+    --exclude='.DS_Store'
+    --exclude='.Trash-*/'
+    --exclude='System Volume Information/'
+    --exclude='.fseventsd/'
+    --exclude='.metadata_never_index'
+    --exclude='boot_out.txt')
+
+# --- Confirm deletions ---
+# Switching a board between sources (or dropping a library) removes files, so
+# list them first instead of quietly wiping the device.
+doomed="$(rsync "${RSYNC_ARGS[@]}" --dry-run --out-format='%o %n' "$SOURCE/" "$DEVICE/" \
+    | grep '^del\. ' | sed 's/^del\. //' || true)"
+if [ -n "$doomed" ]; then
+    count="$(printf '%s\n' "$doomed" | wc -l)"
+    echo "  this will DELETE $count item(s) from the device:"
+    printf '%s\n' "$doomed" | sed 's/^/    - /' | head -n 20
+    [ "$count" -gt 20 ] && echo "    ... and $((count - 20)) more"
+    if [ "$DRY_RUN" -eq 0 ] && [ "$ASSUME_YES" -eq 0 ]; then
+        ask "  continue? [y/N] "
+        case "$REPLY" in
+            y|Y|yes|YES) ;;
+            *) echo "sync2board: aborted, device untouched"; exit 1 ;;
+        esac
+    fi
+fi
+
+if [ "$DRY_RUN" -eq 1 ]; then
+    rsync "${RSYNC_ARGS[@]}" --dry-run "$SOURCE/" "$DEVICE/"
+    echo "sync2board: dry run, nothing written"
+    exit 0
+fi
+
+rsync "${RSYNC_ARGS[@]}" "$SOURCE/" "$DEVICE/"
+
+echo "$SOURCE_NAME" > "$LAST_FILE"
 
 # Best-effort sync to flush kernel buffers before the user unplugs.
 sync
