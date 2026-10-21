@@ -155,7 +155,8 @@ A5 = GPIO8 is the only A-pin on ADC1.
 | Sharp IR output | **A5** (GPIO8) | Only labelled analog pin on ADC1. |
 | Water wire (touch) | **D12** (GPIO12) | Touch-capable, and uses no ADC1 pin. Leaves D9/D11 free for RFID. Already used by `test.py`. Opposite header from A5. |
 | Feeder relay (later) | D6 | Same as BoardCode; plain digital output. |
-| RFID (if kept) | D9 rx, D11 reset | Same as BoardCode. |
+| Contact LED | **D9** | LED + side on D9, resistor to GND; lit while `contact` = 1 (`contact_led_pin`). Fitted 2026-10-21. Takes RFID's old rx pin: RFID would need another UART pin. |
+| RFID (if kept) | D11 reset; rx no longer D9 (LED) | BoardCode used D9 rx. |
 | Adalogger | SDA, SCL, SPI, D10 | Fixed by the wing. |
 | Spare | D5, D13 (red LED), A0–A4 | D5 is ADC1 + touch: backup for either sensor. |
 
@@ -352,3 +353,10 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
   file, 5 MB from RAM, largest raw file in chunks, and the normal links.
   Final version (all files via our chunked route) confirmed working by the
   user on a charger.
+- **2026-10-21** — Contact LED on D9 (+ side on the pin, resistor to GND),
+  so contacts show on video. Set in the sample step right after
+  `touch.update()`, before the SD write: it matches the recorded `contact`
+  column, delay <= one sample (10 ms) plus at most ~10 ms SD write; only the
+  first contact after a quiet spell can fall in a ~150 ms screen redraw (the
+  data has the same gap). 0.5 s flash at boot (before the touch baseline);
+  off in download mode. Confirmed working by the user.

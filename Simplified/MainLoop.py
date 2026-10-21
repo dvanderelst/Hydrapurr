@@ -19,6 +19,7 @@ this version; they stay in lib/ for later.
 import time
 import traceback
 import board
+import digitalio
 
 import Settings
 from components import TimeUtil
@@ -114,6 +115,12 @@ def main_loop(level=INFO, sd_ok=True):
     screen.set_line(4, 'D1 = download', now=True)
 
     button = DownloadMode.Button(board.D1)
+    led = None
+    if Settings.contact_led_pin is not None:
+        led = digitalio.DigitalInOut(Settings.contact_led_pin)
+        led.switch_to_output(value=True)     # brief flash: shows the LED works
+        time.sleep(0.5)
+        led.value = False                    # off before the touch baseline
     touch = TouchSensor()
     water = WaterSensor()
     recorder = RawRecorder()
@@ -146,6 +153,8 @@ def main_loop(level=INFO, sd_ok=True):
                     info('[Main Loop] D1 pressed: download mode, recording paused')
                     recorder.close()
                     flush()
+                    if led is not None:
+                        led.value = False
                     DownloadMode.run(screen, button)
                     # Restart timing so the pause is not counted as a gap.
                     t = now_ms()
@@ -166,6 +175,10 @@ def main_loop(level=INFO, sd_ok=True):
                     samples += 1
                     contact = touch.update(t)
                     water_v = water.read_volts()
+                    # LED first: it should match the recorded contact column,
+                    # with no SD write in between.
+                    if led is not None and contact != previous_contact:
+                        led.value = bool(contact)
                     if contact and not previous_contact:
                         contacts += 1
                     if contact:

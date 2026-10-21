@@ -21,6 +21,9 @@ touch_pin = board.D12          # wire into the water (touchio)
 water_pin = board.A5           # Sharp GP2Y0A51SK0F output (ADC1, WiFi-safe)
 feeder_pin = None              # relay not fitted yet; e.g. board.D6 later.
                                # None = deployments are logged, nothing switches.
+contact_led_pin = board.D9     # LED (+ side on the pin, resistor to GND), lit
+                               # while the wire sees contact; for video checks.
+                               # None = no LED.
 
 # --- Touch (lick contact) -----------------------------------------------------
 # A lick raises touchio's raw_value above a slowly tracking baseline.
