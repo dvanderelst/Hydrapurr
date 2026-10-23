@@ -113,9 +113,10 @@ def _index_html():
     return "".join(parts)
 
 
-def run(screen, button):
+def run(screen, button, clock=None):
     """Serve the SD card over a WiFi access point until D1 is pressed again
-    or download_timeout_ms passes without a request. Blocking."""
+    or download_timeout_ms passes without a request. Blocking. clock is the
+    (text, color) of the RTC time line, shown at the bottom of the screen."""
     global _ap_ip
     import wifi
     import socketpool
@@ -185,11 +186,14 @@ def run(screen, button):
     server.start(ip, 80)
     info(f'[Download] serving {SD_ROOT} at http://{ip}/')
 
-    screen.set_line(0, 'DOWNLOAD MODE', 0xFFFF00)
+    screen.set_line(0, 'DOWNLOAD D1=resume', 0xFFFF00)
     screen.set_line(1, f'WiFi {ssid}')
     screen.set_line(2, f'pw {password}')
     screen.set_line(3, f'http://{ip}')
-    screen.set_line(4, 'D1 = resume')
+    if clock is not None:
+        screen.set_line(4, *clock)
+    else:
+        screen.set_line(4, '')
     screen.refresh_all()
 
     last_activity = now_ms()

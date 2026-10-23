@@ -80,6 +80,18 @@ def check_rtc():
     return True
 
 
+def clock_line():
+    """RTC date/time for the screen as (text, color), read once (not a live
+    clock). 'YYYY-MM-DD HH:MM:SS' is 19 characters, exactly one line."""
+    rtc = TimeUtil.rtc
+    try:
+        if rtc is not None and not rtc.rtc.lost_power:
+            return TimeUtil.rtc_timestamp('iso', with_ms=False), GREEN
+    except Exception:
+        pass
+    return 'RTC: set time!', RED
+
+
 def shutdown(recorder, screen):
     """Close the data file, unmount the SD card, give the display back."""
     try:
@@ -109,8 +121,9 @@ def main_loop(level=INFO, sd_ok=True):
     screen.manual()
     screen.set_line(0, 'HydraPurr', now=True)
     screen.set_line(1, 'SD ok' if sd_ok else 'NO SD CARD', GREEN if sd_ok else RED, now=True)
-    rtc_ok = check_rtc()
-    screen.set_line(2, 'RTC ok' if rtc_ok else 'RTC: set time!', GREEN if rtc_ok else RED, now=True)
+    check_rtc()
+    text, color = clock_line()
+    screen.set_line(2, text, color, now=True)
     screen.set_line(3, 'baseline...', now=True)
     screen.set_line(4, 'D1 = download', now=True)
 
@@ -155,7 +168,7 @@ def main_loop(level=INFO, sd_ok=True):
                     flush()
                     if led is not None:
                         led.value = False
-                    DownloadMode.run(screen, button)
+                    DownloadMode.run(screen, button, clock_line())
                     # Restart timing so the pause is not counted as a gap.
                     t = now_ms()
                     next_sample_ms = t
