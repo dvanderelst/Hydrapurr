@@ -4,6 +4,7 @@
 # Names match BoardCode/lib/Settings.py wherever the meaning is the same, so
 # the copied modules (BoutDetection, MyStore, MySystemLog) work unchanged.
 
+import os
 import board
 
 # --- Files on the SD card -----------------------------------------------------
@@ -48,7 +49,7 @@ water_smooth_samples = 10      # moving average over this many samples (~200 ms)
 
 # --- Raw data recording --------------------------------------------------------
 # Every sample goes to /sd/raw/<date>/<hour>.csv (see RawRecorder.py).
-# ~30 bytes per row: at 100 rows/s that is ~260 MB per day.
+# ~44 bytes per row: at 100 rows/s that is ~380 MB per day.
 raw_log_enabled = True
 raw_log_interval_ms = 10       # one row per 10 ms = 100 rows/s
 raw_log_sync_ms = 5000         # flush to the card this often; a power cut
@@ -61,6 +62,18 @@ download_ap_password = "hydrapurr"     # WPA2: at least 8 characters
 download_timeout_ms = 15 * 60 * 1000   # back to recording after 15 min idle
 download_tx_power_dbm = 8.5            # radio power in download mode (max ~20);
                                        # lower = smaller current spikes
+
+# --- Home WiFi (station mode, for the planned automatic upload) ----------------
+# The credentials are NOT in this file: the repo is public. They go in
+# settings.toml in the board's root (CIRCUITPY drive) and only there: no copy
+# on the computer, sync2board never touches it. Edit it on the board, with
+# these two lines:
+#   WIFI_SSID = "network name"
+#   WIFI_PASSWORD = "password"
+# Don't use CircuitPython's own CIRCUITPY_WIFI_* names there: with those the
+# board joins WiFi by itself at every boot (see HANDOFF.md). None = not set.
+wifi_ssid = os.getenv("WIFI_SSID")
+wifi_password = os.getenv("WIFI_PASSWORD")
 
 # =============================================================================
 # Not used by the recording version (MainLoop.py). Kept for when bout

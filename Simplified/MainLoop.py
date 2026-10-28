@@ -36,7 +36,7 @@ GREEN, YELLOW, RED, WHITE = 0x00FF00, 0xFFFF00, 0xFF4040, 0xFFFFFF
 
 
 def now_ms():
-    return int(time.monotonic() * 1000)
+    return time.monotonic_ns() // 1_000_000
 
 
 def log_settings():
@@ -47,6 +47,8 @@ def log_settings():
         value = getattr(Settings, name)
         if callable(value) or type(value).__name__ == 'module':
             continue
+        if name == 'wifi_password' and value:
+            value = '<set>'      # from settings.toml; keep it out of the log
         info(f'[Settings] {name} = {value}')
     info('[Settings] --- end snapshot ---')
 

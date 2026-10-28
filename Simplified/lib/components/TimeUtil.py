@@ -36,7 +36,7 @@ def init_timebase():
 
 def monotonic_ms():
     try:
-        return int(_time.monotonic() * 1000)
+        return _time.monotonic_ns() // 1_000_000
     except Exception:
         return 0
 

@@ -25,7 +25,7 @@ def now():
     """Placeholder for hardware-specific time function"""
     try:
         import time
-        return int(time.monotonic() * 1000)
+        return time.monotonic_ns() // 1_000_000
     except:
         return 0
 

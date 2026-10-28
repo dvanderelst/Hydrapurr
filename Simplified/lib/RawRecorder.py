@@ -2,13 +2,17 @@
 RawRecorder.py - continuous raw sensor stream to the SD card
 
 One row per sample (MainLoop samples every raw_log_interval_ms):
-    mono_ms, touch_raw, touch_baseline, contact, water_v
+    epoch_ms, mono_ms, touch_raw, touch_baseline, contact, water_v
+
+epoch_ms is wall-clock time (ms since 1970-01-01, RTC local time), computed
+as RTC-at-boot + time since boot. It holds no more information than mono_ms
+plus the anchor below, but it stays correct when a restart appends to the
+same file and mono_ms starts again from ~0.
 
 Files are split per hour of wall-clock time, one folder per day:
     /sd/raw/2026-10-20/13.csv
 Each file (and each re-open after a restart) gets a comment line holding the
-wall-clock time that belongs to a given mono_ms, so every row can be placed
-in real time:
+wall-clock time that belongs to a given mono_ms (human-readable check):
     # start 2026-10-20 13:00:00.004 mono_ms 3600123
 
 Writing, chosen from timings measured on this board and card:
@@ -20,7 +24,7 @@ Writing, chosen from timings measured on this board and card:
 - Writing 100-row batches instead blocked for 25-80 ms at a time, long enough
   to swallow a whole lick, so batching was dropped.
 - The file stays open: re-opening a file to append gets slower as it grows
-  (FAT walks the cluster chain). Hourly files stay ~11 MB at 100 rows/s, far
+  (FAT walks the cluster chain). Hourly files stay ~16 MB at 100 rows/s, far
   below FAT32's 4 GB limit.
 """
 
@@ -31,7 +35,7 @@ from components import MySD
 from components import TimeUtil
 from components.MySystemLog import info, warn
 
-HEADER = "mono_ms,touch_raw,touch_baseline,contact,water_v"
+HEADER = "epoch_ms,mono_ms,touch_raw,touch_baseline,contact,water_v"
 ROOT = "/sd/raw"
 HOUR_CHECK_MS = 1000           # how often to check for a new wall-clock hour
 
@@ -50,6 +54,13 @@ def wall_seconds(mono_ms):
     return TimeUtil.boot_epoch + (mono_ms - TimeUtil.boot_mono_ms) // 1000
 
 
+def epoch_offset_ms():
+    """Add to a monotonic ms value to get wall-clock epoch ms."""
+    if not TimeUtil.timebase_ready:
+        TimeUtil.init_timebase()
+    return TimeUtil.boot_epoch * 1000 - TimeUtil.boot_mono_ms
+
+
 class RawRecorder:
     def __init__(self):
         self.enabled = Settings.raw_log_enabled and MySD.is_mounted()
@@ -57,6 +68,7 @@ class RawRecorder:
         self.file = None
         self.path = None
         self.hour_key = None
+        self.epoch_offset_ms = None
         self.rows_written = 0      # since boot
         self.errors = 0
         self.slowest_ms = 0        # slowest write/flush/rollover since last read
@@ -75,6 +87,7 @@ class RawRecorder:
         if key == self.hour_key and self.file is not None:
             return
         self.close()
+        self.epoch_offset_ms = epoch_offset_ms()
         day_dir = f"{ROOT}/{t.tm_year:04d}-{t.tm_mon:02d}-{t.tm_mday:02d}"
         _mkdir(day_dir)
         self.path = f"{day_dir}/{t.tm_hour:02d}.csv"
@@ -100,7 +113,7 @@ class RawRecorder:
             if self.file is None or t_ms >= self._next_hour_check_ms:
                 self._next_hour_check_ms = t_ms + HOUR_CHECK_MS
                 self._open_for(t_ms)
-            self.file.write(f"{t_ms},{touch.raw},{touch.baseline:.0f},"
+            self.file.write(f"{t_ms + self.epoch_offset_ms},{t_ms},{touch.raw},{touch.baseline:.0f},"
                             f"{touch.contact},{water_v:.4f}\n")
             self.rows_written += 1
             if t_ms >= self._next_sync_ms:

@@ -29,15 +29,16 @@ prototype". In short:
 - On the ESP32-S3, the old analog pins (A0/A1) sit on ADC2, which is
   unreliable once WiFi is on. The touch peripheral doesn't have that problem.
 
-## Current state (2026-10-20)
+## Current state (2026-10-28)
 
 **Status:** the firmware is now a **recorder**: it samples the touch wire and
 the float sensor 100×/s and writes everything to the SD card; licks and
 water-level changes are found offline. Bout detection and feeding are out of
 the main loop for now (code kept in `lib/`). Runs on the board (CircuitPython
 **10.3.1**); touch on D12 and the Sharp on A5 read real values. **Recording to the
-SD card is verified** (2026-10-20): ~96 rows/s, longest gap between samples
-~31 ms, slowest single write ~15 ms. Both sensors respond (after a wiring fix, see log); not yet seen with a cat
+SD card is verified** (2026-10-20, re-checked 2026-10-28): ~83-85 rows/s,
+longest gap ~160 ms (both from the once-a-second screen redraw, which is
+skipped during contact), slowest single write ~15 ms. Both sensors respond (after a wiring fix, see log); not yet seen with a cat
 lick.
 
 Firmware (runs at boot via `code.py`):
@@ -45,12 +46,13 @@ Firmware (runs at boot via `code.py`):
 | File | What it does |
 | --- | --- |
 | `code.py` | Mounts SD, runs `MainLoop.main_loop()`. Test scripts are run by hand from Thonny. |
-| `MainLoop.py` | Recording version. The loop sits in `try/finally`; `shutdown()` closes the data file and `system.log`, unmounts SD and releases the display however the loop ends (exception, Ctrl-C, auto-reload on file save). Every 10 ms (fixed grid): read touch (→ live contact 0/1 against the tracking baseline) and one Sharp reading, hand both to `RawRecorder`. Full-screen TFT redraw once a second, but only after 3 s without touch contact (a redraw pauses sampling ~150 ms, so the screen freezes while the cat drinks). Status line in `system.log` every minute: rows, errors, `rate` (samples/s), `max_gap` (longest time between samples), `slowest_write`, file, touch, contacts, water. |
-| `lib/Settings.py` | All parameters, BoardCode names where the meaning is the same. Recording: `raw_log_interval_ms = 10`, `raw_log_sync_ms = 5000` (flush interval = max data lost on power cut). Touch thresholds are placeholders (+10 % on, +5 % off); they only affect the live `contact` column and the display. Bout/deployment settings are kept in a marked "not used" block. |
+| `MainLoop.py` | Recording version. The loop sits in `try/finally`; `shutdown()` closes the data file and `system.log`, unmounts SD and releases the display however the loop ends (exception, Ctrl-C, auto-reload on file save). Every 10 ms (fixed grid): read touch (→ live contact 0/1 against the tracking baseline) and one Sharp reading, hand both to `RawRecorder`. Full-screen TFT redraw once a second, but only after 3 s without touch contact (a redraw pauses sampling ~150 ms, so the screen freezes while the cat drinks). Contact LED on D9. Settings snapshot in `system.log` at startup (`wifi_password` shown as `<set>`). Status line in `system.log` every minute: rows, errors, `rate` (samples/s), `max_gap` (longest time between samples), `slowest_write`, file, touch, contacts, water. |
+| `Settings.py` | In the root (moved from `lib/` 2026-10-28), the one file to edit. All parameters, BoardCode names where the meaning is the same. Recording: `raw_log_interval_ms = 10`, `raw_log_sync_ms = 5000` (flush interval = max data lost on power cut). Touch thresholds are placeholders (+10 % on, +5 % off); they only affect the live `contact` column and the display. Bout/deployment settings are kept in a marked "not used" block. Home WiFi credentials are the exception: `Settings.py` reads them with `os.getenv` from `settings.toml` (see below). |
+| `settings.toml` | Home WiFi credentials only (`WIFI_SSID`, `WIFI_PASSWORD`). Lives **only on the board** (CIRCUITPY root), edited there: no copy on the computer or in git (repo is public). `sync2board` has `--filter='P settings.toml'`, so it never deletes it. If CIRCUITPY is ever erased, re-create it (keys listed in `Settings.py`). CircuitPython only reads this exact name. |
 | `lib/TouchSensor.py` | `touchio` on D12 → 0/1. Baseline averaged at boot, then tracked (EMA, τ 30 s) only while untouched; hysteresis; contact > 5 s re-takes the baseline; big drops are followed at once. |
 | `lib/WaterSensor.py` | Sharp on A5 in volts (higher = more water). The recorder uses single reads (`read_volts`); the smoothed `update()` is for the bout version. |
 | `lib/DownloadMode.py` | **D1** button → recording pauses, the board starts its own WiFi access point (`HydraPurr` / `hydrapurr`, `Settings.download_ap_*`) and serves the SD card at `http://192.168.4.1/`: a file list with download links (`/raw/<date>/<hour>.csv`, top-level files). Whole card: `wget -r -np -nH http://192.168.4.1/`. Files are streamed in 4 KB chunks by our own route (`send_file`); the library's static file serving is off. TX power lowered to 8.5 dBm. D1 again, or 15 min without requests, → access point off, recording resumes. The screen shows network, password, address and the RTC time read on entry (also shown at startup in place of "RTC ok"; red `RTC: set time!` when `lost_power` is set). Uses `adafruit_httpserver` 4.8.2. |
-| `lib/RawRecorder.py` | Writes `/sd/raw/<YYYY-MM-DD>/<HH>.csv` (new file each wall-clock hour), columns `mono_ms, touch_raw, touch_baseline, contact, water_v`. Each file (and each re-open) gets a line `# start <wall time> mono_ms <n>` to anchor the rows in real time. File stays open; each row is written as it is taken, `flush()` every 5 s. ~30 B/row → ~11 MB/hour, ~260 MB/day. Hourly files avoid FAT32's 4 GB limit and the slowdown of re-opening big files to append. |
+| `lib/RawRecorder.py` | Writes `/sd/raw/<YYYY-MM-DD>/<HH>.csv` (new file each wall-clock hour), columns `epoch_ms, mono_ms, touch_raw, touch_baseline, contact, water_v`. `epoch_ms` = wall-clock ms (RTC at boot + time since boot), so rows stay correctly timed when a restart appends to the same file and `mono_ms` restarts near 0. Each file (and each re-open) also gets a line `# start <wall time> mono_ms <n>` as a human-readable anchor. File stays open; each row is written as it is taken, `flush()` every 5 s. ~44 B/row → ~16 MB/hour, ~380 MB/day. Hourly files avoid FAT32's 4 GB limit and the slowdown of re-opening big files to append. |
 | `lib/StatusDisplay.py` | 5 text lines on the TFT: `REC <rows>` (or NOT RECORDING in red), contact count, water V, touch raw (green on contact), baseline. Manual refresh; `refresh_all()` redraws the **whole screen** (root-group swap) when something changed. Lines padded to 19 characters. Status bar off; `release()` restores the console on shutdown. Uses `adafruit_display_text.label`. |
 | `lib/LickSensor.py`, `lib/BoutDetection.py` | Not used by the recorder; kept for the bout-detection version. `BoutDetection.py` is BoardCode's, unchanged; `LickSensor.py` is BoardCode's glue minus the ADC. |
 | `lib/components/` | Copied from BoardCode: `MyStore`, `MySystemLog`, `TimeUtil`, `FileUtil`, `MySD`, `MyRTC`, `MyI2C`. Changes vs BoardCode: `TimeUtil` falls back to 2000-01-01 instead of epoch 0 (ESP32 can't format pre-2000 dates); `MySD` releases the card on a failed mount; `MyRTC` imports `adafruit_pcf8523.pcf8523`. `__init__.py` is a minimal new one. |
@@ -66,7 +68,9 @@ Tools and tests (run by hand):
 | `test.py` | Single touch pin (D12) driving the red LED. Header comment is stale (describes the non-Reverse board). |
 | `sd/placeholder.txt` | Keeps the `/sd` mount point on CIRCUITPY. |
 
-`./sync2board Simplified` pushes this folder (mirrors with `--delete`).
+`./sync2board Simplified` pushes this folder (mirrors with `--delete`). It
+never touches the board's `settings.toml`, but it does overwrite the board's
+`SetTime.py` (which usually holds edited date/time values).
 To see output: Thonny, or `python3 -m serial.tools.miniterm /dev/ttyACM0
 115200` (Ctrl-D reruns `code.py`, Ctrl-] quits). The TFT shows the status
 screen once the firmware runs.
@@ -75,8 +79,9 @@ Measured on the board (2026-10-20): touch baseline on D12 with the wire in
 water ≈ 19 500; one `raw_value` read ≈ 0.5 ms. Sharp ≈ 0.93 V at rest, noise
 about ±20 mV; one ADC read ≈ 1.3 ms.
 
-**Open issues:** RTC reports `lost_power` again since the reflash although
-its time is right; run `SetTime.py`. SD not tested with this firmware.
+**Open issues:** check whether the RTC still reports `lost_power` (startup
+screen shows red `RTC: set time!`); if so, run `SetTime.py`. `settings.toml`
+on the board still holds placeholder WiFi values until the user fills them in.
 
 ### Recording timing (measured 2026-10-20, this board + card)
 
@@ -84,12 +89,16 @@ its time is right; run `SetTime.py`. SD not tested with this firmware.
 | --- | --- | --- |
 | 100-row batch + flush every 1 s, all 5 TFT lines redrawn 4×/s | 88/s | 128 ms |
 | same, TFT updates off | 99/s | 79 ms (the batch write) |
-| **row-by-row writes, flush every 5 s, one TFT line per 200 ms (current)** | **96/s** | **31 ms** |
+| row-by-row writes, flush every 5 s, one TFT line per 200 ms | 96/s | 31 ms |
+| **same, full-screen redraw once a second, skipped during contact (current, 2026-10-28)** | **83-85/s** | **~160 ms** |
 
 Measured in isolation: one row `write()` median 0.9 ms, p99 6.7 ms, max
 10 ms; 100-row write 9–23 ms; `flush()` 8–14 ms. The card can still add an
 occasional slow write (internal housekeeping); `max_gap` in the status line
-shows it. Every row carries its own `mono_ms`, so gaps are visible offline.
+shows it. Every row carries its own `mono_ms` and `epoch_ms`, so gaps are
+visible offline. Per sample: touch ~0.5 ms + Sharp + row write ~0.9 ms, so
+the loop is idle ~8 of every 10 ms; 10 ms is a chosen setting
+(`raw_log_interval_ms`), not a hardware limit.
 
 Offline: the first row(s) after each `# start` line can be off (water read
 0.49 V instead of ~0.9 V right after boot); skip them.
@@ -105,8 +114,10 @@ Offline: the first row(s) after each `# start` line can be off (water read
   next soft reboot hang USB. The code now only starts/stops the AP.
 - **No `settings.toml` with `CIRCUITPY_WIFI_*`** on this board: CircuitPython
   then tries to join that network at boot (the first attempt used a
-  non-existent network and led to resets). `.gitignore` covers
-  `Simplified/settings.toml*`.
+  non-existent network and led to resets). Our own keys are named
+  `WIFI_*`, which CircuitPython ignores at boot. `.gitignore`
+  covers `Simplified/settings.toml*`. (The old `settings.toml.off` with the
+  web-workflow keys was removed 2026-10-28.)
 - A large download through the library's static file serving at full radio
   power hard-faulted the board (safe mode, `HARD_FAULT`). With 8.5 dBm both
   that path and our own chunked route worked; we keep our own route.
@@ -143,6 +154,9 @@ Offline: the first row(s) after each `# start` line can be off (water read
   own battery fuel gauge).
 - `touchio.TouchIn(pin).raw_value` goes **up** when touched;
   `.threshold` sets the cut-off that `.value` uses.
+- `time.monotonic()` is a float and loses precision with uptime (coarser
+  than 1 ms after ~1 h, tens of ms after a day). All `now_ms()` helpers use
+  `time.monotonic_ns() // 1_000_000` instead.
 
 ## Proposed pin map (2026-10-20, not yet confirmed on the board)
 
@@ -245,6 +259,8 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
 2. Is this meant to become the main firmware eventually, or stay a separate
    lightweight variant next to `BoardCode/`?
 3. Which relay? (Touch pin = D12 and Sharp = GP2Y0A51SK0F are decided.)
+4. Upload destination for the automatic upload (Next steps 5): own HTTP
+   endpoint, MQTT broker, or a hosted service?
 
 ## Next steps (proposed)
 
@@ -257,8 +273,48 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
    baseline tracking holds over hours.
 3. Characterise the float: Sharp voltage over the full water range and while
    a cat drinks; set `min_water_extent_per_bout`.
-4. Fit the relay (`feeder_pin`), then RFID if wanted.
-5. Merge branch `simplified-recorder` into master when happy.
+4. Events file next to the raw stream (user's idea, 2026-10-28): one row
+   per significant event only — lick, water-level change, feeder deployment,
+   settings snapshot at boot / settings change, download mode on/off, boot /
+   shutdown. Written far less often than the raw file; it is the file we
+   actually analyse. Then raw recording becomes a debug/calibration option
+   (`raw_log_enabled` already exists and works). Costs measured so far: a raw
+   row write takes ~1 ms of each 10 ms period (~10 %), the 5-s flush ~0.2 %;
+   the once-a-second screen redraw costs more (~150 ms/s, ~15 %). So turning
+   raw off mainly saves card space (~380 MB/day) and SD writes, not much loop
+   time. Keep raw on until step 2 has validated the lick thresholds: the
+   events file is only as good as the live lick detection. Reuse BoardCode's
+   `licks.dat` / `MyStore` style (`epoch_ms`, `mono_ms`, event, fields).
+5. Automatic upload instead of the D1 download (user's idea, 2026-10-28):
+   the board joins the home WiFi (station mode) and uploads to a destination
+   still to be decided (small HTTP endpoint or MQTT), so data reaches the
+   cloud for monitoring without anyone pressing D1.
+   - Upload the **events file** only: maybe a few hundred KB/day, so well
+     under a second per upload. Raw is ~380 MB/day: at a guessed ~200 KB/s
+     that is ~80 s per hourly file, ~30 min/day. Raw stays on the card,
+     fetched with D1 download mode when needed for calibration/debugging.
+   - No recording gap needed: send 1-4 KB per loop pass in the ~8 ms idle
+     time of each 10 ms period (as `DownloadMode` already sends 4 KB pieces).
+     Only joining the network blocks (a few seconds), once per connection.
+   - While connected, sync the clock from NTP: fixes the frozen-at-boot wall
+     time / drift item in `todo.md` and the RTC `lost_power` problem.
+   - Could then drop the RTC entirely (SD-only logger board instead of the
+     Adalogger). Catch: after a power cut without WiFi the time is unknown
+     until the first sync. Log `mono_ms` plus a boot id on every row and
+     write a time anchor once synced, so `epoch_ms` can be filled in
+     afterwards. Decide after the upload has run reliably for a while.
+   - Web search (2026-10-28) found no CircuitPython ESP32-S3 benchmark.
+     Nearest figures: MicroPython on an S3 ~8.7 Mbit/s (~1 MB/s) TCP upload;
+     ESP-IDF forum reports ~800 kB/s; CircuitPython 8 on a plain ESP32
+     Feather ~7 kB/s. Note raw data averages only ~4.4 kB/s (380 MB/day), so
+     uploading raw in the background is possible if the sustained chunked
+     rate stays clearly above that.
+   - To measure first: real upload speed (TX power is lowered to 8.5 dBm);
+     the longest single socket send (must stay well under 10 ms or sampling
+     gaps appear); whether `touch_raw`/baseline shift while the radio
+     transmits; whether USB drops out in station mode as it does with the
+     access point. The Sharp on A5 (GPIO8, ADC1) is WiFi-safe.
+6. Fit the relay (`feeder_pin`), then RFID if wanted.
 
 ## Log
 
@@ -360,3 +416,19 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
   first contact after a quiet spell can fall in a ~150 ms screen redraw (the
   data has the same gap). 0.5 s flash at boot (before the touch baseline);
   off in download mode. Confirmed working by the user.
+- **2026-10-28** — Raw rows now start with `epoch_ms` (wall-clock ms, RTC at
+  boot + time since boot), so restarts that append to the same hourly file
+  (mono_ms back to ~0) need no segment parsing. Checked on the card: matches
+  the `# start` anchor to the ms. All `now_ms()` helpers switched from float
+  `time.monotonic()` to `monotonic_ns()` (float loses ms precision after
+  ~1 h). Rate unchanged (~83-85 rows/s with the once-a-second redraw).
+  Lesson: never `readlines()` an hourly raw file on the board — out of
+  memory, hard fault, safe mode; iterate line by line. Planned: events file
+  (Next steps 4), then automatic WiFi upload of it, NTP clock sync, maybe no
+  RTC (Next steps 5).
+- **2026-10-28** — `Settings.py` moved from `lib/` to the root (the file you
+  edit sits next to `code.py`; imports unchanged). Home WiFi credentials go in
+  `settings.toml` (board only, never synced) as `WIFI_*`, read by
+  `Settings.py`; the comment there says where. Removed `settings.toml.off`. Next: an upload test script
+  showing signal strength, kB/s and the longest send on the screen, to carry
+  around the house (Next steps 5).

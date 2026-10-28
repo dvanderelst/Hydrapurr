@@ -31,7 +31,7 @@ _ap_ip = ""                    # access point address, for the index page
 
 
 def now_ms():
-    return int(time.monotonic() * 1000)
+    return time.monotonic_ns() // 1_000_000
 
 
 class Button:

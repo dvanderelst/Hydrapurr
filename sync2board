@@ -121,6 +121,9 @@ fi
 # real changes. Forcing every file is the nuclear option but the
 # project is small enough that it's instant in practice.
 RSYNC_ARGS=(-av --ignore-times --delete
+    --filter='P settings.toml'      # WiFi credentials live only on the board;
+                                    # never delete them (a local copy would
+                                    # still be copied over, so keep none)
     --exclude='__pycache__/'
     --exclude='*.pyc'
     --exclude='.sync_trash/'
