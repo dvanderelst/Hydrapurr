@@ -55,6 +55,13 @@ raw_log_interval_ms = 10       # one row per 10 ms = 100 rows/s
 raw_log_sync_ms = 5000         # flush to the card this often; a power cut
                                # loses at most this much data
 
+# --- Event log -------------------------------------------------------------------
+# One row per event to /sd/events/<date>.csv (see EventLog.py): boot,
+# settings, every touch contact, baseline resets, water summaries, shutdown.
+events_enabled = True
+events_sync_ms = 5000          # flush to the card this often
+water_event_interval_ms = 10000  # one water row (mean/min/max) per interval
+
 # --- Download mode (D1 button, see DownloadMode.py) ------------------------------
 # The board's own WiFi network, only on while in download mode.
 download_ap_ssid = "HydraPurr"

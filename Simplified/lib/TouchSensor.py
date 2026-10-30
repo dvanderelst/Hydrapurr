@@ -36,6 +36,8 @@ class TouchSensor:
         self.raw = 0
         self.contact = 0
         self.contact_since = None
+        self.rebaseline = None  # (reason, raw, old, new) when the last update()
+                                # reset the baseline at once, else None
         self._last_ms = None
         self.baseline = self.measure_baseline(Settings.touch_baseline_samples)
         info(f'[Touch] baseline {self.baseline:.0f} at boot')
@@ -61,6 +63,7 @@ class TouchSensor:
         t_ms = now_ms() if t_ms is None else t_ms
         raw = self.touch.raw_value
         self.raw = raw
+        self.rebaseline = None
 
         if self.contact:
             if raw < self.off_level():
@@ -69,6 +72,7 @@ class TouchSensor:
             elif t_ms - self.contact_since > self.stuck_ms:
                 info(f'[Touch] contact held > {self.stuck_ms} ms '
                      f'(raw {raw}, baseline {self.baseline:.0f}): re-taking baseline')
+                self.rebaseline = ('stuck', raw, self.baseline, raw)
                 self.baseline = raw
                 self.contact = 0
                 self.contact_since = None
@@ -79,6 +83,7 @@ class TouchSensor:
             elif raw < self.baseline * (1 - self.on_fraction):
                 # Big drop (e.g. after a re-baseline during a long contact):
                 # follow it at once instead of over tau_ms.
+                self.rebaseline = ('drop', raw, self.baseline, raw)
                 self.baseline = raw
             elif self._last_ms is not None:
                 # Track slow drift only while untouched.

@@ -53,6 +53,7 @@ Firmware (runs at boot via `code.py`):
 | `lib/WaterSensor.py` | Sharp on A5 in volts (higher = more water). The recorder uses single reads (`read_volts`); the smoothed `update()` is for the bout version. |
 | `lib/DownloadMode.py` | **D1** button → recording pauses, the board starts its own WiFi access point (`HydraPurr` / `hydrapurr`, `Settings.download_ap_*`) and serves the SD card at `http://192.168.4.1/`: a file list with download links (`/raw/<date>/<hour>.csv`, top-level files). Whole card: `wget -r -np -nH http://192.168.4.1/`. Files are streamed in 4 KB chunks by our own route (`send_file`); the library's static file serving is off. TX power lowered to 8.5 dBm. D1 again, or 15 min without requests, → access point off, recording resumes. The screen shows network, password, address and the RTC time read on entry (also shown at startup in place of "RTC ok"; red `RTC: set time!` when `lost_power` is set). Uses `adafruit_httpserver` 4.8.2. |
 | `lib/RawRecorder.py` | Writes `/sd/raw/<YYYY-MM-DD>/<HH>.csv` (new file each wall-clock hour), columns `epoch_ms, mono_ms, touch_raw, touch_baseline, contact, water_v`. `epoch_ms` = wall-clock ms (RTC at boot + time since boot), so rows stay correctly timed when a restart appends to the same file and `mono_ms` restarts near 0. Each file (and each re-open) also gets a line `# start <wall time> mono_ms <n>` as a human-readable anchor. File stays open; each row is written as it is taken, `flush()` every 5 s. ~44 B/row → ~16 MB/hour, ~380 MB/day. Hourly files avoid FAT32's 4 GB limit and the slowdown of re-opening big files to append. |
+| `lib/EventLog.py` | (2026-10-30) One row per event to `/sd/events/<YYYY-MM-DD>.csv`, columns `epoch_ms, mono_ms, event, f1..f4`. Events: `boot` (reset reason, safe-mode reason, rtc_ok, touch baseline), `settings` (one row per setting), `contact` (written when a contact ends: duration_ms, peak raw, baseline and water V from before it started; every contact, lick filtering is offline), `rebaseline` (`stuck`/`drop`, raw, old, new), `water` (mean/min/max V and sample count every `water_event_interval_ms` = 10 s), `shutdown` (reason, e.g. `KeyboardInterrupt()`). Field table in the module docstring. Rows written at once, flushed every `events_sync_ms` (5 s; a flush is ~10 ms, too long after every lick). Closed during download mode; a contact or water summary spanning the pause is dropped. Decided with the user: only log when something happens, so no status/heartbeat rows and no download on/off rows (D1 download will go away with the upload). |
 | `lib/StatusDisplay.py` | 5 text lines on the TFT: `REC <rows>` (or NOT RECORDING in red), contact count, water V, touch raw (green on contact), baseline. Manual refresh; `refresh_all()` redraws the **whole screen** (root-group swap) when something changed. Lines padded to 19 characters. Status bar off; `release()` restores the console on shutdown. Uses `adafruit_display_text.label`. |
 | `lib/LickSensor.py`, `lib/BoutDetection.py` | Not used by the recorder; kept for the bout-detection version. `BoutDetection.py` is BoardCode's, unchanged; `LickSensor.py` is BoardCode's glue minus the ADC. |
 | `lib/components/` | Copied from BoardCode: `MyStore`, `MySystemLog`, `TimeUtil`, `FileUtil`, `MySD`, `MyRTC`, `MyI2C`. Changes vs BoardCode: `TimeUtil` falls back to 2000-01-01 instead of epoch 0 (ESP32 can't format pre-2000 dates); `MySD` releases the card on a failed mount; `MyRTC` imports `adafruit_pcf8523.pcf8523`. `__init__.py` is a minimal new one. |
@@ -273,7 +274,10 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
    baseline tracking holds over hours.
 3. Characterise the float: Sharp voltage over the full water range and while
    a cat drinks; set `min_water_extent_per_bout`.
-4. Events file next to the raw stream (user's idea, 2026-10-28): one row
+4. **Done 2026-10-30 (`lib/EventLog.py`), not yet run on the board.**
+   Check on the board: rows appear, `contact` durations match the raw
+   stream, no extra sampling gaps. Original plan: events file next to the
+   raw stream (user's idea, 2026-10-28): one row
    per significant event only — lick, water-level change, feeder deployment,
    settings snapshot at boot / settings change, download mode on/off, boot /
    shutdown. Written far less often than the raw file; it is the file we
@@ -432,3 +436,17 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
   `Settings.py`; the comment there says where. Removed `settings.toml.off`. Next: an upload test script
   showing signal strength, kB/s and the longest send on the screen, to carry
   around the house (Next steps 5).
+- **2026-10-30** — Event log (`lib/EventLog.py`, Next steps 4). Event set
+  agreed with the user: boot, settings, contact, rebaseline, water (10-s
+  summary), shutdown. Dropped: periodic status rows ("only log when there is
+  something to log") and download on/off (D1 download is to be replaced by
+  the upload). `TouchSensor.rebaseline` reports baseline resets to the loop.
+  Formatting tested on the desktop with stub modules; not yet run on the
+  board.
+- **2026-10-30** — Synced to the board and ran it: `boot`, `settings`,
+  `water` and `shutdown` rows written as intended (contact/rebaseline not yet
+  exercised, nobody touched the wire). Water rows read mean ~0.60 V with
+  min/max 0.57-0.85 V per 10 s, far noisier than the ±20 mV in the notes.
+  Likely cause (user): no water in the device, so the float lies tilted at
+  the bottom (further away, slanted reflecting surface). Re-check with water
+  before reading anything into the Sharp noise.

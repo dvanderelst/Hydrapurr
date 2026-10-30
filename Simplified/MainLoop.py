@@ -5,9 +5,10 @@ For now the device only records: the touch wire and the float sensor are
 sampled every raw_log_interval_ms and written to the SD card as one raw
 stream (RawRecorder). Licks and water-level changes are found offline.
 
-TouchSensor still computes a live contact state (0/1) against its tracking
-baseline. It is stored in the stream and shown on the TFT as a quick check,
-but nothing depends on it.
+TouchSensor computes a live contact state (0/1) against its tracking
+baseline. It is stored in the raw stream, shown on the TFT, and each contact
+is written to the event log (EventLog: boot, settings, contacts, baseline
+resets, water summaries, shutdown).
 
 Press D1 to pause recording and serve the SD card over the board's own WiFi
 network (DownloadMode.py); press D1 again to resume.
@@ -29,6 +30,7 @@ from components.MySystemLog import INFO, info, warn, error
 from TouchSensor import TouchSensor
 from WaterSensor import WaterSensor
 from RawRecorder import RawRecorder
+from EventLog import EventLog
 from StatusDisplay import StatusDisplay
 import DownloadMode
 
@@ -39,8 +41,8 @@ def now_ms():
     return time.monotonic_ns() // 1_000_000
 
 
-def log_settings():
-    info('[Settings] --- snapshot at startup ---')
+def settings_items():
+    """(name, value) for every setting, password masked."""
     for name in sorted(dir(Settings)):
         if name.startswith('_'):
             continue
@@ -49,21 +51,29 @@ def log_settings():
             continue
         if name == 'wifi_password' and value:
             value = '<set>'      # from settings.toml; keep it out of the log
+        yield name, value
+
+
+def log_settings():
+    info('[Settings] --- snapshot at startup ---')
+    for name, value in settings_items():
         info(f'[Settings] {name} = {value}')
     info('[Settings] --- end snapshot ---')
 
 
-def log_reset_reason():
+def reset_reasons():
     """Why the board last restarted: e.g. BROWNOUT (power dip), PANIC
-    (crash), POWER_ON, RESET_PIN. Read it in system.log after an unexpected
-    restart."""
+    (crash), POWER_ON, RESET_PIN. Logged to system.log and the event log."""
     try:
         import microcontroller
         import supervisor
-        info(f'[Main Loop] reset reason: {microcontroller.cpu.reset_reason}, '
-             f'safe mode reason: {supervisor.runtime.safe_mode_reason}')
+        reasons = (str(microcontroller.cpu.reset_reason),
+                   str(supervisor.runtime.safe_mode_reason))
     except Exception as e:
         warn(f'[Main Loop] could not read reset reason: {e!r}')
+        return '?', '?'
+    info(f'[Main Loop] reset reason: {reasons[0]}, safe mode reason: {reasons[1]}')
+    return reasons
 
 
 def check_rtc():
@@ -94,8 +104,13 @@ def clock_line():
     return 'RTC: set time!', RED
 
 
-def shutdown(recorder, screen):
-    """Close the data file, unmount the SD card, give the display back."""
+def shutdown(recorder, events, screen, reason):
+    """Close the data files, unmount the SD card, give the display back."""
+    try:
+        events.log(now_ms(), 'shutdown', reason)
+        events.close()
+    except Exception:
+        pass
     try:
         recorder.close()
         info('[Main Loop] shutting down')
@@ -116,14 +131,14 @@ def main_loop(level=INFO, sd_ok=True):
     set_system_log_level(level)
     setup_system_log()
     info('[Main Loop] Simplified HydraPurr start (recording version)')
-    log_reset_reason()
+    reasons = reset_reasons()
     log_settings()
 
     screen = StatusDisplay()
     screen.manual()
     screen.set_line(0, 'HydraPurr', now=True)
     screen.set_line(1, 'SD ok' if sd_ok else 'NO SD CARD', GREEN if sd_ok else RED, now=True)
-    check_rtc()
+    rtc_ok = check_rtc()
     text, color = clock_line()
     screen.set_line(2, text, color, now=True)
     screen.set_line(3, 'baseline...', now=True)
@@ -139,6 +154,12 @@ def main_loop(level=INFO, sd_ok=True):
     touch = TouchSensor()
     water = WaterSensor()
     recorder = RawRecorder()
+    events = EventLog()
+    t = now_ms()
+    events.log(t, 'boot', reasons[0], reasons[1], int(rtc_ok), round(touch.baseline))
+    for name, value in settings_items():
+        events.log(t, 'settings', name, str(value))
+    events.flush()
     if touch.baseline <= 0:
         screen.set_line(3, 'TOUCH BROKEN', RED, now=True)
         screen.set_line(4, 'need CP 10.3.1+', RED, now=True)
@@ -158,6 +179,14 @@ def main_loop(level=INFO, sd_ok=True):
     samples = 0                  # samples taken since the last status line
     max_gap_ms = 0               # longest time between two samples
     last_sample_ms = None
+    contact_start_ms = None      # current contact, for its event row
+    contact_peak = 0
+    contact_baseline = 0
+    contact_water_v = 0.0
+    water_sum, water_n = 0.0, 0  # water summary for the event log
+    water_min, water_max = None, None
+    next_water_event_ms = now_ms() + Settings.water_event_interval_ms
+    stop_reason = 'unknown'
 
     info('[Main Loop] Starting recording loop')
     try:
@@ -167,6 +196,7 @@ def main_loop(level=INFO, sd_ok=True):
                 if button.pressed(t):
                     info('[Main Loop] D1 pressed: download mode, recording paused')
                     recorder.close()
+                    events.close()
                     flush()
                     if led is not None:
                         led.value = False
@@ -177,6 +207,10 @@ def main_loop(level=INFO, sd_ok=True):
                     last_sample_ms = None
                     next_display_ms = 0
                     last_contact_ms = -Settings.display_quiet_ms
+                    # A contact or water summary spanning the pause is dropped.
+                    contact_start_ms = None
+                    water_sum, water_n, water_min, water_max = 0.0, 0, None, None
+                    next_water_event_ms = t + Settings.water_event_interval_ms
                     continue
                 if t >= next_sample_ms:
                     # Fixed sampling grid, so the interval doesn't drift with loop
@@ -188,18 +222,44 @@ def main_loop(level=INFO, sd_ok=True):
                         max_gap_ms = max(max_gap_ms, t - last_sample_ms)
                     last_sample_ms = t
                     samples += 1
+                    water_before = water_v
                     contact = touch.update(t)
                     water_v = water.read_volts()
                     # LED first: it should match the recorded contact column,
                     # with no SD write in between.
                     if led is not None and contact != previous_contact:
                         led.value = bool(contact)
+                    if touch.rebaseline is not None:
+                        events.log(t, 'rebaseline', touch.rebaseline[0], touch.rebaseline[1],
+                                   round(touch.rebaseline[2]), round(touch.rebaseline[3]))
                     if contact and not previous_contact:
                         contacts += 1
+                        contact_start_ms = t
+                        contact_peak = touch.raw
+                        # A stuck re-take sets the baseline to the contact
+                        # level, so use the one from before it.
+                        contact_baseline = touch.baseline
+                        contact_water_v = water_before
                     if contact:
                         last_contact_ms = t
+                        contact_peak = max(contact_peak, touch.raw)
+                    elif previous_contact and contact_start_ms is not None:
+                        events.log(t, 'contact', t - contact_start_ms, contact_peak,
+                                   round(contact_baseline), contact_water_v)
+                        contact_start_ms = None
                     previous_contact = contact
                     recorder.add(t, touch, water_v)
+
+                    water_sum += water_v
+                    water_n += 1
+                    water_min = water_v if water_min is None else min(water_min, water_v)
+                    water_max = water_v if water_max is None else max(water_max, water_v)
+                    if t >= next_water_event_ms:
+                        next_water_event_ms = t + Settings.water_event_interval_ms
+                        events.log(t, 'water', water_sum / water_n, water_min, water_max, water_n)
+                        water_sum, water_n, water_min, water_max = 0.0, 0, None, None
+
+                events.update(t)
 
                 # A full-screen redraw pauses sampling for ~150 ms, so the
                 # screen only updates when the wire has been quiet for
@@ -231,9 +291,12 @@ def main_loop(level=INFO, sd_ok=True):
                 error(f'[Main Loop] Unhandled exception: {e}')
                 traceback.print_exception(e)
                 raise
+    except BaseException as e:   # also Ctrl-C and auto-reload
+        stop_reason = repr(e)
+        raise
     finally:
         # Runs however the loop ends: exception, Ctrl-C, or CircuitPython's
         # auto-reload when a file is saved to the board. Leaving the SD file
         # open with the display in manual refresh made the following soft
         # reboot hard-fault.
-        shutdown(recorder, screen)
+        shutdown(recorder, events, screen, stop_reason)
