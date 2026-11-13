@@ -255,7 +255,7 @@ PARTS = [
     ('J2', 'Connector_Generic:Conn_01x03', 'Touch wire', FP_PH3, 142.24, 134.62,
      {'1': 'TOUCH_J', '2': None, '3': 'GND'},
      {'Note': 'Short trace from D12, no ground pour under it.'}, False),
-    ('R5', 'Device:R', '0R', FP_R, 165.1, 134.62, {'1': 'TOUCH', '2': 'TOUCH_J'},
+    ('R5', 'Device:R', '0R', 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical', 165.1, 134.62, {'1': 'TOUCH', '2': 'TOUCH_J'},
      {'Note': 'Wire link; room for a series resistor later.'}, False),
     ('J3', 'Connector_Generic:Conn_01x03', 'Sharp', FP_PH3, 203.2, 134.62,
      {'1': 'SHARP_OUT', '2': 'GND', '3': '+5V'},
@@ -300,9 +300,9 @@ PARTS = [
      {'Note': 'Close only when the module 3.3 V TX pad is wired. Never with 5 V TX.'}, False),
 
     # --- Sheet 2: contact LED, I2C, spare --------------------------------------
-    ('R13', 'Device:R', '330', FP_R, 142.24, 254, {'1': 'LED_CONTACT', '2': 'LED2_A'}, {}, False),
+    ('R13', 'Device:R', '330', 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical', 142.24, 254, {'1': 'LED_CONTACT', '2': 'LED2_A'}, {}, False),
     ('LED2', 'Device:LED', 'red', FP_LED, 167.64, 254, {'1': 'GND', '2': 'LED2_A'}, {}, False),
-    ('R14', 'Device:R', '330', FP_R, 195.58, 254, {'1': 'LED_CONTACT', '2': 'J5_LED'}, {}, False),
+    ('R14', 'Device:R', '330', 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical', 195.58, 254, {'1': 'LED_CONTACT', '2': 'J5_LED'}, {}, False),
     ('J5', 'Connector_Generic:Conn_01x03', 'Panel LED', FP_PH3, 228.6, 254,
      {'1': 'J5_LED', '2': None, '3': 'GND'}, {'Note': '1 LED+, 2 empty, 3 GND.'}, False),
     ('J6', 'Connector_Generic:Conn_01x04', 'I2C', FP_PH4, 271.78, 254,

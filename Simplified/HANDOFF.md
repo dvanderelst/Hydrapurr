@@ -419,7 +419,17 @@ side 11 holes EN..SDA, VBAT hole moved to (19.05, 17.40) for the coin cell.
 Pad numbers = Feather pin numbers. Plan: 8.5 mm female sockets on the
 carrier (1×16, 1×11, optional 1×1 VBAT), male pins in the Adalogger's
 secondary rows; keep tall parts away from the coin cell and the SD end, and
-put the SD end at the board edge so the card can be swapped. F1 uses the MF-RHT050 footprint (check
+put the SD end at the board edge so the card can be swapped.
+
+**Placement (2026-11-13):** board 80 × 60 mm, arranged by the user, fixed with
+`tools/fix_placement.py` (moves listed parts, swaps footprints keeping pad
+nets, updates the schematic Footprint field, checks courtyard overlaps,
+board edge, keep-outs). Pololu U1 **stands upright** on a right-angle header
+(keep-out ~2 mm on the Q1 side). No tall parts (TO-220, big electrolytics)
+in front of the stack's USB end: the Feather's USB-C plug sits there
+15-18 mm up. R5, R13, R14 are standing resistors (P2.54 vertical) in the
+strip below the stack: R5 right under D12, then J2. `tools/place_parts.py`
+was only the first pass (80 × 80) and is superseded. F1 uses the MF-RHT050 footprint (check
 the pitch of the fuse bought). Q2/Q3 = PN2222A (2N2222), footprint pinout E-B-C;
 a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6RL) is still in
 `fp-lib-table` but no longer used.
