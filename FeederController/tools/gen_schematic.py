@@ -202,7 +202,7 @@ FP_R = 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'
 FP_C = 'Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm'
 FP_PH3 = 'Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical'
 FP_PH4 = 'Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical'
-FP_TO92 = 'Package_TO_SOT_THT:TO-92_Inline'
+FP_TO92 = 'Package_TO_SOT_THT:TO-92_Inline_Wide'
 FP_TO220 = 'Package_TO_SOT_THT:TO-220-3_Vertical'
 FP_LED = 'LED_THT:LED_D3.0mm'
 

@@ -5,7 +5,10 @@
       "defaults": {},
       "diff_pair_dimensions": [],
       "drc_exclusions": [],
-      "rules": {},
+      "rules": {
+        "min_copper_edge_clearance": 0.3,
+        "min_resolved_spokes": 1
+      },
       "track_widths": [],
       "via_dimensions": []
     },
@@ -239,7 +242,7 @@
     "classes": [
       {
         "bus_width": 12,
-        "clearance": 0.25,
+        "clearance": 0.3,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,

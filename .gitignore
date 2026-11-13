@@ -25,3 +25,4 @@ FeederController/fp-info-cache
 FeederController/*.dsn
 FeederController/*.ses
 FeederController/freerouting*.json
+FeederController/*.rpt

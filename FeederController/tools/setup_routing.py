@@ -2,7 +2,7 @@
 """Routing setup for the carrier PCB (KiCad must be closed).
 
 - Net classes in FeederController.kicad_pro (KiCad 7 netclass patterns):
-    Default  0.3 mm tracks, 0.25 mm clearance, vias 0.8/0.4 mm
+    Default  0.3 mm tracks, 0.3 mm clearance, vias 0.8/0.4 mm
     Power    0.8 mm tracks, 0.3 mm clearance, vias 1.0/0.5 mm
     Touch    0.3 mm tracks, 0.6 mm clearance (keeps other copper away)
 - GND zones on B.Cu and F.Cu over the whole board, each with a notch cut
@@ -42,12 +42,19 @@ def netclass(name, track, clearance, via_d, via_drill):
 def setup_project():
     pro = json.load(open(PRO))
     ns = pro.setdefault('net_settings', {})
-    ns['classes'] = [netclass('Default', 0.3, 0.25, 0.8, 0.4),
+    ns['classes'] = [netclass('Default', 0.3, 0.3, 0.8, 0.4),
                      netclass('Power', 0.8, 0.3, 1.0, 0.5),
                      netclass('Touch', 0.3, 0.6, 0.8, 0.4)]
     ns['netclass_patterns'] = ([{"netclass": "Power", "pattern": p} for p in POWER] +
                                [{"netclass": "Touch", "pattern": p} for p in TOUCH])
     ns.setdefault('meta', {})['version'] = 3
+    # Board constraints (Board Setup -> Constraints). Edge clearance 0.3 mm is
+    # the usual fab minimum (Freerouting does not get KiCad's edge clearance
+    # from the DSN and routed at 0.39-0.49 mm). One thermal spoke is enough
+    # for these small GND pads (most also connect on the other layer).
+    rules = pro.setdefault('board', {}).setdefault('design_settings', {}).setdefault('rules', {})
+    rules['min_copper_edge_clearance'] = 0.3
+    rules['min_resolved_spokes'] = 1
     ns.setdefault('net_colors', None)
     ns.setdefault('netclass_assignments', None)
     with open(PRO, 'w') as fh:

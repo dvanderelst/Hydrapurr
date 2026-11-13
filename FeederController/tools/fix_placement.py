@@ -23,17 +23,12 @@ KIFP = '/usr/share/kicad/footprints'
 BOARD = (100.0, 100.0, 180.0, 160.0)          # x1, y1, x2, y2 (user's 80 x 60 mm outline)
 
 HORIZ_R = 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'
-# 2026-11-13: all resistors flat (the user's choice); R5, R13, R14 were standing.
-SWAP = {'R5': HORIZ_R, 'R13': HORIZ_R, 'R14': HORIZ_R}
+TO92_WIDE = 'Package_TO_SOT_THT:TO-92_Inline_Wide'
+# 2026-11-13: Q2/Q3 to the wide TO-92 footprint (2.54 mm pad pitch): the narrow
+# one has 0.22 mm between pads, below the 0.25/0.3 mm net-class clearance.
+SWAP = {'Q2': TO92_WIDE, 'Q3': TO92_WIDE}
 
-MOVE = {
-    # strip below the stack, right of J7: LED2 J5 | R5 (pad 1 ~4 mm from D12) J2
-    'LED2': (126.5, 156.3, 0), 'J5': (134.5, 156.0, 0),
-    'R5': (151.6, 156.4, 0), 'J2': (165.5, 156.0, 0),
-    # R13, R14 flat under the logger, in the pocket between coin cell and SD
-    # socket; pad 1 (LED_CONTACT) on the right, towards D9
-    'R13': (159.41, 137.5, 180), 'R14': (159.41, 141.5, 180),
-}
+MOVE = {'Q2': (132.0, 107.2, -90), 'Q3': (163.5, 109.5, -90)}
 
 TALL = pp.TALL
 
@@ -100,14 +95,15 @@ def set_sch_footprint(text, ref, libid):
 def main():
     tree = g.parse(open(PCB).read())[0]
     idx = {pp.ref_of(e): i for i, e in enumerate(tree) if isinstance(e, list) and e and e[0] == 'footprint'}
+    before = {}
+    for r, i in idx.items():
+        a = g.find(tree[i], 'at')[0]
+        before[r] = (float(a[1]), float(a[2]), float(a[3]) if len(a) > 3 else 0.0)
     for ref, libid in SWAP.items():
         tree[idx[ref]] = swap(tree[idx[ref]], libid)
     fps = {r: tree[i] for r, i in idx.items()}
-    pos = {}
-    for r, fp in fps.items():
-        a = g.find(fp, 'at')[0]
-        pos[r] = (float(a[1]), float(a[2]), float(a[3]) if len(a) > 3 else 0.0)
-    old_pos = dict(pos)
+    pos = dict(before)          # swapped parts keep their position and rotation
+    old_pos = dict(before)
     pos.update(MOVE)
 
     boxes = {r: pp.abs_boxes(fps[r], *pos[r]) for r in fps}
@@ -152,6 +148,12 @@ def main():
                     ang = (float(a[3]) if len(a) == 4 else 0.0) - old + rot
                     ang = ((ang + 180) % 360) - 180
                     a[3:] = [g.fmt(ang)] if abs(ang) > 1e-9 else []
+    if '--strip-tracks' in sys.argv:
+        # parts moved: old routing no longer fits; also drop stale zone fills
+        tree[1:] = [e for e in tree[1:] if not (isinstance(e, list) and e and e[0] in ('segment', 'via', 'arc'))]
+        for z in g.find(tree, 'zone'):
+            z[1:] = [e for e in z[1:] if not (isinstance(e, list) and e and e[0] == 'filled_polygon')]
+        print('removed all tracks and vias, cleared zone fills')
     with open(PCB, 'w') as fh:
         fh.write(g.dump(tree) + '\n')
     sch = open(SCH).read()
