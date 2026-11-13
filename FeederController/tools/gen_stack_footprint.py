@@ -91,7 +91,8 @@ def build():
          '(effects (font (size 1 1) (thickness 0.15))))']
     # board outline (Feather and Adalogger share it): full on Fab, corner marks on silk
     L.append(rect(0, 0, 50.8, 22.86, 'F.Fab', 0.1))
-    for cx, cy, dx, dy in ((0, 0, 1, 1), (50.8, 0, -1, 1), (0, 22.86, 1, -1), (50.8, 22.86, -1, -1)):
+    # (0.5 mm inside the outline: the SD end sits on the carrier's board edge)
+    for cx, cy, dx, dy in ((0.5, 0.5, 1, 1), (50.3, 0.5, -1, 1), (0.5, 22.36, 1, -1), (50.3, 22.36, -1, -1)):
         L.append(line(cx, cy, cx + 3 * dx, cy, 'F.SilkS'))
         L.append(line(cx, cy, cx, cy + 3 * dy, 'F.SilkS'))
     # Courtyard only where something occupies the space between the Adalogger
@@ -110,7 +111,10 @@ def build():
     L.append(text('coin cell (faces down)', 10.15, 12.75, 'F.Fab', 0.8))
     L.append(rect(33.7, 4.3, 54.2, 18.5, 'F.Fab', 0.1, dash=True))
     L.append(text('microSD (faces down)', 43.9, 11.4, 'F.Fab', 0.8))
-    L.append(rect(33.7, 4.3, 54.2, 18.5, 'F.SilkS', 0.12, dash=True))
+    # silkscreen part of the SD outline stops 0.5 mm inside the board edge
+    L.append(line(50.3, 4.3, 33.7, 4.3, 'F.SilkS', 0.12, dash=True))
+    L.append(line(33.7, 4.3, 33.7, 18.5, 'F.SilkS', 0.12, dash=True))
+    L.append(line(33.7, 18.5, 50.3, 18.5, 'F.SilkS', 0.12, dash=True))
     L.append(text('SD card ->', 44.0, 16.6, 'F.SilkS', 1.0))
     L.append(text('USB', 1.9, 11.43, 'F.SilkS', 1.0, 90))
     L.append(text('Feather screen up / Adalogger upside down', 25.4, 25.9, 'F.Fab', 0.8))
