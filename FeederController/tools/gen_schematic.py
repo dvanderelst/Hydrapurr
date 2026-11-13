@@ -236,8 +236,9 @@ PARTS = [
     ('Q1', 'Transistor_FET:IRF9540N', 'IRF9540N', FP_TO220, 261.62, 45.72,
      {'1': 'Q1_GATE', '2': 'FEEDER+', '3': '+12V_F'},
      {'Note': 'High-side switch: source on +12V_F, drain = FEEDER+.'}, False),
-    ('Q2', 'Transistor_BJT:BC547', 'BC547', FP_TO92, 142.24, 83.82,
-     {'1': 'Q1_GATE', '2': 'Q2_BASE', '3': 'GND'}, {}, False),
+    ('Q2', 'Transistor_BJT:PN2222A', 'PN2222A', FP_TO92, 142.24, 83.82,
+     {'1': 'GND', '2': 'Q2_BASE', '3': 'Q1_GATE'},
+     {'Note': 'E-B-C pinout (PN2222A). A P2N2222A is C-B-E: check the part.'}, False),
     ('R1', 'Device:R', '4.7k', FP_R, 167.64, 83.82, {'1': 'FEEDER_EN', '2': 'Q2_BASE'}, {}, False),
     ('R2', 'Device:R', '47k', FP_R, 190.5, 83.82, {'1': 'Q2_BASE', '2': 'GND'}, {}, False),
     ('D1', 'Device:D_Schottky', '1N5819', 'Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal',
@@ -285,8 +286,9 @@ PARTS = [
     ('J4', 'Connector_Generic:Conn_01x04', 'RFID', FP_PH4, 139.7, 210.82,
      {'1': 'RFID_VCC', '2': 'RFID_RST_N', '3': 'RFID_TX5', '4': 'GND'},
      {'Note': 'WL-134 order: 1 VCC, 2 RST, 3 TX, 4 GND (check pin 4 on the module).'}, False),
-    ('Q3', 'Transistor_BJT:BC547', 'BC547', FP_TO92, 167.64, 210.82,
-     {'1': 'RFID_RST_N', '2': 'Q3_BASE', '3': 'GND'}, {}, False),
+    ('Q3', 'Transistor_BJT:PN2222A', 'PN2222A', FP_TO92, 167.64, 210.82,
+     {'1': 'GND', '2': 'Q3_BASE', '3': 'RFID_RST_N'},
+     {'Note': 'E-B-C pinout (PN2222A). A P2N2222A is C-B-E: check the part.'}, False),
     ('R8', 'Device:R', '4.7k', FP_R, 193.04, 210.82, {'1': 'RFID_RST', '2': 'Q3_BASE'}, {}, False),
     ('R9', 'Device:R', '47k', FP_R, 215.9, 210.82, {'1': 'Q3_BASE', '2': 'GND'}, {}, False),
     ('R10', 'Device:R', '10k', FP_R, 241.3, 210.82, {'1': 'RFID_VCC', '2': 'RFID_RST_N'}, {}, False),
@@ -601,8 +603,8 @@ def build():
     gate = P('R4', 2)
     W(gate, P('Q1', 1))
     S.place('Q2', gate[0] - 2.54, gate[1] + 12.7)
-    W(P('Q2', 1), gate)
-    S.pin_power('Q2', 3, 'GND', 0)
+    W(P('Q2', 3), gate)
+    S.pin_power('Q2', 1, 'GND', 0)
     base_y = P('Q2', 2)[1]
     S.place('R2', 190.5, base_y + 3.81, refpos=(-2.54, 1.27, 'right'))
     S.place('R1', 185.42, base_y, rot=90, refpos=(-3.81, -6.35))
@@ -722,8 +724,8 @@ def build():
     S.label('RFID_VCC', (289.56, 190.5), 'L')
     W(P('R10', 2), (297.18, p2[1]))
     S.place('Q3', 281.94, p2[1] + 5.08)
-    W(p2, (297.18, p2[1]), P('Q3', 1))
-    S.pin_power('Q3', 3, 'GND', 0)
+    W(p2, (297.18, p2[1]), P('Q3', 3))
+    S.pin_power('Q3', 1, 'GND', 0)
     qb = P('Q3', 2)
     S.place('R9', 271.78, qb[1] + 3.81, refpos=(-2.54, 1.27, 'right'))
     S.place('R8', 264.16, qb[1], rot=90, refpos=(-3.81, -6.35))

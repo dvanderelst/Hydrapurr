@@ -336,7 +336,7 @@ Decided with the user:
   are timers that switch its adapter); up to 0.15 A measured.
 - **High-side MOSFET switch, no relay:** boost (always on) → PTC fuse 0.5 A
   → P-MOSFET IRF9540N (source on 12 V, drain = FEEDER+) → feeder; FEEDER− =
-  GND. Gate pulled up to 12 V by 10 kΩ; BC547 NPN pulls it low, driven from
+  GND. Gate pulled up to 12 V by 10 kΩ; PN2222A NPN pulls it low, driven from
   **A0** via 4.7 kΩ with 47 kΩ base pulldown. A0 high = feeder on (same as
   `feeder_on()`); floating/reset = off. Across the output: 1N5819 flyback
   (cathode to FEEDER+), 100 nF, green LED + 1 kΩ. 1000 µF on 5 V, 100 µF
@@ -363,7 +363,7 @@ Decided with the user:
   0 Ω link in series); Sharp J3 (PH-3 in sensor order Vo/GND/Vcc, 10 µF +
   100 µF, 1 kΩ to A5, optional 100 nF); RFID supply jumper JP2: 5 V via
   ferrite + 470 µF (default) or 6 V from an optional LM7806 on 12 V;
-  RFID J4 (PH-4: VCC, RST, TX, GND), reset via BC547 on TX (inverted, as the
+  RFID J4 (PH-4: VCC, RST, TX, GND), reset via PN2222A on TX (inverted, as the
   old board), data divider + JP1 on RX; contact LED on D9 (on-board LED +
   PH-3 J5 for a panel LED, 330 Ω each); I²C J6 (PH-4, STEMMA order); spare
   header J7 1×12 (5V, 3V3, GND, D5, D6, D11, D13, A1–A4, GND).
@@ -402,7 +402,8 @@ re-run the generator (it refuses without `--force`). Assumption to check:
 the Reverse TFT uses the standard Feather pin positions (long header RST,
 3V, NC, GND, A0–A5, SCK, MO, MI, RX, TX, NC; short header from SDA: SDA,
 SCL, D5, D6, D9–D13, USB, EN, BAT). F1 uses the MF-RHT050 footprint (check
-the pitch of the fuse bought). The old relay library (G6RL) is still in
+the pitch of the fuse bought). Q2/Q3 = PN2222A (2N2222), footprint pinout E-B-C;
+a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6RL) is still in
 `fp-lib-table` but no longer used.
 
 

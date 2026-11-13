@@ -1,7 +1,7 @@
 (kicad_sch
   (version 20230121)
   (generator eeschema)
-  (uuid 7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd)
+  (uuid 572cbe07-3d7d-4a46-b609-b4a7fe5bf95d)
   (paper "A3")
   (title_block
     (title "HydraPurr carrier PCB")
@@ -695,12 +695,12 @@
           (name "+12V" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27)))))))
     (symbol
-      "Transistor_BJT:BC547"
+      "Transistor_BJT:PN2222A"
       (pin_names (offset 0) hide)
       (in_bom yes)
       (on_board yes)
       (property "Reference" "Q" (at 5.08 1.905 0) (effects (font (size 1.27 1.27)) (justify left)))
-      (property "Value" "BC547" (at 5.08 0 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Value" "PN2222A" (at 5.08 0 0) (effects (font (size 1.27 1.27)) (justify left)))
       (property
         "Footprint"
         "Package_TO_SOT_THT:TO-92_Inline"
@@ -708,25 +708,25 @@
         (effects (font (size 1.27 1.27) italic) (justify left) hide))
       (property
         "Datasheet"
-        "https://www.onsemi.com/pub/Collateral/BC550-D.pdf"
+        "https://www.onsemi.com/pub/Collateral/PN2222-D.PDF"
         (at 0 0 0)
         (effects (font (size 1.27 1.27)) (justify left) hide))
       (property "ki_keywords" "NPN Transistor" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
       (property
         "ki_description"
-        "0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"
+        "1A Ic, 40V Vce, NPN Transistor, General Purpose Transistor, TO-92"
         (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide))
       (property "ki_fp_filters" "TO?92*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
       (symbol
-        "BC547_0_1"
+        "PN2222A_0_1"
         (polyline (pts (xy 0 0) (xy 0.635 0)) (stroke (width 0) (type default)) (fill (type none)))
         (polyline
-          (pts (xy 0.635 0.635) (xy 2.54 2.54))
+          (pts (xy 2.54 -2.54) (xy 0.635 -0.635))
           (stroke (width 0) (type default))
           (fill (type none)))
         (polyline
-          (pts (xy 0.635 -0.635) (xy 2.54 -2.54) (xy 2.54 -2.54))
+          (pts (xy 2.54 2.54) (xy 0.635 0.635))
           (stroke (width 0) (type default))
           (fill (type none)))
         (polyline
@@ -734,18 +734,22 @@
           (stroke (width 0.508) (type default))
           (fill (type none)))
         (polyline
-          (pts (xy 1.27 -1.778) (xy 1.778 -1.27) (xy 2.286 -2.286) (xy 1.27 -1.778) (xy 1.27 -1.778))
+          (pts (xy 2.413 -2.413) (xy 1.905 -1.905) (xy 1.905 -1.905))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 1.143 -1.651) (xy 1.651 -1.143) (xy 2.159 -2.159) (xy 1.143 -1.651) (xy 1.143 -1.651))
           (stroke (width 0) (type default))
           (fill (type outline)))
         (circle (center 1.27 0) (radius 2.8194) (stroke (width 0.254) (type default)) (fill (type none))))
       (symbol
-        "BC547_1_1"
+        "PN2222A_1_1"
         (pin
           passive
           line
-          (at 2.54 5.08 270)
+          (at 2.54 -5.08 90)
           (length 2.54)
-          (name "C" (effects (font (size 1.27 1.27))))
+          (name "E" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27)))))
         (pin
           input
@@ -757,9 +761,9 @@
         (pin
           passive
           line
-          (at 2.54 -5.08 90)
+          (at 2.54 5.08 270)
           (length 2.54)
-          (name "E" (effects (font (size 1.27 1.27))))
+          (name "C" (effects (font (size 1.27 1.27))))
           (number "3" (effects (font (size 1.27 1.27)))))))
     (symbol
       "Device:D_Schottky"
@@ -1420,7 +1424,7 @@
     "FEATHER on ADALOGGER"
     (at 25.4 50.8 0)
     (effects (font (size 2 2) bold) (justify left bottom))
-    (uuid c1c379ee-9a0d-429d-ad6e-a954828e1755))
+    (uuid bf75a937-a5bc-40c8-89c9-97d84a28f22b))
   (symbol
     (lib_id "HydraPurr:Feather_ESP32S3_ReverseTFT")
     (at 63.5 101.6 0)
@@ -1428,7 +1432,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid cd2b5461-f38f-44d1-a037-922b08a240c8)
+    (uuid 8e33e52f-eb10-47d6-882d-0c851d4e5bfc)
     (property "Reference" "A1" (at 50.8 143.51 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Value"
@@ -1446,39 +1450,39 @@
       "Female 1x16 + 1x12 sockets. SPI, D10 and RST pass between the Feather and the Adalogger only."
       (at 63.5 101.6 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid ff32e3b0-49ff-416d-a598-075b74646c45))
-    (pin "10" (uuid 1cf51c4a-e79e-4856-a7c2-af9acd07df12))
-    (pin "11" (uuid 9cb940eb-5ccf-41a8-b30a-801e57c2c51a))
-    (pin "12" (uuid cda2ae71-713b-46d9-bcb4-f86e137ead5e))
-    (pin "13" (uuid b7e88697-6996-4de6-bce3-a1ec64e76dea))
-    (pin "14" (uuid 1f6b83b8-9d55-45be-b386-9fded800a167))
-    (pin "15" (uuid d68c0018-bd38-49b5-9113-aab63c59ed22))
-    (pin "16" (uuid 9c200172-10c9-4885-8ec4-2b90831d387c))
-    (pin "17" (uuid 587ee8df-c5c3-4796-b8dc-7c30cb8aec6f))
-    (pin "18" (uuid ed42b9e8-489f-48c9-b060-ee84d681d3d6))
-    (pin "19" (uuid 933827b4-9dba-4749-9cfe-2c78dd5f9fdb))
-    (pin "2" (uuid de3decc3-df77-433b-8e92-e22666b9a4af))
-    (pin "20" (uuid 54b25db8-2d90-4c5d-b622-65dfc90a776d))
-    (pin "21" (uuid 3d8451e1-97be-4eec-9cfb-8e4d1416996c))
-    (pin "22" (uuid 9c476670-82c8-41a4-a8ef-43c63fd15a87))
-    (pin "23" (uuid e5f9ddb6-f194-43e9-95dc-36e52d5de93c))
-    (pin "24" (uuid 7fba194f-a512-4b41-8714-91c6fc525632))
-    (pin "25" (uuid 2b888765-8547-4810-b73c-5c1dc555c9eb))
-    (pin "26" (uuid 7056c624-7085-4f21-aa0b-8163c19729c8))
-    (pin "27" (uuid a3f76348-573a-488a-9743-869e55e961c5))
-    (pin "28" (uuid a492a2b4-31a9-4f5d-a568-a723b3b48039))
-    (pin "3" (uuid 8a7b8c24-d107-40b3-ba19-f424beb51797))
-    (pin "4" (uuid 75891fec-d35b-40ac-a3df-86006e1941dc))
-    (pin "5" (uuid 52d3e3cc-a4b6-4071-b6ff-68c38bfa6590))
-    (pin "6" (uuid 21beca15-8591-40d3-859d-0095b0394a83))
-    (pin "7" (uuid 45e99bb4-34aa-4e1f-824f-882f3c938289))
-    (pin "8" (uuid f5ef7b5a-7eb3-4b77-b4a5-0c769d04da93))
-    (pin "9" (uuid f00a4678-8f2d-460c-af3c-ccb1c6dadbf4))
+    (pin "1" (uuid 5273557a-5730-40e0-8a1e-cbced772c3aa))
+    (pin "10" (uuid c66a6f81-3799-4379-9ae5-ecfe29dd1dc3))
+    (pin "11" (uuid 55780e7e-6a43-4de2-a91c-e65819d7626d))
+    (pin "12" (uuid 2389736b-bb5f-4be0-8f0e-dfaf5091bf39))
+    (pin "13" (uuid c15af52c-ce71-4119-8a71-a04c54b0a0da))
+    (pin "14" (uuid 232ad428-561a-4a70-9ccd-06b2efba9300))
+    (pin "15" (uuid b68efcd5-e80c-4e47-b989-3453b8ccad85))
+    (pin "16" (uuid e678efc3-9210-498e-ae78-ea4c45b50353))
+    (pin "17" (uuid 82cf2262-b0e0-4afc-af14-d9e51f746057))
+    (pin "18" (uuid fe324466-7491-437e-aeba-b1ca407367cf))
+    (pin "19" (uuid f1329d08-39c9-4561-9f1f-bfb94f469acc))
+    (pin "2" (uuid 55eae349-1292-4c39-8105-7560e1ab9987))
+    (pin "20" (uuid 4e007c82-94f2-466f-9bee-8945de0e2a62))
+    (pin "21" (uuid b421d9c8-807f-49a2-9e17-880ce155dfa5))
+    (pin "22" (uuid 4d015be2-3806-43b8-944d-ebbdf9d33694))
+    (pin "23" (uuid 546fbc57-ae13-4b02-9c0a-739fff61594b))
+    (pin "24" (uuid c734d21c-d587-4680-bdf5-f15e70e5c1ec))
+    (pin "25" (uuid f6d734de-adfe-4d68-bb06-72ed3147b755))
+    (pin "26" (uuid bad44918-0a19-42fc-8923-366d4e457953))
+    (pin "27" (uuid 4db5709c-e6e6-401f-93b3-0baf7d512cdd))
+    (pin "28" (uuid 3fad9e03-5ae7-4a03-be19-5a9bb374675a))
+    (pin "3" (uuid 58be6607-ca2f-46f8-ab95-daccd52788c3))
+    (pin "4" (uuid 4e999b50-f9bd-4049-bec8-482a250fca9f))
+    (pin "5" (uuid 4eca851a-ed90-425c-8b1b-3754c04b885b))
+    (pin "6" (uuid f0685fab-8aa3-462a-a3aa-6c1de4bfab0e))
+    (pin "7" (uuid 1c6944c7-2407-4ca9-9982-d6affac8f5f0))
+    (pin "8" (uuid 1b3dc27a-e635-4f27-a969-0f11e848123e))
+    (pin "9" (uuid 4158e2e4-1f5c-455a-a6ef-2829b76c5693))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "A1") (unit 1)))))
-  (no_connect (at 76.2 81.28) (uuid 1a5cff26-6158-40a0-bab0-1ff323a6fe30))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "A1") (unit 1)))))
+  (no_connect (at 76.2 81.28) (uuid 6f9b6f4e-600d-497f-9244-9d88dcd379e0))
   (symbol
     (lib_id "power:+3V3")
     (at 66.04 68.58 0)
@@ -1486,7 +1490,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 3c39562c-9262-434e-aa1f-7305f982fc22)
+    (uuid 2dd868de-7285-45c1-8816-84b6de76426b)
     (property
       "Reference"
       "#PWR01"
@@ -1495,12 +1499,12 @@
     (property "Value" "+3V3" (at 66.04 64.77 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 66.04 68.58 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 66.04 68.58 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 1ba8c6d4-a7fc-46e0-9462-fe87f2df6205))
+    (pin "1" (uuid 738c3352-c400-496c-8dbf-b01720452b1f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR01") (unit 1)))))
-  (no_connect (at 76.2 91.44) (uuid f0ff3fc8-e97c-46e3-9c85-3cd071af9088))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR01") (unit 1)))))
+  (no_connect (at 76.2 91.44) (uuid 79e7b220-b2d2-4ae0-a685-026a836e5a3a))
   (symbol
     (lib_id "power:GND")
     (at 63.5 137.16 0)
@@ -1508,7 +1512,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid ef125ef5-a389-4c4c-907a-310d6c4d4bd5)
+    (uuid 6bc9064a-ff5e-4fc0-8677-27a35e3138c1)
     (property
       "Reference"
       "#PWR02"
@@ -1517,112 +1521,112 @@
     (property "Value" "GND" (at 63.5 140.97 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 63.5 137.16 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 63.5 137.16 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 988349a8-adca-42bf-b093-f5f4cfefd4b9))
+    (pin "1" (uuid bfbbaf79-bc8a-46ee-a43d-92ec32176638))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR02") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR02") (unit 1)))))
   (label
     "FEEDER_EN"
     (at 78.74 96.52 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid be674eb1-8a83-4a36-93a1-35d4bd5e18e7))
+    (uuid 7328f708-a811-4523-b4a7-b19cba29e18f))
   (label
     "A1"
     (at 78.74 99.06 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 3c5fb9e9-0069-42e8-90c9-ab85e671e1a3))
+    (uuid ec57c27c-6e28-4ad9-8f0b-04d535cd281a))
   (label
     "A2"
     (at 78.74 101.6 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 98524800-6aa7-4175-884d-1542dfb0e11b))
+    (uuid df034e6d-de2d-4f6c-8e78-8ec6244e0fbb))
   (label
     "A3"
     (at 78.74 104.14 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid b3e78014-725a-4add-84f8-44bfe8992804))
+    (uuid dfa4ffbd-13f4-497c-be4a-eec126532077))
   (label
     "A4"
     (at 78.74 106.68 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 5457598a-cc0e-4870-b8c9-6a6f1fe97c68))
+    (uuid 0badd3ed-38cb-43ee-8623-6682d9d852bd))
   (label
     "SHARP_VO"
     (at 78.74 109.22 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid e64c5a50-601d-47ff-9571-4f7dae26d2e3))
-  (no_connect (at 50.8 104.14) (uuid 5d61c63f-2466-46d4-958c-671546468295))
-  (no_connect (at 50.8 106.68) (uuid 4313a02e-f662-49a8-b41e-1fc617f3993b))
-  (no_connect (at 50.8 109.22) (uuid c31be58d-5130-43d9-baa3-c18e4a38692b))
+    (uuid c5c155c0-7304-4b84-8291-2e2cdf889552))
+  (no_connect (at 50.8 104.14) (uuid 16bebfe2-1c9f-4a13-b8fc-5ef188451dc1))
+  (no_connect (at 50.8 106.68) (uuid 4c2604ed-0c11-44e9-a20e-f2eed88465d1))
+  (no_connect (at 50.8 109.22) (uuid 1592535b-1a4a-4618-8350-2e7adec9d067))
   (label
     "RFID_RX"
     (at 48.26 114.3 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 09d60503-8a6c-40ec-9a12-9d7c4e0f14e4))
+    (uuid d3ea1ac2-5cbb-491e-aa60-6c782397bbc0))
   (label
     "RFID_RST"
     (at 48.26 116.84 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid db74bf62-25f5-470f-b9bd-554769324e7f))
-  (no_connect (at 50.8 99.06) (uuid 64f9176a-3d32-4455-9116-d7e3a149de6b))
+    (uuid 68d9bcec-4e13-40e9-9327-10a8bf773a9f))
+  (no_connect (at 50.8 99.06) (uuid 8e33237a-4756-433f-aad5-f555fcb6ffa1))
   (label
     "SDA"
     (at 48.26 121.92 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid cc6f5502-c8bf-4628-911f-015d31602e25))
+    (uuid 78b3a6c7-d009-41ef-b09a-06846a227e08))
   (label
     "SCL"
     (at 48.26 124.46 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 2e0f2001-9697-4931-b9dc-2fb8b0c08df1))
+    (uuid 2a76b12e-580e-4cc0-83e9-60fe663db895))
   (label
     "D5"
     (at 48.26 81.28 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 3f95247e-533c-46d2-9341-cd483dcbd2ab))
+    (uuid 83304aec-1458-4cad-aa10-fef383050814))
   (label
     "D6"
     (at 48.26 83.82 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 11d0afef-2788-43fe-b26d-35d0fc0f1d38))
+    (uuid 2e0175f1-a7bb-4bac-9c25-df81ebb984f4))
   (label
     "LED_CONTACT"
     (at 48.26 86.36 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 2cc5bb56-b301-4684-bcfb-e3be076de958))
-  (no_connect (at 50.8 88.9) (uuid 3c45c666-7642-475a-903d-29ecf7f355b7))
+    (uuid 851ce6c2-9285-49b0-8c36-0abba2b5f4f0))
+  (no_connect (at 50.8 88.9) (uuid a7e1a507-75b3-4c64-b9e3-c1329f07c2c5))
   (label
     "D11"
     (at 48.26 91.44 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 474b5d32-c45a-464e-b328-98db2e80acfe))
+    (uuid 4eba5d52-4604-4f26-8fa2-21004cbd2bf9))
   (label
     "TOUCH"
     (at 48.26 93.98 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid c03cc959-c51b-408e-9c6f-3acf29ecddaf))
+    (uuid c0e46c4b-2806-4618-8b5c-ddb7a5aeecec))
   (label
     "D13"
     (at 48.26 96.52 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 6ce830dd-afd7-48e0-aa63-0f7df2358dcc))
+    (uuid d83444c6-feaf-4ce8-9d24-bb311960a7ba))
   (symbol
     (lib_id "power:+5V")
     (at 68.58 63.5 0)
@@ -1630,7 +1634,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 4330cfb2-0b04-4ddc-ac84-574127d9164c)
+    (uuid 318ed25e-1c98-4d72-8404-46f3b6213b5c)
     (property
       "Reference"
       "#PWR03"
@@ -1639,18 +1643,18 @@
     (property "Value" "+5V" (at 68.58 59.69 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 68.58 63.5 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 68.58 63.5 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid d3d3fe61-940e-4a64-b93a-3a8af03ca672))
+    (pin "1" (uuid 7f2474fc-8ba8-4307-b70c-41abc5847e34))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR03") (unit 1)))))
-  (no_connect (at 76.2 88.9) (uuid b6e0c23d-a21c-4eb6-b5ba-7304cd01fb8e))
-  (no_connect (at 60.96 71.12) (uuid 04e76e9e-7218-4dfa-b1d5-aa05594763c2))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR03") (unit 1)))))
+  (no_connect (at 76.2 88.9) (uuid 4a26d8df-e49f-4259-8740-c051a9aad73f))
+  (no_connect (at 60.96 71.12) (uuid 0a239941-4818-47a1-a1c2-6e7f896cbfe9))
   (text
     "Power flags (supplied by the Feather)"
     (at 25.4 154.94 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 79a04030-c35b-4964-8f9c-6e37cd168398))
+    (uuid 32f4f17c-26f5-45ab-aa64-2d4f7850b3fe))
   (symbol
     (lib_id "power:+5V")
     (at 30.48 165.1 0)
@@ -1658,7 +1662,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid b5fe04ad-67ec-45b5-99f7-19c79d230aa8)
+    (uuid 779decaa-4c01-45b9-a08b-dae4fc888c3d)
     (property
       "Reference"
       "#PWR04"
@@ -1667,11 +1671,11 @@
     (property "Value" "+5V" (at 30.48 161.29 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 30.48 165.1 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 30.48 165.1 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 2ec28cf7-a3b1-45bd-8b96-7b3a3829b8aa))
+    (pin "1" (uuid 43d5856f-f3ed-4b5c-a0d0-141abd296d81))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR04") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR04") (unit 1)))))
   (symbol
     (lib_id "power:PWR_FLAG")
     (at 40.64 165.1 0)
@@ -1679,7 +1683,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid eb92c0cd-b352-454e-8821-11de67977103)
+    (uuid b15b2f5e-4b85-4d59-9d2c-f1040de9e88f)
     (property
       "Reference"
       "#FLG05"
@@ -1688,11 +1692,11 @@
     (property "Value" "PWR_FLAG" (at 40.64 161.29 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 40.64 165.1 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 40.64 165.1 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid a842d825-406b-4a9d-a8f3-34bca6bc1416))
+    (pin "1" (uuid 6477b485-39cc-456e-bc75-a924eba5d835))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#FLG05") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#FLG05") (unit 1)))))
   (symbol
     (lib_id "power:+3V3")
     (at 55.88 165.1 0)
@@ -1700,7 +1704,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid fefd1f04-e88b-4ac7-aa96-cbf75fe6dd69)
+    (uuid 721d7b8e-2640-4315-9467-feb5c31b104b)
     (property
       "Reference"
       "#PWR06"
@@ -1709,11 +1713,11 @@
     (property "Value" "+3V3" (at 55.88 161.29 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 55.88 165.1 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 55.88 165.1 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 419ac4f8-2d2b-4db0-84ae-904a23f38a09))
+    (pin "1" (uuid 99af42e9-c8eb-493d-92b4-c46b1ce295f8))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR06") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR06") (unit 1)))))
   (symbol
     (lib_id "power:PWR_FLAG")
     (at 66.04 165.1 0)
@@ -1721,7 +1725,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid f05a22df-a1df-4f44-9b64-5bbe27e7f71e)
+    (uuid b248fb5f-88bd-41a0-93c7-06bf32c2b9d5)
     (property
       "Reference"
       "#FLG07"
@@ -1730,11 +1734,11 @@
     (property "Value" "PWR_FLAG" (at 66.04 161.29 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 66.04 165.1 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 66.04 165.1 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid def6a042-7011-454a-b10e-f2063e52d6b8))
+    (pin "1" (uuid 1fcb7b2d-0349-4731-94de-1243275e125f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#FLG07") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#FLG07") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 81.28 165.1 0)
@@ -1742,7 +1746,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid dbf93f14-1df2-482b-984a-76aa8f19d2ca)
+    (uuid cad2d435-0bb2-49b1-8b4a-c9e4765ff0d1)
     (property
       "Reference"
       "#PWR08"
@@ -1751,11 +1755,11 @@
     (property "Value" "GND" (at 81.28 168.91 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 81.28 165.1 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 81.28 165.1 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid a293feea-9ef0-4080-9dda-1433ec6a73b5))
+    (pin "1" (uuid ce0bb42e-be1e-49a3-a2f5-4439c6ff7ef7))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR08") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR08") (unit 1)))))
   (symbol
     (lib_id "power:PWR_FLAG")
     (at 91.44 165.1 0)
@@ -1763,7 +1767,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid f87f9e8e-1a8f-4883-818a-1718be4d1681)
+    (uuid f048b105-8a26-4b1a-939c-2897a96843b4)
     (property
       "Reference"
       "#FLG09"
@@ -1772,21 +1776,21 @@
     (property "Value" "PWR_FLAG" (at 91.44 161.29 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 91.44 165.1 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 91.44 165.1 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 2b44da11-6afb-4243-b444-468a448e7546))
+    (pin "1" (uuid 0c37e3da-94b8-46ae-aa6c-bcbd6413737e))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#FLG09") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#FLG09") (unit 1)))))
   (text
     "FEEDER DRIVER (high-side switch)"
     (at 127 30.48 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 0f745914-7cee-4e32-9fce-40f06feaef93))
+    (uuid 93caa654-c14d-43a3-95b3-31cf5a6e02fe))
   (text
     "A0 high: Q2 on, Q1 gate at 0 V, feeder runs. A0 floating: R2 keeps Q2 off, R4 keeps Q1 off."
     (at 127 34.29 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 8342f6e5-a3ae-4329-9727-2ed6423c912d))
+    (uuid 0f5d291c-aff7-4359-ab21-387409c75857))
   (symbol
     (lib_id "Device:C_Polarized")
     (at 134.62 57.15 0)
@@ -1794,7 +1798,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 65a83f06-14d9-4588-8a01-f0948c0a4e28)
+    (uuid 0ed664cc-3839-4d91-a7bf-e6e79753a93f)
     (property "Reference" "C1" (at 139.7 55.88 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "1000uF 16V" (at 139.7 58.42 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -1803,12 +1807,12 @@
       (at 134.62 57.15 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 134.62 57.15 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid b02aea69-8fe5-4a37-ad16-67afbea5c649))
-    (pin "2" (uuid 5d6e95c2-7894-44c6-933f-43ec886acec0))
+    (pin "1" (uuid 8da08144-7802-4132-a13c-9c2abb2cd9e5))
+    (pin "2" (uuid b91ae177-35bd-4fa7-9c81-88e7b2349a19))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C1") (unit 1)))))
   (symbol
     (lib_id "HydraPurr:Pololu_U3V16F12")
     (at 152.4 50.8 0)
@@ -1816,7 +1820,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 6edf36fa-0e8f-43b8-9920-277b871ff81d)
+    (uuid f6acda94-9619-40d2-a741-c26009498fd6)
     (property "Reference" "U1" (at 144.78 41.91 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Value"
@@ -1834,13 +1838,13 @@
       "Mounted flat on a straight header, soldered in. Silkscreen VIN/VOUT."
       (at 152.4 50.8 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "3" (uuid dea51106-38dd-4d8d-a2f0-6dea4a5832d2))
-    (pin "1" (uuid 6c01b7a3-31fc-42eb-84a4-b89340b17bdf))
-    (pin "2" (uuid aa9ec0db-ff4b-4f4b-8d01-b22757bc169a))
+    (pin "3" (uuid 59f12007-82a2-41ab-9a15-e079bef0cf2d))
+    (pin "1" (uuid c17afb80-0d01-4ea0-a8b5-ceb9633920f4))
+    (pin "2" (uuid e92afd7b-baae-497d-876b-27c8024575f6))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "U1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "U1") (unit 1)))))
   (symbol
     (lib_id "Device:C_Polarized")
     (at 172.72 57.15 0)
@@ -1848,7 +1852,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 51d41123-051e-4210-bd2e-3dc010e7f177)
+    (uuid e207fe32-a444-4fbb-929f-36bb00cc3a9f)
     (property "Reference" "C2" (at 177.8 55.88 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "100uF 25V" (at 177.8 58.42 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -1857,12 +1861,12 @@
       (at 172.72 57.15 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 172.72 57.15 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 08f98bbc-4a93-479a-99df-585da906af53))
-    (pin "2" (uuid a3f26ed3-b77d-4374-9023-5efca9c7f2bc))
+    (pin "1" (uuid d2824878-56d9-4508-8656-70e693e4e3d0))
+    (pin "2" (uuid 54aead94-41a4-4eb1-85f1-6385a7670a9f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C2") (unit 1)))))
   (symbol
     (lib_id "Device:Polyfuse")
     (at 190.5 50.8 90)
@@ -1870,7 +1874,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 08697d79-2d75-4528-a3f9-dfbc41fd26ad)
+    (uuid 63c9f9fd-4dbe-4306-91ff-94821f3bab0f)
     (property "Reference" "F1" (at 186.69 44.45 90) (effects (font (size 1.27 1.27))))
     (property "Value" "0.5A PTC" (at 186.69 46.99 90) (effects (font (size 1.27 1.27))))
     (property
@@ -1884,12 +1888,12 @@
       "MF-RHT050 footprint; check the pitch against the fuse you buy."
       (at 190.5 50.8 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 466e9b5e-9527-4e23-a71a-641a75970366))
-    (pin "2" (uuid fb6bf8d4-9bc9-4a14-b198-36146b87514d))
+    (pin "1" (uuid d4ca7e73-de4c-4451-bd50-7bf02f3c068b))
+    (pin "2" (uuid 2e61f74b-ef2d-452f-9723-a7a8ae35785e))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "F1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "F1") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 200.66 54.61 0)
@@ -1897,7 +1901,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid dac11ab8-31f2-41d7-aeab-4a624d55e07a)
+    (uuid 3e7d21b8-dee6-4134-8e63-145bc0a1e122)
     (property "Reference" "R4" (at 205.74 53.34 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "10k" (at 205.74 55.88 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -1906,12 +1910,12 @@
       (at 200.66 54.61 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 200.66 54.61 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid bae554a2-bb0f-419a-b9fc-5785a3863cbe))
-    (pin "2" (uuid e17c07ba-5ccd-48c2-95a3-099bd86d6fc3))
+    (pin "1" (uuid 5c1a9a4d-8519-4346-8f4f-0d40cf533724))
+    (pin "2" (uuid 00af0e61-320d-4c91-aa03-bf6db27c4787))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R4") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R4") (unit 1)))))
   (symbol
     (lib_id "Transistor_FET:IRF9540N")
     (at 215.9 58.42 0)
@@ -1920,7 +1924,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 298cd12b-1b46-4524-9946-aab6b519162b)
+    (uuid b4d7981d-6d71-45c0-b046-82134edee5f0)
     (property "Reference" "Q1" (at 220.98 54.61 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "IRF9540N" (at 220.98 57.15 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -1934,13 +1938,13 @@
       "High-side switch: source on +12V_F, drain = FEEDER+."
       (at 215.9 58.42 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid f6b10009-dcef-44a3-98ac-22bf2adae9ff))
-    (pin "2" (uuid 2e5d24ae-8ec0-4db3-9a26-2da3a5745a0b))
-    (pin "3" (uuid dd1a1163-6044-47fe-8a1f-c084a25bafb8))
+    (pin "1" (uuid 7c5726c3-ed0a-46c9-abd6-0a3453812ae7))
+    (pin "2" (uuid 2b3e994e-02d5-47d1-a1d1-eff2f67246cf))
+    (pin "3" (uuid 6637c5ee-3e84-4b9a-8353-5dfa6c46742b))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "Q1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "Q1") (unit 1)))))
   (symbol
     (lib_id "power:+5V")
     (at 129.54 50.8 0)
@@ -1948,7 +1952,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid e861e1e2-7e34-47fd-a730-3efd6cd44ba7)
+    (uuid 5d563c59-9da8-4cce-8760-61beb56dbcf7)
     (property
       "Reference"
       "#PWR10"
@@ -1957,11 +1961,11 @@
     (property "Value" "+5V" (at 129.54 46.99 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 129.54 50.8 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 129.54 50.8 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid b1d7c81e-b924-4b44-ab7f-dd76107e32a3))
+    (pin "1" (uuid 01380fc6-d815-40ba-84f9-6ae28c74ef0a))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR10") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR10") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 134.62 60.96 0)
@@ -1969,7 +1973,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 607c3c4b-bc91-42a0-9610-37ef846ce0ec)
+    (uuid 4acb56bb-8a92-4262-8a99-146ed00b46fb)
     (property
       "Reference"
       "#PWR11"
@@ -1978,11 +1982,11 @@
     (property "Value" "GND" (at 134.62 64.77 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 134.62 60.96 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 134.62 60.96 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid d602187d-0807-4303-82da-1109a785df31))
+    (pin "1" (uuid 3ba608f3-ed00-4340-b991-7301ab4bab3f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR11") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR11") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 152.4 57.15 0)
@@ -1990,7 +1994,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 56a0da50-19d6-46f4-b013-6dbcbfb472b2)
+    (uuid d3bcea3c-9183-401d-8390-d1094757b8fd)
     (property
       "Reference"
       "#PWR12"
@@ -1999,11 +2003,11 @@
     (property "Value" "GND" (at 152.4 60.96 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 152.4 57.15 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 152.4 57.15 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid eefe9fd6-25e3-42bf-90c2-4c96d369f5bc))
+    (pin "1" (uuid 7db0a968-8f76-480f-8c20-405990f7b3b7))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR12") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR12") (unit 1)))))
   (symbol
     (lib_id "power:+12V")
     (at 167.64 50.8 0)
@@ -2011,7 +2015,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid e526695f-d072-41c0-89bf-94d2ee526c0a)
+    (uuid a2f0609c-d2a9-401b-a694-274842a1c360)
     (property
       "Reference"
       "#PWR13"
@@ -2020,11 +2024,11 @@
     (property "Value" "+12V" (at 167.64 46.99 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 167.64 50.8 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 167.64 50.8 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 8a1715f2-69bd-4e73-a336-72ef1d1cd272))
+    (pin "1" (uuid 37ee27fc-e0df-421f-887d-1c5950b7018f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR13") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR13") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 172.72 60.96 0)
@@ -2032,7 +2036,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 09a9f63c-35a0-41da-98df-46fbdba364fd)
+    (uuid 75350cfb-77a5-4498-acf1-66195c2c188e)
     (property
       "Reference"
       "#PWR14"
@@ -2041,40 +2045,45 @@
     (property "Value" "GND" (at 172.72 64.77 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 172.72 60.96 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 172.72 60.96 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 3abdad92-2d1f-4730-ac5a-fba9813fece4))
+    (pin "1" (uuid 6dc6c62a-3974-42a2-8aae-cafb20710c47))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR14") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR14") (unit 1)))))
   (label
     "+12V_F"
     (at 209.55 50.8 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 4cdb284d-bbed-4589-8c0f-af2eb8dc6002))
+    (uuid a9cfca71-2498-48d4-98ef-e78ec652981b))
   (symbol
-    (lib_id "Transistor_BJT:BC547")
+    (lib_id "Transistor_BJT:PN2222A")
     (at 198.12 71.12 0)
     (unit 1)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 38a30c5c-b5e2-496f-89ea-58fdb67cfab0)
+    (uuid e7fbe1bc-ba42-45ba-b872-d6c9e7fa731d)
     (property "Reference" "Q2" (at 203.2 69.85 0) (effects (font (size 1.27 1.27)) (justify left)))
-    (property "Value" "BC547" (at 203.2 72.39 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "PN2222A" (at 203.2 72.39 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Footprint"
       "Package_TO_SOT_THT:TO-92_Inline"
       (at 198.12 71.12 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 198.12 71.12 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 3e67d28b-736d-4968-a025-e86ba7cfab2a))
-    (pin "2" (uuid fdb488ca-c706-4397-8249-0e31bb2910be))
-    (pin "3" (uuid 4b07a60d-3dd2-457a-8dc3-333a8af7ef26))
+    (property
+      "Note"
+      "E-B-C pinout (PN2222A). A P2N2222A is C-B-E: check the part."
+      (at 198.12 71.12 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 6f393487-da5a-40b9-850b-013a2c1335f5))
+    (pin "2" (uuid 9d627eaf-57a1-4f9d-81eb-a463b8b1ee5f))
+    (pin "3" (uuid 670287e2-e1a9-4c7a-9ee0-b8b4dc9b8ae0))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "Q2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "Q2") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 200.66 76.2 0)
@@ -2082,7 +2091,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 24bbded7-0ee1-4904-907a-6df87453b9fc)
+    (uuid 0fdded05-8419-4458-b87a-617931c444ae)
     (property
       "Reference"
       "#PWR15"
@@ -2091,11 +2100,11 @@
     (property "Value" "GND" (at 200.66 80.01 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 200.66 76.2 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 200.66 76.2 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 1d3abb16-9df8-407c-b08c-dd8efe3843fb))
+    (pin "1" (uuid 7518c891-dfbe-490f-b400-7097c74fc492))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR15") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR15") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 190.5 74.93 0)
@@ -2103,7 +2112,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid ec32054b-1d7e-4410-bcae-239d07488217)
+    (uuid d7f52ad0-9e5e-4cce-96bb-c1152cc39a83)
     (property "Reference" "R2" (at 187.96 76.2 0) (effects (font (size 1.27 1.27)) (justify right)))
     (property "Value" "47k" (at 187.96 78.74 0) (effects (font (size 1.27 1.27)) (justify right)))
     (property
@@ -2112,12 +2121,12 @@
       (at 190.5 74.93 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 190.5 74.93 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid b6348a7b-7d14-47d4-a86d-273118bc8f72))
-    (pin "2" (uuid 82e125a6-49ec-4882-8951-d65d742ddeab))
+    (pin "1" (uuid 93256e50-03fe-4f78-8793-08ed7b019e35))
+    (pin "2" (uuid 134a946d-16b8-4456-9ca2-2c4bbb3af6c6))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R2") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 185.42 71.12 90)
@@ -2125,7 +2134,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 709320a2-3ea3-46cd-a4be-22b6285d405b)
+    (uuid 4833cbdf-38d5-42f4-a5c7-5835605e646e)
     (property "Reference" "R1" (at 181.61 64.77 90) (effects (font (size 1.27 1.27))))
     (property "Value" "4.7k" (at 181.61 67.31 90) (effects (font (size 1.27 1.27))))
     (property
@@ -2134,12 +2143,12 @@
       (at 185.42 71.12 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 185.42 71.12 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid b7579532-d34b-4376-96dd-1cd8ad50ef8b))
-    (pin "2" (uuid b3eb1122-a357-4a52-b877-ee70a029b8b1))
+    (pin "1" (uuid 23e1c429-b26f-45e4-a148-316699b3a280))
+    (pin "2" (uuid bdce757d-8c7b-4203-ba82-8353eb171554))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R1") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 190.5 78.74 0)
@@ -2147,7 +2156,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 70ad4b2d-4748-4ed4-ace0-4360acbdea8a)
+    (uuid da08e3e9-8c50-4635-8c55-f71dd32777e9)
     (property
       "Reference"
       "#PWR16"
@@ -2156,17 +2165,17 @@
     (property "Value" "GND" (at 190.5 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 190.5 78.74 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 190.5 78.74 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 663423ae-14b3-4f58-9d43-72c246cb184e))
+    (pin "1" (uuid 297bee16-2f5d-4d97-ac85-aea65bbc3108))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR16") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR16") (unit 1)))))
   (label
     "FEEDER_EN"
     (at 179.07 71.12 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 7cedc781-cc05-4589-8260-4ca28cede327))
+    (uuid 347537b8-1e2a-4e20-9bc7-13843d25985b))
   (symbol
     (lib_id "Device:D_Schottky")
     (at 228.6 90.17 270)
@@ -2174,7 +2183,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 89f65614-0475-4cbc-a38c-4afc1d41e90e)
+    (uuid 6fcee6a1-1d5e-4d7d-8bfa-e8755cc67248)
     (property "Reference" "D1" (at 222.25 88.9 270) (effects (font (size 1.27 1.27))))
     (property "Value" "1N5819" (at 222.25 91.44 270) (effects (font (size 1.27 1.27))))
     (property
@@ -2183,12 +2192,12 @@
       (at 228.6 90.17 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 228.6 90.17 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 27eceac9-362f-4f4a-915c-a6c9782d3d53))
-    (pin "2" (uuid 9274aef4-47f2-453a-b09d-986eb51574a8))
+    (pin "1" (uuid 8ea684e4-0ef9-4e27-8801-17793b88b13b))
+    (pin "2" (uuid 538d8a6a-c320-433d-a9ae-d8e0c077cf4a))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "D1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "D1") (unit 1)))))
   (symbol
     (lib_id "Device:C")
     (at 241.3 90.17 0)
@@ -2196,7 +2205,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 24f656ec-25fe-4289-880b-795631386a25)
+    (uuid ccbf69c7-1a56-41b5-8179-6376f0b71a63)
     (property "Reference" "C3" (at 246.38 88.9 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "100nF 50V" (at 246.38 91.44 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -2205,12 +2214,12 @@
       (at 241.3 90.17 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 241.3 90.17 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 378e34ac-8199-4e1a-9c57-1dd59f551cd1))
-    (pin "2" (uuid 5a8deb8c-6160-471f-b84b-8c7e7dcc412f))
+    (pin "1" (uuid 5bfb3d53-747f-45de-bfaa-fc3e98de5ca0))
+    (pin "2" (uuid 288caf6e-1c74-4ac5-b4c1-c0d3cf543183))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C3") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C3") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 259.08 90.17 0)
@@ -2218,7 +2227,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid af1b0ef5-7a8d-4d36-9961-3ac2b6953d8b)
+    (uuid ac14202c-4487-4dd1-a96f-ffb44a841369)
     (property "Reference" "R3" (at 264.16 88.9 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "1k" (at 264.16 91.44 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -2227,12 +2236,12 @@
       (at 259.08 90.17 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 259.08 90.17 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 2e7d6a3f-88ed-47c9-9aa9-77aea96d4037))
-    (pin "2" (uuid a7b7b517-3c03-4a6a-8bf7-08167a947a34))
+    (pin "1" (uuid 3346e052-8661-41ae-8a73-684594c6e6c3))
+    (pin "2" (uuid 14b13612-8910-4a16-b7e1-720506cf8476))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R3") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R3") (unit 1)))))
   (symbol
     (lib_id "Device:LED")
     (at 259.08 101.6 90)
@@ -2240,7 +2249,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 84249c34-4ea4-4ece-889b-b3f20990830e)
+    (uuid d93c3e37-be4c-4ec0-87ff-8d6a3aa41347)
     (property "Reference" "LED1" (at 265.43 100.33 90) (effects (font (size 1.27 1.27))))
     (property "Value" "green" (at 265.43 102.87 90) (effects (font (size 1.27 1.27))))
     (property
@@ -2249,12 +2258,12 @@
       (at 259.08 101.6 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 259.08 101.6 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid dd176830-cb09-4843-b4e9-7dcf85072cf1))
-    (pin "2" (uuid 32a91e51-dc38-4d22-9002-d010f846656c))
+    (pin "1" (uuid 90a51fd2-897f-417e-875d-d04499766570))
+    (pin "2" (uuid b4a99f29-61ca-43b3-ab71-ef92f1b6fb2d))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "LED1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "LED1") (unit 1)))))
   (symbol
     (lib_id "Connector_Generic:Conn_01x03")
     (at 284.48 86.36 0)
@@ -2262,7 +2271,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 0d368d12-7a2e-48bb-a00d-c5fa5ea4a09f)
+    (uuid 84b3c9d2-859f-460e-a92c-2790c5c929ee)
     (property "Reference" "J1" (at 287.02 80.01 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "Feeder" (at 287.02 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -2276,19 +2285,19 @@
       "1 FEEDER+, 2 empty (no LiPo fits), 3 FEEDER- = GND."
       (at 284.48 86.36 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 729b68d5-f4d0-46ac-9da7-351f893625bf))
-    (pin "2" (uuid 25dc438c-9df1-4ce4-bad5-df25cb44be64))
-    (pin "3" (uuid d5308d75-4626-4954-9faa-c717247bcaa0))
+    (pin "1" (uuid 886054a2-7edd-4ac0-bda0-d9ccd3326a3d))
+    (pin "2" (uuid dd886fe5-ee1f-4ce3-9d1b-fa1f8b207865))
+    (pin "3" (uuid 3162857c-e14e-4ecc-903e-145fce87d0cf))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "J1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "J1") (unit 1)))))
   (label
     "FEEDER+"
     (at 264.16 83.82 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid b10b2fd7-2745-4250-a228-9e3fb55cd4ae))
+    (uuid 1189e0fa-74e0-4592-8e1f-b08202d4cc7e))
   (symbol
     (lib_id "power:GND")
     (at 228.6 93.98 0)
@@ -2296,7 +2305,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 6f25883a-b36c-4430-b790-1d6802afa00f)
+    (uuid bf14e8ca-67ce-4d2f-9f60-4118b5ce39ca)
     (property
       "Reference"
       "#PWR17"
@@ -2305,11 +2314,11 @@
     (property "Value" "GND" (at 228.6 97.79 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 228.6 93.98 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 228.6 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid b0c65744-d518-4acf-b436-1008a59188e8))
+    (pin "1" (uuid 93e5341b-1bcf-4dd2-a58c-51d7c837be57))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR17") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR17") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 241.3 93.98 0)
@@ -2317,7 +2326,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 1434ca23-683d-4f17-9871-9003277ee627)
+    (uuid a6db8634-446e-4167-b2c4-27767455ae88)
     (property
       "Reference"
       "#PWR18"
@@ -2326,11 +2335,11 @@
     (property "Value" "GND" (at 241.3 97.79 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 241.3 93.98 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 241.3 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid f6a9fb58-e3d3-4dcd-b0f4-44a984e3764b))
+    (pin "1" (uuid a7e072a0-3b42-494f-a9fe-9c2fc7069780))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR18") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR18") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 259.08 105.41 0)
@@ -2338,7 +2347,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid a46b5753-ad6f-4b21-b080-0a8ef7e7da2b)
+    (uuid 38429782-3577-41c2-984a-78e1e2dbfc18)
     (property
       "Reference"
       "#PWR19"
@@ -2347,12 +2356,12 @@
     (property "Value" "GND" (at 259.08 109.22 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 259.08 105.41 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 259.08 105.41 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid ae6323a2-d12f-42b5-8830-d3991fc7ab46))
+    (pin "1" (uuid 5af32314-6872-4ac3-8d8f-287bb87bcacc))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR19") (unit 1)))))
-  (no_connect (at 279.4 86.36) (uuid 91376c54-f0e8-4e00-8d0c-ed24ea7f27df))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR19") (unit 1)))))
+  (no_connect (at 279.4 86.36) (uuid 9b67bb3e-c5a8-47fe-8cc4-7bc87640c63d))
   (symbol
     (lib_id "power:GND")
     (at 274.32 88.9 0)
@@ -2360,7 +2369,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 3c3af58d-85e9-436b-9459-65c4bf65ece3)
+    (uuid 2228d3df-5110-4680-969a-8727bda4ea4d)
     (property
       "Reference"
       "#PWR20"
@@ -2369,16 +2378,16 @@
     (property "Value" "GND" (at 274.32 92.71 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 274.32 88.9 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 274.32 88.9 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 59c834cc-f4a2-48d6-8217-fe9e4a9bafe1))
+    (pin "1" (uuid a002b7f3-6cf1-42a5-bc3c-c0d466a0a107))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR20") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR20") (unit 1)))))
   (text
     "TOUCH WIRE"
     (at 127 121.92 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 7f784d1d-04b2-480c-8a22-c087207fd72a))
+    (uuid 372fdfcf-1d0b-40d4-bb76-83e748a9bc8b))
   (symbol
     (lib_id "Device:R")
     (at 147.32 134.62 90)
@@ -2386,7 +2395,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 8d629931-e0f9-4ccb-a965-6f296d2a04ae)
+    (uuid 1dd8ea4d-c1b3-49b5-9627-6754f19521f9)
     (property "Reference" "R5" (at 143.51 128.27 90) (effects (font (size 1.27 1.27))))
     (property "Value" "0R" (at 143.51 130.81 90) (effects (font (size 1.27 1.27))))
     (property
@@ -2400,12 +2409,12 @@
       "Wire link; room for a series resistor later."
       (at 147.32 134.62 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 2b3b2df2-9e93-49b2-bbef-80a706f34839))
-    (pin "2" (uuid bd8893b5-d42f-40b6-9a38-f41fc87e99bf))
+    (pin "1" (uuid 12c89470-3104-485c-a218-13ba0d24706c))
+    (pin "2" (uuid c5a49d87-8859-47c2-b83a-449c904ed41f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R5") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R5") (unit 1)))))
   (symbol
     (lib_id "Connector_Generic:Conn_01x03")
     (at 165.1 137.16 0)
@@ -2413,7 +2422,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 2deaea2c-9229-4121-8206-d70c487b4bbb)
+    (uuid abf38b69-0a2b-44ff-b1bd-d0101d9e1ccf)
     (property "Reference" "J2" (at 167.64 130.81 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Value"
@@ -2431,20 +2440,20 @@
       "Short trace from D12, no ground pour under it."
       (at 165.1 137.16 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 10c3d2b4-b3a5-463f-8cd9-de296f601e02))
-    (pin "2" (uuid 306b9fb6-2784-4216-b393-76de6538fd58))
-    (pin "3" (uuid 538abaed-eb51-4284-b880-b72e07001b8a))
+    (pin "1" (uuid 78c85e24-c32f-4bf3-b69f-13fba956b837))
+    (pin "2" (uuid fbcaf459-b48e-4f16-9af2-68e4b8de9e8f))
+    (pin "3" (uuid 1b562d21-dc40-4225-8e88-d2743ff493ae))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "J2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "J2") (unit 1)))))
   (label
     "TOUCH"
     (at 140.97 134.62 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 16172e01-0588-4baa-85b0-e1b28b772a5c))
-  (no_connect (at 160.02 137.16) (uuid 01eea260-b29b-48a8-b872-da7a4d24dd78))
+    (uuid abd8a107-ff84-4095-9c95-d44bfd1a3ba1))
+  (no_connect (at 160.02 137.16) (uuid f41e63a2-da8c-4e44-943f-f3edcb60999f))
   (symbol
     (lib_id "power:GND")
     (at 154.94 139.7 0)
@@ -2452,7 +2461,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 4e35c79b-0238-4601-b0a2-1a3fcd2c6c45)
+    (uuid 292cbef2-eaeb-45be-b62d-952b8d36e962)
     (property
       "Reference"
       "#PWR21"
@@ -2461,21 +2470,21 @@
     (property "Value" "GND" (at 154.94 143.51 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 154.94 139.7 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 154.94 139.7 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid b804495d-dff5-4f48-a5c8-7bfcd656ffbb))
+    (pin "1" (uuid c0b097ac-f14a-4541-9409-9e0fe91b83f3))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR21") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR21") (unit 1)))))
   (text
     "Short trace, no ground pour under it."
     (at 127 147.32 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid f3e1a72f-69e4-4544-8017-a0f0ba580521))
+    (uuid d10fce2f-ce00-4ab6-b137-7d669ec2bed5))
   (text
     "WATER LEVEL (SHARP)"
     (at 203.2 121.92 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 86cf06b3-c6e8-4037-9461-d6f29384a4e6))
+    (uuid 90093101-6417-46f4-999f-c84d2e516b04))
   (symbol
     (lib_id "Connector_Generic:Conn_01x03")
     (at 251.46 137.16 0)
@@ -2483,7 +2492,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 90a386b7-73fb-4dd0-9923-a126ac4a486b)
+    (uuid c72fb6a0-d02f-4254-84b9-36079685cd0c)
     (property "Reference" "J3" (at 254 130.81 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "Sharp" (at 254 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -2497,13 +2506,13 @@
       "Sensor pin order: 1 Vo, 2 GND, 3 Vcc. ZH-to-PH adapter cable."
       (at 251.46 137.16 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 4f4f09d2-f737-4fc9-95e2-c774b190c89b))
-    (pin "2" (uuid 86f110a6-13db-4a45-af00-d5203d1d7f45))
-    (pin "3" (uuid 399358d8-f0aa-4718-9beb-55f41852d1ec))
+    (pin "1" (uuid d39214f1-a868-4fe3-a07c-9c0c637dfe3a))
+    (pin "2" (uuid 8e3f816b-6cbf-4509-ab3b-6641b0d2d431))
+    (pin "3" (uuid 04efe2b2-9d78-4ef6-b12c-56c09307e4dc))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "J3") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "J3") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 233.68 134.62 270)
@@ -2511,7 +2520,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 92520e82-c8b0-4877-a1fb-8f51cecbe96d)
+    (uuid 098e9761-5ea4-48c5-97dd-952da0970baa)
     (property "Reference" "R6" (at 229.87 128.27 270) (effects (font (size 1.27 1.27))))
     (property "Value" "1k" (at 229.87 130.81 270) (effects (font (size 1.27 1.27))))
     (property
@@ -2520,12 +2529,12 @@
       (at 233.68 134.62 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 233.68 134.62 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 312b4a41-e9d2-4928-8b47-49a63eac69ce))
-    (pin "2" (uuid 674d9ca3-0b48-45ba-8dd5-fbf1205cb35f))
+    (pin "1" (uuid 57c52cba-e82c-4794-ba8c-f06adafb3261))
+    (pin "2" (uuid e111c4d4-c456-46d9-9ba5-a8bb18031976))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R6") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R6") (unit 1)))))
   (symbol
     (lib_id "Device:C")
     (at 226.06 140.97 0)
@@ -2533,7 +2542,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp yes)
-    (uuid c7e4cfa9-3bc1-4973-8029-1075c7b1f7d8)
+    (uuid acefc944-8804-4be6-84f0-d09d96a36461)
     (property "Reference" "C6" (at 215.9 142.24 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "100nF" (at 215.9 144.78 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -2547,12 +2556,12 @@
       "Optional filter; fit only if readings are noisy."
       (at 226.06 140.97 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 9fee4068-6bc6-41b5-80c4-058eb11927b2))
-    (pin "2" (uuid bc4ff306-4c20-4bd7-87c3-a8795ce1fd86))
+    (pin "1" (uuid 393a235f-2fe7-48c3-82f5-c8c3637a96cc))
+    (pin "2" (uuid c207bc9f-d7d2-406c-8e8f-bb3a4ed1e92c))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C6") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C6") (unit 1)))))
   (symbol
     (lib_id "Device:C")
     (at 213.36 158.75 0)
@@ -2560,7 +2569,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid c1a3dffd-3d56-4d3b-bdce-14d2eadd3d6e)
+    (uuid a13d216c-6c1e-4f07-bb82-87ba5ae7e2c2)
     (property "Reference" "C4" (at 210.82 157.48 0) (effects (font (size 1.27 1.27)) (justify right)))
     (property
       "Value"
@@ -2573,12 +2582,12 @@
       (at 213.36 158.75 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 213.36 158.75 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid f6492f34-6691-43b1-ad7e-9ff4656ea54c))
-    (pin "2" (uuid 28b48758-1680-4925-9d56-3ef62fddd398))
+    (pin "1" (uuid d5f90ed4-0592-41ff-a4d9-8062c3b11c19))
+    (pin "2" (uuid 22d55e38-ef27-4c02-9aba-05ff76193086))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C4") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C4") (unit 1)))))
   (symbol
     (lib_id "Device:C_Polarized")
     (at 226.06 158.75 0)
@@ -2586,7 +2595,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 16103c38-ca5e-4dc6-81e7-d250d0e45ffb)
+    (uuid 0ce4fbe1-44ec-4127-9619-46d3a983423c)
     (property "Reference" "C5" (at 231.14 157.48 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Value"
@@ -2599,18 +2608,18 @@
       (at 226.06 158.75 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 226.06 158.75 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 7b89e595-fd11-4b60-978a-acba45dce3bf))
-    (pin "2" (uuid fd4d78f6-34f0-42be-9379-0dd48b6c2d4b))
+    (pin "1" (uuid 37352d6b-8815-457e-a97a-6ada764e88f7))
+    (pin "2" (uuid 33f2f437-8842-4282-b8f3-645c2b8f4963))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C5") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C5") (unit 1)))))
   (label
     "SHARP_VO"
     (at 220.98 134.62 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 71d28712-6b41-4f99-a04b-2ae0292ccb28))
+    (uuid 6a8f40c7-c70c-4a77-8ddf-9d03ebef2bd8))
   (symbol
     (lib_id "power:GND")
     (at 226.06 144.78 0)
@@ -2618,7 +2627,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 9de69a19-965a-4e7d-bfd1-b3cdd024102c)
+    (uuid ee51c583-ece1-4d47-b629-4a59eff348d5)
     (property
       "Reference"
       "#PWR22"
@@ -2627,11 +2636,11 @@
     (property "Value" "GND" (at 226.06 148.59 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 226.06 144.78 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 226.06 144.78 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 9024b0db-29a4-4106-a64a-14016691dc0f))
+    (pin "1" (uuid 1d51bf04-9d61-4e3e-b6ab-c5b6d439fd4a))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR22") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR22") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 240.03 139.7 0)
@@ -2639,7 +2648,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 4fcf9d8b-025c-4b81-a6dc-e6299b2b03ed)
+    (uuid 8f3c2ea5-44ff-4252-ba8f-d07f49a69fdb)
     (property
       "Reference"
       "#PWR23"
@@ -2648,11 +2657,11 @@
     (property "Value" "GND" (at 240.03 143.51 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 240.03 139.7 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 240.03 139.7 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid cc431bc1-1abf-4708-97a2-5b968e30158d))
+    (pin "1" (uuid 5cd540a2-c09d-4587-a9a1-d95d7f782761))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR23") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR23") (unit 1)))))
   (symbol
     (lib_id "power:+5V")
     (at 205.74 152.4 0)
@@ -2660,7 +2669,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 3f2a2ecf-e892-48c5-be20-27f056b2b7c9)
+    (uuid 97aee621-5c13-44a0-84ad-b64c57e70129)
     (property
       "Reference"
       "#PWR24"
@@ -2669,11 +2678,11 @@
     (property "Value" "+5V" (at 205.74 148.59 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 205.74 152.4 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 205.74 152.4 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 0f30e50f-1d47-41d2-858b-83e154f8a54c))
+    (pin "1" (uuid 490ac8ff-0756-475f-af84-000c5ada2772))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR24") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR24") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 213.36 162.56 0)
@@ -2681,7 +2690,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid a2a64850-fe33-4e7f-be53-e05277a94997)
+    (uuid f20f95c9-becf-4dc1-942f-7546b30df112)
     (property
       "Reference"
       "#PWR25"
@@ -2690,11 +2699,11 @@
     (property "Value" "GND" (at 213.36 166.37 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 213.36 162.56 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 213.36 162.56 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 29692f87-0c83-43fd-9fbf-61491d997b91))
+    (pin "1" (uuid a57d7e88-ca4c-4e5b-a8fc-893d8c8dbd5a))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR25") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR25") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 226.06 162.56 0)
@@ -2702,7 +2711,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 21a809da-afd1-4b15-9e40-375d9c3aedbb)
+    (uuid e2cd0afe-fa0a-43ba-8fd4-d8e3ff3e5280)
     (property
       "Reference"
       "#PWR26"
@@ -2711,16 +2720,16 @@
     (property "Value" "GND" (at 226.06 166.37 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 226.06 162.56 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 226.06 162.56 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid acfad38d-9d2d-4b30-87c5-9b5ea07138ce))
+    (pin "1" (uuid e2b34b6f-b592-4366-a86c-a03832eb982a))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR26") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR26") (unit 1)))))
   (text
     "CONTACT LED"
     (at 274.32 121.92 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 94e4c9f9-2c18-406b-ab5d-993022b8cee6))
+    (uuid 694309ae-b27b-439b-aaa0-6693c589157c))
   (symbol
     (lib_id "Device:R")
     (at 289.56 134.62 90)
@@ -2728,7 +2737,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 0600348e-f19e-45b6-b326-ac8e200dbb29)
+    (uuid 461e09a3-d438-4599-b8d7-83459aa24e30)
     (property "Reference" "R13" (at 285.75 128.27 90) (effects (font (size 1.27 1.27))))
     (property "Value" "330" (at 285.75 130.81 90) (effects (font (size 1.27 1.27))))
     (property
@@ -2737,12 +2746,12 @@
       (at 289.56 134.62 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 289.56 134.62 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid edbf6160-0ac8-41c7-8bac-626afa493e87))
-    (pin "2" (uuid d5c8c1b2-89e3-41a7-86d5-f6dbb878815f))
+    (pin "1" (uuid db866b6e-5a51-42b7-bd71-43b3ffeef55f))
+    (pin "2" (uuid c2ecc637-8e79-4c4d-b2de-a45101005a6c))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R13") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R13") (unit 1)))))
   (symbol
     (lib_id "Device:LED")
     (at 297.18 142.24 90)
@@ -2750,7 +2759,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 24c30c07-e9a1-46e4-b032-0649398cec06)
+    (uuid 382d258f-87d9-41f2-a154-444554d7594c)
     (property "Reference" "LED2" (at 303.53 140.97 90) (effects (font (size 1.27 1.27))))
     (property "Value" "red" (at 303.53 143.51 90) (effects (font (size 1.27 1.27))))
     (property
@@ -2759,12 +2768,12 @@
       (at 297.18 142.24 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 297.18 142.24 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid f48d835e-415e-48fe-9799-5aef0bb664c5))
-    (pin "2" (uuid cca1441c-92fa-415d-a4a9-8cd4ebe98c66))
+    (pin "1" (uuid fd280d23-16cc-42e7-9e71-693b388be29f))
+    (pin "2" (uuid 5bd1d102-f02f-4696-a5a9-51f8190d0fe3))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "LED2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "LED2") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 289.56 154.94 90)
@@ -2772,7 +2781,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 98305249-03f3-4dd7-a57e-a183748e9c73)
+    (uuid 8c78f9de-f1bb-4bc4-8481-e18d2e1ea943)
     (property "Reference" "R14" (at 289.56 148.59 90) (effects (font (size 1.27 1.27))))
     (property "Value" "330" (at 289.56 151.13 90) (effects (font (size 1.27 1.27))))
     (property
@@ -2781,12 +2790,12 @@
       (at 289.56 154.94 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 289.56 154.94 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid a374cf0e-a856-4e7e-9b9c-a753816c1547))
-    (pin "2" (uuid d1a6c34f-9f29-45e0-b12d-5f4f5cef81ff))
+    (pin "1" (uuid eef40ec6-4507-449b-a974-ff033fb357d2))
+    (pin "2" (uuid c3c0db3c-b8d5-4f7a-8497-7efda8b052e5))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R14") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R14") (unit 1)))))
   (symbol
     (lib_id "Connector_Generic:Conn_01x03")
     (at 312.42 157.48 0)
@@ -2794,7 +2803,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 525715a0-3eab-42da-9be1-a2dc50d48750)
+    (uuid b06fdd3f-0e68-4ede-af07-9a81e12dbeda)
     (property "Reference" "J5" (at 314.96 151.13 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Value"
@@ -2812,19 +2821,19 @@
       "1 LED+, 2 empty, 3 GND."
       (at 312.42 157.48 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 435dcd1a-e096-40cd-8992-1a2d42e94ed8))
-    (pin "2" (uuid ad3a5fcd-e21d-405f-9d1d-d6862b2ccaf9))
-    (pin "3" (uuid d6dd2a7d-f1c3-4533-a4a4-b87b698128aa))
+    (pin "1" (uuid 27cd7909-243a-4276-8c49-9d6c0829b410))
+    (pin "2" (uuid 0b69e459-034e-42a2-a7a2-87c984522a31))
+    (pin "3" (uuid ff1714ce-ba02-4124-95d9-3c6f8ef98921))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "J5") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "J5") (unit 1)))))
   (label
     "LED_CONTACT"
     (at 276.86 134.62 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 77928c86-9a18-4c2c-9954-df2efac51f33))
+    (uuid 6a670724-2d1c-4e94-9010-e5dc36542703))
   (symbol
     (lib_id "power:GND")
     (at 297.18 146.05 0)
@@ -2832,7 +2841,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid b8541b84-6f46-42dc-a7ce-acba1acf48cf)
+    (uuid c5bc7bda-fdf9-4af2-91b4-444fc4fb2ac4)
     (property
       "Reference"
       "#PWR27"
@@ -2841,12 +2850,12 @@
     (property "Value" "GND" (at 297.18 149.86 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 297.18 146.05 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 297.18 146.05 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 869ee2b2-380e-4fef-b606-708db2fa5982))
+    (pin "1" (uuid ea72fd30-87aa-4bef-a717-d01473f08394))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR27") (unit 1)))))
-  (no_connect (at 307.34 157.48) (uuid 57bdfab8-1ed9-49f7-8eb3-171279a0ff47))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR27") (unit 1)))))
+  (no_connect (at 307.34 157.48) (uuid 008b55fa-fa34-412a-99cc-0231ec91c333))
   (symbol
     (lib_id "power:GND")
     (at 302.26 162.56 0)
@@ -2854,7 +2863,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid f1ba0960-76ac-4bed-94d4-3af1cb21d0e3)
+    (uuid cb995d4e-cd21-4eff-acdb-7306b7c5fe4f)
     (property
       "Reference"
       "#PWR28"
@@ -2863,16 +2872,16 @@
     (property "Value" "GND" (at 302.26 166.37 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 302.26 162.56 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 302.26 162.56 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 461d13f0-f057-45f3-950e-f53981a7360f))
+    (pin "1" (uuid 205132e1-69ca-481c-9019-7ecc90c4af98))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR28") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR28") (unit 1)))))
   (text
     "I2C (STEMMA order)"
     (at 325.12 121.92 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 72d3ca33-f1f8-4180-86b6-7ff0071343b7))
+    (uuid 80238fef-2e09-40bd-b121-779566ada2ed))
   (symbol
     (lib_id "Connector_Generic:Conn_01x04")
     (at 350.52 137.16 0)
@@ -2880,7 +2889,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid d78c02f6-6329-4735-b43c-a9824f6f542c)
+    (uuid 5d243014-2fa1-4b73-9ee4-806988c1f7d7)
     (property "Reference" "J6" (at 353.06 129.54 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "I2C" (at 353.06 132.08 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -2889,21 +2898,21 @@
       (at 350.52 137.16 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 350.52 137.16 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 40607e62-b15a-4f4a-affc-b444817d12f1))
-    (pin "2" (uuid 0e525bbd-019e-46b0-82e6-6ebb2ba71939))
-    (pin "3" (uuid df4b8e23-d7a3-4abb-b7be-1399582402b9))
-    (pin "4" (uuid ae1acc38-0974-447b-9751-850665a50d22))
+    (pin "1" (uuid add2ae6a-c569-4a00-b321-3079455faed8))
+    (pin "2" (uuid 4fa55c90-a8ca-442a-81d1-86f1c93753e3))
+    (pin "3" (uuid aa96768d-ab43-47ba-b6f7-0de994bd9857))
+    (pin "4" (uuid 63166bfc-bcbb-4ccb-ae98-ff32cb5f64a6))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "J6") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "J6") (unit 1)))))
   (global_label
     "GND"
     (shape passive)
     (at 342.9 134.62 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
-    (uuid 4cbee8d2-aa1f-4d50-91ca-9f8eaebf6bf5)
+    (uuid 244ad089-9138-4783-8866-2af2147e3473)
     (property
       "Intersheetrefs"
       "${INTERSHEET_REFS}"
@@ -2915,7 +2924,7 @@
     (at 332.74 137.16 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
-    (uuid 8c5366de-80f7-4176-9f87-6c64453fd611)
+    (uuid b75d2f17-d143-4216-a0d3-1a08291d84ce)
     (property
       "Intersheetrefs"
       "${INTERSHEET_REFS}"
@@ -2926,23 +2935,23 @@
     (at 340.36 139.7 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 4e4c8058-cbe6-433b-a33c-0edb9b53c4a4))
+    (uuid 9ce61f6e-238d-491f-81b5-7b488d5ecb2f))
   (label
     "SCL"
     (at 340.36 142.24 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid ccbdeb86-6e30-4a34-be05-2fc7a2bb6f3b))
+    (uuid 3fc6a352-8f20-458d-ba24-579665e1c41b))
   (text
     "RFID SUPPLY"
     (at 127 180.34 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 66934624-d30d-40b0-a9e5-4467a80b3652))
+    (uuid 2908dc17-914c-4ff7-9b39-0b73abc17a98))
   (text
     "JP2 1-2 = USB 5 V via FB1, C7 (default). Fit U2, C8, C9 and set JP2 2-3 for 6 V."
     (at 127 184.15 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid b6abb8a6-9135-442e-bdbe-15785138bce7))
+    (uuid d7b1f7fc-8138-4c09-80ca-be989f98bf34))
   (symbol
     (lib_id "Device:FerriteBead")
     (at 139.7 190.5 90)
@@ -2950,7 +2959,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid cfe98fa8-a2b6-43c8-a9ec-ad39101f65c9)
+    (uuid 01522ced-e162-4d87-9c2a-64c1cbe5c711)
     (property "Reference" "FB1" (at 139.7 195.58 90) (effects (font (size 1.27 1.27))))
     (property "Value" "Ferrite bead" (at 139.7 198.12 90) (effects (font (size 1.27 1.27))))
     (property
@@ -2959,12 +2968,12 @@
       (at 139.7 190.5 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 139.7 190.5 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 156903fd-3b1c-4d74-9740-3f965b5f5345))
-    (pin "2" (uuid fa7950b6-974a-4530-bcd3-f498d0fd5cbd))
+    (pin "1" (uuid 296a803d-207c-4d85-bd15-e12646b0b9f6))
+    (pin "2" (uuid dc35d748-3d04-4f96-9f1c-c60cf5f3f459))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "FB1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "FB1") (unit 1)))))
   (symbol
     (lib_id "Device:C_Polarized")
     (at 152.4 196.85 0)
@@ -2972,7 +2981,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 610833de-2a6a-4c33-bb4a-dec1df36cb41)
+    (uuid 4b0cb0bc-c7d6-4885-bc3a-135127c842ff)
     (property "Reference" "C7" (at 157.48 195.58 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Value"
@@ -2985,12 +2994,12 @@
       (at 152.4 196.85 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 152.4 196.85 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 7ce6a2a8-eeaa-4a15-8cab-372f1ca9296e))
-    (pin "2" (uuid 976b1b9c-4631-4faa-b59d-19aafc08b00d))
+    (pin "1" (uuid e88b2fe2-b17a-4bf5-9e2e-44b0f005311d))
+    (pin "2" (uuid 8f1d0f20-50ff-4093-81be-d2c3cd162fd3))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C7") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C7") (unit 1)))))
   (symbol
     (lib_id "Device:C")
     (at 137.16 222.25 0)
@@ -2998,7 +3007,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp yes)
-    (uuid 77c38031-0afd-4931-b1b9-c37803230f82)
+    (uuid 1c957fa3-dae7-4d0c-821a-7320d5b307fc)
     (property "Reference" "C8" (at 142.24 220.98 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "330nF" (at 142.24 223.52 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3007,12 +3016,12 @@
       (at 137.16 222.25 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 137.16 222.25 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 618a1581-a8f8-46b8-8bb0-092f81805812))
-    (pin "2" (uuid 9034cfcc-ee1d-4e39-96e6-123a292f4a20))
+    (pin "1" (uuid 19d10855-e6ff-4473-8412-6a36c726e280))
+    (pin "2" (uuid f5392960-4600-4421-aedc-122ed2bb0e45))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C8") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C8") (unit 1)))))
   (symbol
     (lib_id "Regulator_Linear:L7806")
     (at 152.4 215.9 0)
@@ -3020,7 +3029,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp yes)
-    (uuid 7979d013-91c1-4db1-a9eb-b9b93fc107ce)
+    (uuid 5461b7c8-03b7-49ed-957d-2d9343687ed5)
     (property "Reference" "U2" (at 147.32 205.74 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "LM7806" (at 147.32 208.28 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3034,13 +3043,13 @@
       "Optional: 6 V for longer RFID read range (JP2 on 2-3)."
       (at 152.4 215.9 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid b50788cd-98eb-4ef6-9042-acba25ee0633))
-    (pin "2" (uuid c89cfdcf-64bb-4209-ba5a-3885799b3604))
-    (pin "3" (uuid 731effb9-b296-4e4b-9c88-58bd70de77d1))
+    (pin "1" (uuid fcbc68e7-8ae6-4006-a872-456889308555))
+    (pin "2" (uuid 175d53fc-b86c-4dbb-b2eb-ab4f1fdd13c7))
+    (pin "3" (uuid 6fe887e1-b296-4004-bd0f-fdf0ed49f24d))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "U2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "U2") (unit 1)))))
   (symbol
     (lib_id "Device:C")
     (at 167.64 222.25 0)
@@ -3048,7 +3057,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp yes)
-    (uuid 36379210-2367-4ac8-8b00-5c4baa25c79e)
+    (uuid d0fddf93-bbae-49cf-88cb-eb04cbc34e8e)
     (property "Reference" "C9" (at 172.72 220.98 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "100nF" (at 172.72 223.52 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3057,12 +3066,12 @@
       (at 167.64 222.25 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 167.64 222.25 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 0db61925-411c-4b4b-84b1-e12900dd1d9b))
-    (pin "2" (uuid 673dfef2-26ce-4874-a72f-7439697688f8))
+    (pin "1" (uuid f4a1d215-5da9-40be-9abf-6b9a53fc6c98))
+    (pin "2" (uuid 5ae9ee1c-5492-4603-8e1f-b66fc5a8268e))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "C9") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "C9") (unit 1)))))
   (symbol
     (lib_id "Connector_Generic:Conn_01x03")
     (at 185.42 205.74 0)
@@ -3070,7 +3079,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 1300e9f3-1930-4996-9a78-fe5a5dddd8f8)
+    (uuid cdfc515f-2f70-46ed-b060-e45e485b1af3)
     (property "Reference" "JP2" (at 187.96 199.39 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Value"
@@ -3088,13 +3097,13 @@
       "Jumper on 1-2 by default."
       (at 185.42 205.74 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 05a6d9b6-815e-4bf7-b999-101b29a39df1))
-    (pin "2" (uuid 25b22b56-5638-4745-a038-890d412808d1))
-    (pin "3" (uuid 139e0b08-9546-4b21-831a-6c3e4b071842))
+    (pin "1" (uuid 4425889e-0f20-4058-a8f8-fbe59859b549))
+    (pin "2" (uuid d42a6531-79ef-401b-95f5-77deda5e44e2))
+    (pin "3" (uuid b39ee372-2d56-4ab8-a4f7-2d8298f82c7e))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "JP2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "JP2") (unit 1)))))
   (symbol
     (lib_id "power:+5V")
     (at 127 190.5 0)
@@ -3102,7 +3111,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 61e47199-90bc-4092-9143-1c30741a9bcb)
+    (uuid 68fc5bf4-2c78-4c61-b9ab-236788217309)
     (property
       "Reference"
       "#PWR29"
@@ -3111,17 +3120,17 @@
     (property "Value" "+5V" (at 127 186.69 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 127 190.5 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 127 190.5 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid f5333d24-8ec3-422d-a590-69063bf20d41))
+    (pin "1" (uuid 461e83d7-b7c1-4094-b01a-9a9f29d8569f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR29") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR29") (unit 1)))))
   (label
     "+5V_RFID"
     (at 157.48 190.5 0)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 79693922-855f-4260-8bc9-393198cddbe8))
+    (uuid 9666e76e-19a4-4bb1-bb1c-28e5fa5ff33c))
   (symbol
     (lib_id "power:GND")
     (at 152.4 200.66 0)
@@ -3129,7 +3138,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 0d43e2a7-42d6-4c55-ac38-d626a54b5d4c)
+    (uuid 6d386540-0c6d-4e53-9f34-a85c0ac8436f)
     (property
       "Reference"
       "#PWR30"
@@ -3138,11 +3147,11 @@
     (property "Value" "GND" (at 152.4 204.47 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 152.4 200.66 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 152.4 200.66 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 961c7887-9b01-4c93-a70b-1655941a886c))
+    (pin "1" (uuid d65d4bde-bec4-4e86-8a5a-04acc75405bb))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR30") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR30") (unit 1)))))
   (symbol
     (lib_id "power:+12V")
     (at 127 215.9 0)
@@ -3150,7 +3159,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 628dd7c3-e46c-4f80-bd64-cbce368a18e2)
+    (uuid 349bb509-bd9f-45e8-92f9-2f3eea45969c)
     (property
       "Reference"
       "#PWR31"
@@ -3159,11 +3168,11 @@
     (property "Value" "+12V" (at 127 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 127 215.9 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 127 215.9 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 4b872949-b9df-4553-9d20-63b1e98150a2))
+    (pin "1" (uuid b8a0ac21-521f-4710-83df-e4724be34a98))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR31") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR31") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 137.16 226.06 0)
@@ -3171,7 +3180,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 52dbf28e-4c89-458b-96a8-a82ba34f3934)
+    (uuid 5f4b47df-9268-4d08-8bf2-47692313677d)
     (property
       "Reference"
       "#PWR32"
@@ -3180,11 +3189,11 @@
     (property "Value" "GND" (at 137.16 229.87 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 137.16 226.06 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 137.16 226.06 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 55d84d07-69b8-43c1-9357-bc71c6ce4991))
+    (pin "1" (uuid eb474f1c-7fc9-41fe-bfec-46689d20418f))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR32") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR32") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 152.4 223.52 0)
@@ -3192,7 +3201,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 18cf26a6-a1e7-4cab-b836-8dd6740750c7)
+    (uuid eb98d9aa-c6c2-443b-aacb-7972d4701aa8)
     (property
       "Reference"
       "#PWR33"
@@ -3201,11 +3210,11 @@
     (property "Value" "GND" (at 152.4 227.33 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 152.4 223.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 152.4 223.52 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid a02c884b-1429-4844-a184-44920a2ed072))
+    (pin "1" (uuid ff38f5b0-1163-4726-97b8-5f3e4d390bf2))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR33") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR33") (unit 1)))))
   (symbol
     (lib_id "power:+6V")
     (at 172.72 215.9 0)
@@ -3213,7 +3222,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 903f7d7d-88d2-4c8c-a154-6771a5d064f5)
+    (uuid 7a486ac6-0151-4afc-ad76-48d3395ff5b6)
     (property
       "Reference"
       "#PWR34"
@@ -3222,11 +3231,11 @@
     (property "Value" "+6V" (at 172.72 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 172.72 215.9 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 172.72 215.9 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid daab3dbf-fe2a-46c5-9ba4-52db3a5b696c))
+    (pin "1" (uuid 72bfa830-d94f-45fc-b1a1-fce608af0ba8))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR34") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR34") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 167.64 226.06 0)
@@ -3234,7 +3243,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 8a136e3b-dfc0-4daf-aad6-5eda2037ee09)
+    (uuid 83fbc28c-03f7-41c1-802b-a816bff7b92e)
     (property
       "Reference"
       "#PWR35"
@@ -3243,32 +3252,32 @@
     (property "Value" "GND" (at 167.64 229.87 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 167.64 226.06 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 167.64 226.06 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 90e9e321-30e4-434e-898d-2ee830d8d9c5))
+    (pin "1" (uuid 73eb04c9-2750-4321-911b-2fca8e7dce5d))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR35") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR35") (unit 1)))))
   (label
     "RFID_VCC"
     (at 177.8 205.74 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid f3104996-72f9-430b-8946-f6b930714700))
+    (uuid 2437bf80-5d47-44ff-9d58-5755297f54f4))
   (text
     "RFID DATA and RESET"
     (at 254 180.34 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 29c44e45-7f06-4c1f-89ae-68b4358cf4ad))
+    (uuid ff249108-3614-449d-9555-46d9cfdf46c4))
   (text
     "TX high = RST low (inverted, as the old board)."
     (at 254 184.15 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid bea0b1f1-b219-4b99-a29d-cdf241f52601))
+    (uuid 7c12d312-da24-4cae-8f7f-ae7f0164cf9f))
   (text
     "JP1 open = 5 V TX (default). Close only for the 3.3 V TX pad."
     (at 254 241.3 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 90f85fcb-b326-46ef-97d8-6fa9d3da19c0))
+    (uuid cc3ce431-4806-4e37-9dc1-0c050b504aed))
   (symbol
     (lib_id "Connector_Generic:Conn_01x04")
     (at 317.5 205.74 0)
@@ -3276,7 +3285,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 4648cb2c-d530-4b55-95e6-5c1e2ea8d52a)
+    (uuid 2290d8e0-016a-4f64-9e96-2bc196f6f622)
     (property "Reference" "J4" (at 320.04 198.12 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "RFID" (at 320.04 200.66 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3290,14 +3299,14 @@
       "WL-134 order: 1 VCC, 2 RST, 3 TX, 4 GND (check pin 4 on the module)."
       (at 317.5 205.74 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 1c778c4d-af7d-4256-9225-dafd0ff7adab))
-    (pin "2" (uuid 886f5806-42ce-43f4-9044-25867aac7353))
-    (pin "3" (uuid 82aee052-6db7-4444-8d32-3ae319144b6f))
-    (pin "4" (uuid f6b886a4-a56b-458b-926a-385ba8dd25f2))
+    (pin "1" (uuid 97e61b9e-0c89-492a-a4b9-d0fb48368cb1))
+    (pin "2" (uuid 593d564f-f7de-4e4a-9921-f18405e0dca8))
+    (pin "3" (uuid d08e9a06-1055-4c4e-ab31-4fac8532f6d9))
+    (pin "4" (uuid 4e42e69a-1256-413d-93f4-8d95c815ded2))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "J4") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "J4") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 297.18 194.31 0)
@@ -3305,7 +3314,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 64058034-38a9-43c1-a86d-92d73e922101)
+    (uuid 731e3a35-8e6d-442e-b06b-72ada0a6ea7e)
     (property "Reference" "R10" (at 302.26 193.04 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "10k" (at 302.26 195.58 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3314,41 +3323,46 @@
       (at 297.18 194.31 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 297.18 194.31 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 7d1861d9-a07a-40fe-8e67-7179dd5a4805))
-    (pin "2" (uuid 001f6abe-5db9-450d-bbd4-4ad296b4b237))
+    (pin "1" (uuid 0601cd07-e517-4d48-ab0a-61d67a6ae25f))
+    (pin "2" (uuid f090b859-0e3c-44cc-af53-4b89e66c4e88))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R10") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R10") (unit 1)))))
   (label
     "RFID_VCC"
     (at 289.56 190.5 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid c9550f0b-8375-4b7c-ad84-9d6858956685))
+    (uuid 88fd1efd-47c8-439d-96e2-0944622c9aba))
   (symbol
-    (lib_id "Transistor_BJT:BC547")
+    (lib_id "Transistor_BJT:PN2222A")
     (at 281.94 210.82 0)
     (unit 1)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid ee6c0683-8d5e-407d-84de-a313741068a2)
+    (uuid 243b5bf0-3eda-4481-b0a1-f8fe30c2c5fc)
     (property "Reference" "Q3" (at 287.02 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
-    (property "Value" "BC547" (at 287.02 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "PN2222A" (at 287.02 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
       "Footprint"
       "Package_TO_SOT_THT:TO-92_Inline"
       (at 281.94 210.82 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 281.94 210.82 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 31fbb75c-50bd-42f4-b9c2-f084ed963969))
-    (pin "2" (uuid b9cedd3a-4ef1-4519-9d1a-def6d742ca45))
-    (pin "3" (uuid c2e5bfba-1301-4e00-b880-45064564ed87))
+    (property
+      "Note"
+      "E-B-C pinout (PN2222A). A P2N2222A is C-B-E: check the part."
+      (at 281.94 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 75cab0d7-5fb3-499b-b18e-ea4fd15e31e6))
+    (pin "2" (uuid 0b8f380c-89f1-4b09-b0d5-f4ea6d2b6ac8))
+    (pin "3" (uuid f3665769-f6fe-461a-b506-7b68c702b855))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "Q3") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "Q3") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 284.48 215.9 0)
@@ -3356,7 +3370,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 82074066-8af8-44c7-981e-933ce6cd360b)
+    (uuid 9e7ae4a7-5f4e-4cf5-9282-6b977a6d3066)
     (property
       "Reference"
       "#PWR36"
@@ -3365,11 +3379,11 @@
     (property "Value" "GND" (at 284.48 219.71 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 284.48 215.9 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 284.48 215.9 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid cdd5516f-d79a-461e-be6a-238e3a81920a))
+    (pin "1" (uuid 019b58a5-2826-45a9-ae16-327fba867027))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR36") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR36") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 271.78 214.63 0)
@@ -3377,7 +3391,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid eebf0a47-94dc-4e19-8239-035f8a7536a7)
+    (uuid a8eb8c38-a68d-428b-9f42-7c7e30bf7187)
     (property "Reference" "R9" (at 269.24 215.9 0) (effects (font (size 1.27 1.27)) (justify right)))
     (property "Value" "47k" (at 269.24 218.44 0) (effects (font (size 1.27 1.27)) (justify right)))
     (property
@@ -3386,12 +3400,12 @@
       (at 271.78 214.63 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 271.78 214.63 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid a395afe6-4c0e-4866-8553-701d60688a5d))
-    (pin "2" (uuid ab463e4f-26f7-4969-ac97-9a014d5368be))
+    (pin "1" (uuid 20d87211-45bb-4f6a-a6ec-0ab52ae1718e))
+    (pin "2" (uuid d1aa1c5f-f312-4a33-b636-93dcae8fc946))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R9") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R9") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 264.16 210.82 90)
@@ -3399,7 +3413,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 3a494eea-be58-4054-a81c-eaea7b04d1b2)
+    (uuid 46dfa067-0933-4ee6-a5ce-606a93868f86)
     (property "Reference" "R8" (at 260.35 204.47 90) (effects (font (size 1.27 1.27))))
     (property "Value" "4.7k" (at 260.35 207.01 90) (effects (font (size 1.27 1.27))))
     (property
@@ -3408,12 +3422,12 @@
       (at 264.16 210.82 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 264.16 210.82 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 255641e8-3faf-4655-8d7d-503eddf05844))
-    (pin "2" (uuid 81a54724-cea3-486f-b0e0-27feaf9529a0))
+    (pin "1" (uuid 71e72fa2-1669-4da6-8b96-5daeb4df44b0))
+    (pin "2" (uuid f091aec3-9a60-4d88-9664-ca0848289940))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R8") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R8") (unit 1)))))
   (symbol
     (lib_id "power:GND")
     (at 271.78 218.44 0)
@@ -3421,7 +3435,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 2aca0992-4bd4-44f7-83fe-de794e8d1b7e)
+    (uuid eaa03f1e-f74b-4795-8673-3ac4114fa235)
     (property
       "Reference"
       "#PWR37"
@@ -3430,17 +3444,17 @@
     (property "Value" "GND" (at 271.78 222.25 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 271.78 218.44 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 271.78 218.44 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 32e7293a-6723-4759-8208-9581b751b4fa))
+    (pin "1" (uuid e7257b12-0119-4111-a158-fcd3b7a70219))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR37") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR37") (unit 1)))))
   (label
     "RFID_RST"
     (at 257.81 210.82 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid f66c49fe-be7c-431e-91b1-81463fc92450))
+    (uuid d0a231a9-a2ad-4f69-9176-1a538d57ccd5))
   (symbol
     (lib_id "power:GND")
     (at 309.88 213.36 0)
@@ -3448,7 +3462,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 2e553c17-04b7-41f1-860f-051cc2febbca)
+    (uuid 9abc352e-9e8f-405f-b9a1-2c7dced01767)
     (property
       "Reference"
       "#PWR38"
@@ -3457,11 +3471,11 @@
     (property "Value" "GND" (at 309.88 217.17 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 309.88 213.36 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 309.88 213.36 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid c5ca7c86-2106-4f35-a180-868cc5243751))
+    (pin "1" (uuid d786db0b-caac-4aa5-93e6-acf41c9dd01e))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR38") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR38") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 294.64 226.06 270)
@@ -3469,7 +3483,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid ab1a5348-ee97-4fe7-9089-5abb9ba71b81)
+    (uuid 1394814a-c3d5-45bf-ac4b-845f80bd81e7)
     (property "Reference" "R11" (at 294.64 219.71 270) (effects (font (size 1.27 1.27))))
     (property "Value" "10k" (at 294.64 222.25 270) (effects (font (size 1.27 1.27))))
     (property
@@ -3478,12 +3492,12 @@
       (at 294.64 226.06 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 294.64 226.06 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid 741ef50b-8df5-4702-be9b-159744e162b0))
-    (pin "2" (uuid 30c9911a-920e-44d6-9b53-2bba9df84246))
+    (pin "1" (uuid d7d1acd9-0661-45aa-a5f7-767961bbd33f))
+    (pin "2" (uuid 8cc8d393-6a3b-4f19-9169-562a0e53e0a6))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R11") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R11") (unit 1)))))
   (symbol
     (lib_id "Device:R")
     (at 287.02 229.87 0)
@@ -3491,7 +3505,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 45f23498-8f84-4d96-8563-a726c0613a57)
+    (uuid 668cd1be-4514-4e9e-b3be-e295442d7c7a)
     (property "Reference" "R12" (at 276.86 231.14 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "18k" (at 276.86 233.68 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3500,12 +3514,12 @@
       (at 287.02 229.87 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 287.02 229.87 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid bcfaad5e-383d-4349-8c89-e89d8c706e43))
-    (pin "2" (uuid 6bd10a4d-06f9-4802-877e-0c1e4ecece4a))
+    (pin "1" (uuid 63634958-9e0f-4bd1-a76d-22f6ce88f0ab))
+    (pin "2" (uuid a4f45bd6-5ec5-4bf8-bb90-7429fa0e99df))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "R12") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "R12") (unit 1)))))
   (symbol
     (lib_id "Connector_Generic:Conn_01x02")
     (at 295.91 236.22 270)
@@ -3513,7 +3527,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid ce69a482-25b4-416c-8e7c-3dbcdb01ed82)
+    (uuid 01889279-a6c0-4d0c-81c6-8bffe190a7b7)
     (property "Reference" "JP1" (at 307.34 234.95 270) (effects (font (size 1.27 1.27))))
     (property "Value" "OPEN = 5V TX" (at 307.34 237.49 270) (effects (font (size 1.27 1.27))))
     (property
@@ -3527,18 +3541,18 @@
       "Close only when the module 3.3 V TX pad is wired. Never with 5 V TX."
       (at 295.91 236.22 0)
       (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid e246b57a-c553-4c62-926e-dd93638ce364))
-    (pin "2" (uuid 60e285c1-59c5-407a-b867-854dd03261b1))
+    (pin "1" (uuid c74897bb-7cf7-49a9-8c39-73ff3efa1f16))
+    (pin "2" (uuid cc415e60-58e4-4c09-a9b2-9615aa7db867))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "JP1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "JP1") (unit 1)))))
   (label
     "RFID_RX"
     (at 281.94 226.06 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 86e7dead-4f86-4cb5-b933-84fa9d325d99))
+    (uuid d2351ae9-76d8-43d0-ab1b-03eaf3e578c1))
   (symbol
     (lib_id "power:GND")
     (at 287.02 233.68 0)
@@ -3546,7 +3560,7 @@
     (in_bom no)
     (on_board no)
     (dnp no)
-    (uuid 5b599fa2-0182-4659-adf2-e7e30f915619)
+    (uuid 374bdaf7-097b-4881-b0f0-645433cab381)
     (property
       "Reference"
       "#PWR39"
@@ -3555,16 +3569,16 @@
     (property "Value" "GND" (at 287.02 237.49 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 287.02 233.68 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 287.02 233.68 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid cf82992f-443e-4f6d-a512-cc347111ace1))
+    (pin "1" (uuid 1a533647-396b-4b0e-a8a7-4da75a2210e9))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "#PWR39") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "#PWR39") (unit 1)))))
   (text
     "SPARE PINS, MOUNTING HOLES"
     (at 345.44 180.34 0)
     (effects (font (size 1.75 1.75) bold) (justify left bottom))
-    (uuid 335588a6-18ef-487b-af5f-3c6033a7ce16))
+    (uuid 99ba43bb-e042-4a38-8e45-a987e8c6cd0d))
   (symbol
     (lib_id "Connector_Generic:Conn_01x12")
     (at 378.46 223.52 0)
@@ -3572,7 +3586,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 60b3d683-ef6d-4067-9c33-825c17c0f982)
+    (uuid dfdf67c5-6822-408f-9a56-ae64bd72e274)
     (property "Reference" "J7" (at 381 205.74 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "Spare pins" (at 381 208.28 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3581,29 +3595,29 @@
       (at 378.46 223.52 0)
       (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 378.46 223.52 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid f6892601-2427-4877-a431-6660f9fac7f2))
-    (pin "10" (uuid c6952d46-9ff4-4f61-9fb1-0931c54f2ea1))
-    (pin "11" (uuid eb7bef54-5799-475e-9f2f-af792f6a87d2))
-    (pin "12" (uuid be244234-b516-4829-81b5-2fa30f332fbc))
-    (pin "2" (uuid 32ea1e4e-545a-460b-9935-605cb272e28f))
-    (pin "3" (uuid 7bb40497-7900-49f2-b583-c40fc5e8e6f7))
-    (pin "4" (uuid d70003a5-defd-4d84-8a54-0d2e027e79a1))
-    (pin "5" (uuid 0b56f7f5-9bd1-413d-9b81-3b5f39b06eb1))
-    (pin "6" (uuid e50ee033-fd80-4b17-82c1-84476d25f6c6))
-    (pin "7" (uuid 0bf4a58e-aebb-4e5a-9570-6da15962739c))
-    (pin "8" (uuid e23b4181-bdd8-49c7-8f64-1521c329666d))
-    (pin "9" (uuid 3270e204-97c8-4f5c-9f16-34d25ce66d71))
+    (pin "1" (uuid 00756f2e-e85c-49ec-be00-c8b5ea7ee80b))
+    (pin "10" (uuid 1b8e19eb-ee0b-45a0-8447-06386cfde2c1))
+    (pin "11" (uuid a931fc38-e507-4242-859b-ed45e4a0260f))
+    (pin "12" (uuid c7e3cae9-8342-44f5-a938-98bb330f5ea6))
+    (pin "2" (uuid 789f8065-af43-4feb-980d-070250984daa))
+    (pin "3" (uuid 73d1bd19-39dc-40f7-bd24-c6db6e9bdfc4))
+    (pin "4" (uuid 703d759c-ebe5-4883-b2d4-c06fbb2fb0de))
+    (pin "5" (uuid 5021b8fb-6dae-493a-9d7d-845c04a246df))
+    (pin "6" (uuid 1cdea92b-90eb-458c-95d9-96adbcb1ed06))
+    (pin "7" (uuid 31024b62-7051-4c2b-9a8e-a36b1d628cd6))
+    (pin "8" (uuid 21af7b9b-4cc8-409f-ba54-45703a1fcdef))
+    (pin "9" (uuid f5d9d7d4-d2e1-4346-9bc8-c496870a8173))
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "J7") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "J7") (unit 1)))))
   (global_label
     "+5V"
     (shape passive)
     (at 370.84 210.82 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
-    (uuid a20f8bd1-9939-47a6-84ea-23022cc2cc1e)
+    (uuid f2fa990d-f132-48c4-b999-b1cfe702b8bd)
     (property
       "Intersheetrefs"
       "${INTERSHEET_REFS}"
@@ -3615,7 +3629,7 @@
     (at 360.68 213.36 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
-    (uuid 9fea96da-61aa-40b3-bf33-bbad0923e4af)
+    (uuid 213d2d23-e1d8-4073-8954-42bc197791c7)
     (property
       "Intersheetrefs"
       "${INTERSHEET_REFS}"
@@ -3627,7 +3641,7 @@
     (at 370.84 215.9 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
-    (uuid 9bc394ff-94b9-44c3-9b3b-7bf7aab7b508)
+    (uuid b9d1b5d2-96c1-40fa-8234-93bdd3d6ffc9)
     (property
       "Intersheetrefs"
       "${INTERSHEET_REFS}"
@@ -3638,56 +3652,56 @@
     (at 360.68 218.44 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid a2b7c8e6-fa91-41ee-a13c-b9e6e11df225))
+    (uuid 7c0b7922-ef83-457f-996f-1e04da9b13fc))
   (label
     "D6"
     (at 360.68 220.98 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid be799b01-8446-4871-9503-56137855672a))
+    (uuid 9b109ba2-0c8c-4c6c-a444-06dcb801df32))
   (label
     "D11"
     (at 360.68 223.52 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 968e231c-27ab-4606-ac4d-1e58968399e0))
+    (uuid 8ce63c86-4d03-4382-89d8-dbb3c2482170))
   (label
     "D13"
     (at 360.68 226.06 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 6668896b-ce23-4c20-9dfe-a8837a5023ed))
+    (uuid 9664e523-4590-4c08-ad0c-8a624bebddd4))
   (label
     "A1"
     (at 360.68 228.6 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 555e51e5-0738-414f-8647-39848578940a))
+    (uuid 6b04e08d-c74f-4f48-a8e8-5905a5a86186))
   (label
     "A2"
     (at 360.68 231.14 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 1e5fb179-1e1c-4a5e-9c10-c41f17624696))
+    (uuid 4ca69c9d-c14b-47b8-8a28-cb23c8e4c1e2))
   (label
     "A3"
     (at 360.68 233.68 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 25042e2e-b0cb-4993-b39c-b624b2c3d0c5))
+    (uuid ac09eaf7-f9db-4428-858b-5bc390f51b25))
   (label
     "A4"
     (at 360.68 236.22 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid 322c5200-1dbf-42e9-8a9e-adf557a8d2a5))
+    (uuid 17b811d6-57c8-4327-911b-e2d9908bb3fe))
   (global_label
     "GND"
     (shape passive)
     (at 370.84 238.76 180)
     (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
-    (uuid abcad6c9-6d56-4628-8914-c01985c9c897)
+    (uuid 3cdfebc7-9f78-4fb7-8b57-c320e393a7e8)
     (property
       "Intersheetrefs"
       "${INTERSHEET_REFS}"
@@ -3700,7 +3714,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid e23e337a-1eed-4112-a689-6bc6580f1e13)
+    (uuid 13b462fd-3409-44b2-958d-b361d28418f8)
     (property "Reference" "H1" (at 350.52 191.77 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "M3" (at 350.52 194.31 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3712,7 +3726,7 @@
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "H1") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "H1") (unit 1)))))
   (symbol
     (lib_id "Mechanical:MountingHole")
     (at 358.14 193.04 0)
@@ -3720,7 +3734,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 2f0d6a80-8de8-4cba-a43e-4fc0b43ac660)
+    (uuid bb2e04f3-0d02-44b4-95ad-fb9134b5cf91)
     (property "Reference" "H2" (at 363.22 191.77 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "M3" (at 363.22 194.31 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3732,7 +3746,7 @@
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "H2") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "H2") (unit 1)))))
   (symbol
     (lib_id "Mechanical:MountingHole")
     (at 345.44 203.2 0)
@@ -3740,7 +3754,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 70a23429-b80d-41a8-aff4-2e3fd60f4578)
+    (uuid 2230e6a5-dd6e-41d0-b010-adc94dabd5ef)
     (property "Reference" "H3" (at 350.52 201.93 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "M3" (at 350.52 204.47 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3752,7 +3766,7 @@
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "H3") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "H3") (unit 1)))))
   (symbol
     (lib_id "Mechanical:MountingHole")
     (at 358.14 203.2 0)
@@ -3760,7 +3774,7 @@
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid 405914d9-3bf3-4da1-b635-11151afb9619)
+    (uuid 085046d0-887a-4725-9f96-35c5f370f79f)
     (property "Reference" "H4" (at 363.22 201.93 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Value" "M3" (at 363.22 204.47 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property
@@ -3772,625 +3786,625 @@
     (instances
       (project
         "FeederController"
-        (path "/7e6fc4a9-9e6e-4b0b-b507-d9388952a6cd" (reference "H4") (unit 1)))))
+        (path "/572cbe07-3d7d-4a46-b609-b4a7fe5bf95d" (reference "H4") (unit 1)))))
   (text
     "All parts through-hole. DNP: C6, U2, C8, C9. Generated by tools/gen_schematic.py; check with --check."
     (at 25.4 281.94 0)
     (effects (font (size 1.5 1.5)) (justify left bottom))
-    (uuid c909ee8b-7a21-43ac-a9d6-a81ce67354e5))
+    (uuid 6eb9d218-f823-4ee8-8cb2-b8d1878575cf))
   (wire
     (pts (xy 66.04 71.12) (xy 66.04 68.58))
     (stroke (width 0) (type default))
-    (uuid 642d0fdf-df51-4692-8f64-b7c5b360706d))
+    (uuid 639ec3f5-18d9-4e01-a634-6597a18141f2))
   (wire
     (pts (xy 63.5 134.62) (xy 63.5 137.16))
     (stroke (width 0) (type default))
-    (uuid 543855ed-47a3-4d6b-997d-6baf8ff6b919))
+    (uuid fd5d9b4f-9334-4c8d-b134-cd3473a11f38))
   (wire
     (pts (xy 76.2 96.52) (xy 78.74 96.52))
     (stroke (width 0) (type default))
-    (uuid 5dadbbda-6799-4aed-915a-e0c003402168))
+    (uuid c44bd43e-7331-4bbf-b44d-bd9707a7f55d))
   (wire
     (pts (xy 76.2 99.06) (xy 78.74 99.06))
     (stroke (width 0) (type default))
-    (uuid ef65c525-ecec-4337-ba91-c81d178ccbdd))
+    (uuid e6999568-b553-49fd-b80f-9c88b921f1d3))
   (wire
     (pts (xy 76.2 101.6) (xy 78.74 101.6))
     (stroke (width 0) (type default))
-    (uuid 74cba13c-3461-466f-84f6-32ce266e115f))
+    (uuid 99f818d5-8d8e-4607-bfaf-402fae23946a))
   (wire
     (pts (xy 76.2 104.14) (xy 78.74 104.14))
     (stroke (width 0) (type default))
-    (uuid c3469192-33c2-4f85-9a12-ed488cc4a9e3))
+    (uuid 5afce4db-5364-435b-87a9-86587c283cef))
   (wire
     (pts (xy 76.2 106.68) (xy 78.74 106.68))
     (stroke (width 0) (type default))
-    (uuid a1d3dd80-8dcd-4e1d-88af-ec4efe7b9db5))
+    (uuid 9e2c2117-5737-42ce-adb2-0d33e311fb2b))
   (wire
     (pts (xy 76.2 109.22) (xy 78.74 109.22))
     (stroke (width 0) (type default))
-    (uuid db997a59-d793-46dd-a78e-0ac249c3cc59))
+    (uuid daab6d3a-c4dc-49e7-9e1b-420d39bbfa0e))
   (wire
     (pts (xy 50.8 114.3) (xy 48.26 114.3))
     (stroke (width 0) (type default))
-    (uuid 7838dd05-b1cc-4a6e-b039-23093ec385d1))
+    (uuid 268ae186-e3d8-4fcb-b62d-f8a6056b2209))
   (wire
     (pts (xy 50.8 116.84) (xy 48.26 116.84))
     (stroke (width 0) (type default))
-    (uuid e62256c9-a52b-4f01-bc5a-1123dda3e324))
+    (uuid 97648adf-6224-48c8-91bf-a85c3118d508))
   (wire
     (pts (xy 50.8 121.92) (xy 48.26 121.92))
     (stroke (width 0) (type default))
-    (uuid 385f2706-7dd7-40c0-a5da-efbb5dd4e3dd))
+    (uuid 7425ed6d-cc7e-45d2-9c52-669d8ace9307))
   (wire
     (pts (xy 50.8 124.46) (xy 48.26 124.46))
     (stroke (width 0) (type default))
-    (uuid cbab4c25-2072-4915-9f11-9d2cb367e947))
+    (uuid 0071ceb6-02eb-4ece-9faf-2689f15f158b))
   (wire
     (pts (xy 50.8 81.28) (xy 48.26 81.28))
     (stroke (width 0) (type default))
-    (uuid f22a129e-c984-4fe8-af44-08789afdb7d1))
+    (uuid acbe7c7d-5a80-4f72-b1a6-fb8ef2fe1003))
   (wire
     (pts (xy 50.8 83.82) (xy 48.26 83.82))
     (stroke (width 0) (type default))
-    (uuid 7d723c54-841e-47ce-82c0-2210ca3c09e6))
+    (uuid 7649a1ae-2060-48d9-9a55-298e5822c7c2))
   (wire
     (pts (xy 50.8 86.36) (xy 48.26 86.36))
     (stroke (width 0) (type default))
-    (uuid 8ffa4d21-9e07-47a9-95a9-8835fa3fd59b))
+    (uuid 97122e59-2f42-4a99-b8a4-e66fc833461e))
   (wire
     (pts (xy 50.8 91.44) (xy 48.26 91.44))
     (stroke (width 0) (type default))
-    (uuid 1de471df-00cc-42fd-b6e5-6af7fff62beb))
+    (uuid c6b483d4-b506-485e-80e0-161c0e5e41b9))
   (wire
     (pts (xy 50.8 93.98) (xy 48.26 93.98))
     (stroke (width 0) (type default))
-    (uuid aa33cab5-50e9-4442-9311-f55e22b41c07))
+    (uuid f05a266e-53f7-4bc4-9690-874809a7bb3b))
   (wire
     (pts (xy 50.8 96.52) (xy 48.26 96.52))
     (stroke (width 0) (type default))
-    (uuid 8989d4ab-030d-44cf-89ec-d10629a00817))
+    (uuid e778de4f-995c-46bf-b8cc-6f5a81d5ee87))
   (wire
     (pts (xy 68.58 71.12) (xy 68.58 63.5))
     (stroke (width 0) (type default))
-    (uuid 7065b904-c2ad-4686-b254-e92b834a892b))
+    (uuid f504ef40-c7d8-42de-afa3-feb771d2919a))
   (wire
     (pts (xy 30.48 165.1) (xy 40.64 165.1))
     (stroke (width 0) (type default))
-    (uuid 5d82a5b0-9b8f-4a04-8f8c-c61176094119))
+    (uuid 6bbae135-1b39-49f7-a45e-7bf04174a05c))
   (wire
     (pts (xy 55.88 165.1) (xy 66.04 165.1))
     (stroke (width 0) (type default))
-    (uuid 68acb236-9710-4354-87c2-8d922f900fa9))
+    (uuid c0e4d5ab-76bb-469d-92d4-c44f6f1a3af2))
   (wire
     (pts (xy 81.28 165.1) (xy 91.44 165.1))
     (stroke (width 0) (type default))
-    (uuid 131bb22b-4f41-471f-a43d-fc70fbb36099))
+    (uuid 816499c5-3370-433d-b088-04e4915fc3a5))
   (wire
     (pts (xy 129.54 50.8) (xy 134.62 50.8))
     (stroke (width 0) (type default))
-    (uuid b969f1d7-c89d-424d-9145-0ff9740ca34e))
+    (uuid 5e5727fe-028f-455f-9f6e-c4493c8e07cc))
   (wire
     (pts (xy 134.62 50.8) (xy 142.24 50.8))
     (stroke (width 0) (type default))
-    (uuid 3279a800-4699-4b97-bb95-e236d4863885))
+    (uuid db403963-f11d-4dd8-8922-ed14fdbffcfa))
   (wire
     (pts (xy 134.62 50.8) (xy 134.62 53.34))
     (stroke (width 0) (type default))
-    (uuid 0625675b-aaae-4c88-b334-0172ce353401))
+    (uuid 300a0df1-6e24-46a1-9677-031a80db8ae4))
   (wire
     (pts (xy 162.56 50.8) (xy 167.64 50.8))
     (stroke (width 0) (type default))
-    (uuid f282c4fd-ba16-40a7-867d-ec6ffe8a13d9))
+    (uuid 5444ff0c-4d60-455d-9925-e68a91cf60a8))
   (wire
     (pts (xy 167.64 50.8) (xy 172.72 50.8))
     (stroke (width 0) (type default))
-    (uuid 05884841-6c52-4dea-9c57-896a32252e0f))
+    (uuid aa0f0313-82a6-4ebe-8ee6-2026e5d3e926))
   (wire
     (pts (xy 172.72 50.8) (xy 186.69 50.8))
     (stroke (width 0) (type default))
-    (uuid 69f4f6cb-31e7-4618-8e28-adf91eb3d9e6))
+    (uuid bb1eb081-a05f-43c1-994d-e99f176de3a9))
   (wire
     (pts (xy 172.72 50.8) (xy 172.72 53.34))
     (stroke (width 0) (type default))
-    (uuid 09852895-ec5d-4e1c-96c8-af9d89dd057f))
+    (uuid e8bdf0a1-ff7f-46f4-852b-37104323c0c4))
   (wire
     (pts (xy 194.31 50.8) (xy 200.66 50.8))
     (stroke (width 0) (type default))
-    (uuid fa702aff-bcac-439e-ad29-360f12e77a5e))
+    (uuid 5e0da066-c579-497c-bfc8-e6a5675b3da8))
   (wire
     (pts (xy 200.66 50.8) (xy 218.44 50.8))
     (stroke (width 0) (type default))
-    (uuid 743c01b1-c559-40cd-8904-28d082041c29))
+    (uuid ab3adea8-c29b-45ef-9d75-e7924121f261))
   (wire
     (pts (xy 218.44 50.8) (xy 218.44 53.34))
     (stroke (width 0) (type default))
-    (uuid 8888f037-e838-47d5-87d4-8069ee6fb09e))
+    (uuid cea99215-390c-451b-b13f-d2e2cb11cd35))
   (wire
     (pts (xy 200.66 58.42) (xy 210.82 58.42))
     (stroke (width 0) (type default))
-    (uuid 7d165a94-89bf-48c2-9cdf-f7b85b7fa9f6))
+    (uuid f8cc4003-3192-494c-8c10-25474c322912))
   (wire
     (pts (xy 200.66 66.04) (xy 200.66 58.42))
     (stroke (width 0) (type default))
-    (uuid a31813d5-c0a5-4929-875e-e83698ce6856))
+    (uuid e1aa2541-28fb-4239-9efe-9b816b9ab62b))
   (wire
     (pts (xy 189.23 71.12) (xy 190.5 71.12))
     (stroke (width 0) (type default))
-    (uuid 6800f200-2fb8-4754-a48f-34ee228db1b0))
+    (uuid 1291f04a-fbd7-4625-bde3-e6ed7836ae24))
   (wire
     (pts (xy 190.5 71.12) (xy 193.04 71.12))
     (stroke (width 0) (type default))
-    (uuid 2183b3f3-195c-4145-84d4-ff8040fae1a9))
+    (uuid fa084a75-5410-45ab-a2ce-5930fa04ee31))
   (wire
     (pts (xy 181.61 71.12) (xy 179.07 71.12))
     (stroke (width 0) (type default))
-    (uuid d6de6363-d7e6-4804-abe9-6b9c5ac09625))
+    (uuid 191c7ffa-e11a-4a4f-9bac-42ff2f08bc1a))
   (wire
     (pts (xy 218.44 63.5) (xy 218.44 83.82))
     (stroke (width 0) (type default))
-    (uuid a0000dec-94fa-4a48-ab60-8356992f9903))
+    (uuid 291b3b02-6237-4a54-a71b-e885d98ab917))
   (wire
     (pts (xy 218.44 83.82) (xy 228.6 83.82))
     (stroke (width 0) (type default))
-    (uuid f7578ddd-8a07-427b-b6c9-fcb3d3bc4557))
+    (uuid 9b3bcdba-1cbf-4f2e-acda-8ef500abc2e8))
   (wire
     (pts (xy 228.6 83.82) (xy 241.3 83.82))
     (stroke (width 0) (type default))
-    (uuid 693689b8-7bb8-489b-aef6-ac30861fab7b))
+    (uuid 6fe70171-6343-4ed2-a3db-3e362e0b707a))
   (wire
     (pts (xy 241.3 83.82) (xy 259.08 83.82))
     (stroke (width 0) (type default))
-    (uuid a8c334e2-83a1-44d3-8085-c13d3767e570))
+    (uuid 5d46ac98-c6ae-475a-b760-b384b5d4e761))
   (wire
     (pts (xy 259.08 83.82) (xy 279.4 83.82))
     (stroke (width 0) (type default))
-    (uuid f1edea01-462b-4755-98f2-4df6bfa93587))
+    (uuid 00b4d116-4593-47b9-87bd-5f9ea137b1c7))
   (wire
     (pts (xy 228.6 83.82) (xy 228.6 86.36))
     (stroke (width 0) (type default))
-    (uuid 4ae2ca0f-87f1-4f6f-97f3-1ab2ec414732))
+    (uuid 5b703a61-e879-4a09-8f0c-541541b5f4bc))
   (wire
     (pts (xy 241.3 83.82) (xy 241.3 86.36))
     (stroke (width 0) (type default))
-    (uuid 623a58a5-ab72-4859-83cc-4e467c0b7f11))
+    (uuid 072f3e10-7d7d-4932-8ef9-a147db2f88ba))
   (wire
     (pts (xy 259.08 83.82) (xy 259.08 86.36))
     (stroke (width 0) (type default))
-    (uuid ca4564d1-a996-4b7c-b25f-286eed298dbf))
+    (uuid 5485bc3f-3c58-45ba-92cf-8a8502aa0383))
   (wire
     (pts (xy 259.08 93.98) (xy 259.08 97.79))
     (stroke (width 0) (type default))
-    (uuid 87d2c4dc-35da-44a5-9988-9276e8c50026))
+    (uuid a4ce4ab4-f478-4c57-9dd8-26ba103c7313))
   (wire
     (pts (xy 279.4 88.9) (xy 274.32 88.9))
     (stroke (width 0) (type default))
-    (uuid fbc25392-10a5-49d2-8bf5-b74febe1885b))
+    (uuid bab6463e-647b-48d8-9fe8-63910f71c477))
   (wire
     (pts (xy 143.51 134.62) (xy 140.97 134.62))
     (stroke (width 0) (type default))
-    (uuid 7c3bff36-ce09-46c0-b325-31625efeaa23))
+    (uuid 282046fe-80f5-4172-9334-d866dfbfbfc5))
   (wire
     (pts (xy 151.13 134.62) (xy 160.02 134.62))
     (stroke (width 0) (type default))
-    (uuid e5183100-6832-4ef5-964a-2c883e47f758))
+    (uuid b4792a45-6967-40b3-8e30-b7cdcf58a019))
   (wire
     (pts (xy 160.02 139.7) (xy 154.94 139.7))
     (stroke (width 0) (type default))
-    (uuid 0ea6d8e7-bd4c-435a-bbfa-0bf89f42326b))
+    (uuid 0cc335c6-216c-4f8b-9afd-ce6b59816716))
   (wire
     (pts (xy 246.38 134.62) (xy 237.49 134.62))
     (stroke (width 0) (type default))
-    (uuid 3eccc4e3-0c3d-470e-a2c2-aa8e807e55ea))
+    (uuid 99f5a6a4-6a73-410d-b5bb-14978d85bc2a))
   (wire
     (pts (xy 229.87 134.62) (xy 226.06 134.62))
     (stroke (width 0) (type default))
-    (uuid beb065f6-d798-412d-b530-72e38565fef2))
+    (uuid a0a944c4-cf08-4338-8bad-008e5fc90a41))
   (wire
     (pts (xy 226.06 134.62) (xy 220.98 134.62))
     (stroke (width 0) (type default))
-    (uuid b91ebab1-8ad1-4ada-909b-31503310fa09))
+    (uuid 1f6cb24b-fbdf-4993-a329-4d1fb93a29f5))
   (wire
     (pts (xy 226.06 134.62) (xy 226.06 137.16))
     (stroke (width 0) (type default))
-    (uuid 9df0b546-e06d-4d4d-b511-292ffac76044))
+    (uuid 10a9da66-bb9e-4165-8bd4-d0200f757a31))
   (wire
     (pts (xy 246.38 137.16) (xy 240.03 137.16))
     (stroke (width 0) (type default))
-    (uuid 5d8b017c-5e56-4bc4-9950-cc03034f4df0))
+    (uuid 667f3212-11d6-4b42-a888-37f8df18ba55))
   (wire
     (pts (xy 240.03 137.16) (xy 240.03 139.7))
     (stroke (width 0) (type default))
-    (uuid 62464cc0-7035-47b8-8853-b36fac53b4d0))
+    (uuid aab25cdd-f316-4d9a-9e31-9c486ecf6ea2))
   (wire
     (pts (xy 246.38 139.7) (xy 243.84 139.7))
     (stroke (width 0) (type default))
-    (uuid 43dc65c7-45ce-44b4-8141-272bef1970a4))
+    (uuid ea7176a5-d0f6-414e-9be8-c150b682a62d))
   (wire
     (pts (xy 243.84 139.7) (xy 243.84 152.4))
     (stroke (width 0) (type default))
-    (uuid 4e2661cd-0d1b-4d8e-9148-b329591e2b3d))
+    (uuid 8aa235ba-c3e6-49b9-8dce-6457f9761fe8))
   (wire
     (pts (xy 243.84 152.4) (xy 226.06 152.4))
     (stroke (width 0) (type default))
-    (uuid f67e321a-e288-4411-b1b8-7efeada2f736))
+    (uuid 5a9d1df3-3e8a-4d59-b2bb-6e75f1abe4b2))
   (wire
     (pts (xy 226.06 152.4) (xy 213.36 152.4))
     (stroke (width 0) (type default))
-    (uuid 328b2d17-d56c-4ee8-8b0a-c98ee1a89546))
+    (uuid 30e0fb11-9127-4485-9746-60eee84c9af4))
   (wire
     (pts (xy 213.36 152.4) (xy 205.74 152.4))
     (stroke (width 0) (type default))
-    (uuid cc262e72-5502-4987-9718-5455bcb329d8))
+    (uuid 736c977e-3486-4360-9795-6ffe0675a220))
   (wire
     (pts (xy 226.06 152.4) (xy 226.06 154.94))
     (stroke (width 0) (type default))
-    (uuid d51e97b4-fbc1-458c-b64a-57203181854b))
+    (uuid b5f9947e-b37e-4a5c-8cde-3d4075e16d23))
   (wire
     (pts (xy 213.36 152.4) (xy 213.36 154.94))
     (stroke (width 0) (type default))
-    (uuid 82f193ed-4429-4a58-ac12-67dde75db9e2))
+    (uuid 0caf2347-f2fb-4013-91b1-a020ae637333))
   (wire
     (pts (xy 276.86 134.62) (xy 281.94 134.62))
     (stroke (width 0) (type default))
-    (uuid ca025f1f-3a2f-4004-9861-24096e34bd4f))
+    (uuid 7254b812-df9c-48a4-8614-e124a3e90f3a))
   (wire
     (pts (xy 281.94 134.62) (xy 285.75 134.62))
     (stroke (width 0) (type default))
-    (uuid 9e55dbdc-cf8d-4bda-8045-65aaf3cb0a09))
+    (uuid 6e271302-aafb-485f-976e-9a7b57984170))
   (wire
     (pts (xy 293.37 134.62) (xy 297.18 134.62))
     (stroke (width 0) (type default))
-    (uuid 8027609f-20de-4fd5-a5cf-cbe1f10d8daa))
+    (uuid f706391a-de6c-4737-a953-a003474e0aec))
   (wire
     (pts (xy 297.18 134.62) (xy 297.18 138.43))
     (stroke (width 0) (type default))
-    (uuid ae08a466-0f35-4899-b6f0-4e0af3da6c93))
+    (uuid 023ec1b6-41fb-4b8a-92bd-7673c9aed957))
   (wire
     (pts (xy 281.94 134.62) (xy 281.94 154.94))
     (stroke (width 0) (type default))
-    (uuid b908bd31-e40e-4578-bc00-2d017e41c784))
+    (uuid ef16472d-04e3-4ca2-b779-29bb7c17596e))
   (wire
     (pts (xy 281.94 154.94) (xy 285.75 154.94))
     (stroke (width 0) (type default))
-    (uuid e93e7274-07a5-4deb-9d6f-31629ed89de7))
+    (uuid 308b232e-8428-4149-b180-9f58c47ed164))
   (wire
     (pts (xy 293.37 154.94) (xy 307.34 154.94))
     (stroke (width 0) (type default))
-    (uuid 1a53bd77-df9f-4080-b34d-82f8bbe1430a))
+    (uuid 118ae5a3-6bab-48f5-a08a-fbfc273fd3a5))
   (wire
     (pts (xy 307.34 160.02) (xy 302.26 160.02))
     (stroke (width 0) (type default))
-    (uuid 108f598a-96c7-40d0-89eb-d43ff22691c4))
+    (uuid bd53bbb9-3c33-4b9a-b70e-1e1f482e094e))
   (wire
     (pts (xy 302.26 160.02) (xy 302.26 162.56))
     (stroke (width 0) (type default))
-    (uuid 2c98b3af-53fd-4e4e-8a65-9ac30efba5a0))
+    (uuid ff9163b0-f6a2-49b7-b4cc-2c669d56f153))
   (wire
     (pts (xy 345.44 134.62) (xy 342.9 134.62))
     (stroke (width 0) (type default))
-    (uuid 54a01cf0-d60a-443a-abc1-db8c03a193ba))
+    (uuid 3c11d3c5-e653-43d8-aa81-d5a052b4f670))
   (wire
     (pts (xy 345.44 137.16) (xy 332.74 137.16))
     (stroke (width 0) (type default))
-    (uuid d69c56f7-f182-46bc-9ca2-acae2718d5c7))
+    (uuid cb8fee4d-cddd-4f48-a2a6-c637379abc0a))
   (wire
     (pts (xy 345.44 139.7) (xy 340.36 139.7))
     (stroke (width 0) (type default))
-    (uuid 6b4b69b1-774e-4f31-b79d-65df622c81e6))
+    (uuid 499d8236-73c1-40d5-8b80-9a3d17971b34))
   (wire
     (pts (xy 345.44 142.24) (xy 340.36 142.24))
     (stroke (width 0) (type default))
-    (uuid bfb6607c-30da-46ae-beef-aa6b4187b9fb))
+    (uuid d025f604-ba7f-4555-94db-45ed37551ff6))
   (wire
     (pts (xy 127 190.5) (xy 135.89 190.5))
     (stroke (width 0) (type default))
-    (uuid 2521dc72-ab4b-43a0-b3a0-c58474b0e55e))
+    (uuid e42c3eaa-2122-4b2a-aa52-67007bec67c6))
   (wire
     (pts (xy 143.51 190.5) (xy 152.4 190.5))
     (stroke (width 0) (type default))
-    (uuid d5e0b5d6-fe87-4d8b-b251-802acdc92903))
+    (uuid 79fa7c7a-4bf1-4f9c-a2ed-8739708ca4c0))
   (wire
     (pts (xy 152.4 190.5) (xy 175.26 190.5))
     (stroke (width 0) (type default))
-    (uuid ead59699-ad62-4daa-90f9-8f1acf885924))
+    (uuid ca35d651-06f8-4ebe-811c-389b8a4f5026))
   (wire
     (pts (xy 175.26 190.5) (xy 175.26 203.2))
     (stroke (width 0) (type default))
-    (uuid 7cd53272-e56e-494f-9f83-44c6f05224da))
+    (uuid 901d23ea-3ccb-4aa4-a7e4-93f30126015d))
   (wire
     (pts (xy 175.26 203.2) (xy 180.34 203.2))
     (stroke (width 0) (type default))
-    (uuid 864491a1-57f2-4ace-8fe5-1c73222e4e1b))
+    (uuid e509020d-bca3-4ee4-a2f3-db87533b2db1))
   (wire
     (pts (xy 152.4 190.5) (xy 152.4 193.04))
     (stroke (width 0) (type default))
-    (uuid 8bdd5511-d67d-4953-b678-182d55f4917f))
+    (uuid d477f5e7-90c6-4274-a059-8364db74dae1))
   (wire
     (pts (xy 127 215.9) (xy 137.16 215.9))
     (stroke (width 0) (type default))
-    (uuid 40d7dafd-e0a6-4202-afef-d4050a7a8999))
+    (uuid 99bcd92f-3855-4157-b7a8-44d5b8f193d2))
   (wire
     (pts (xy 137.16 215.9) (xy 144.78 215.9))
     (stroke (width 0) (type default))
-    (uuid fa887c74-5bb7-428c-9109-1ebdb9177460))
+    (uuid 25f916fa-8451-4a53-8b1a-3f98c0a7badb))
   (wire
     (pts (xy 137.16 215.9) (xy 137.16 218.44))
     (stroke (width 0) (type default))
-    (uuid e407dc05-f2eb-45df-a7c7-b2c5533e542d))
+    (uuid 2849a092-ef1e-47ea-ae51-c8c16f3f9765))
   (wire
     (pts (xy 160.02 215.9) (xy 167.64 215.9))
     (stroke (width 0) (type default))
-    (uuid c8f6129a-b12b-4b93-831f-11e4948e1bc7))
+    (uuid 9c28e74a-5abd-4a10-bec8-32db654b7412))
   (wire
     (pts (xy 167.64 215.9) (xy 172.72 215.9))
     (stroke (width 0) (type default))
-    (uuid 675c9a81-9159-4a6e-a9ea-410a18fe84ea))
+    (uuid 07f37017-aa63-4924-a0ab-28210847df68))
   (wire
     (pts (xy 172.72 215.9) (xy 172.72 208.28))
     (stroke (width 0) (type default))
-    (uuid c4d64504-65d0-481d-b34b-3b4a1a0b0280))
+    (uuid deec04e0-b835-4ba6-8661-b5f885e14258))
   (wire
     (pts (xy 172.72 208.28) (xy 180.34 208.28))
     (stroke (width 0) (type default))
-    (uuid 8f66167a-b418-4be4-b691-ea81559d5d21))
+    (uuid 38c2527c-4740-478f-8bd4-81230a4bffc1))
   (wire
     (pts (xy 167.64 215.9) (xy 167.64 218.44))
     (stroke (width 0) (type default))
-    (uuid dcdb14ef-7e39-43bc-8cd0-89157cce5164))
+    (uuid da976a8d-7031-4633-9eb0-8a81a2d705d1))
   (wire
     (pts (xy 180.34 205.74) (xy 177.8 205.74))
     (stroke (width 0) (type default))
-    (uuid e3c44d68-5635-4c17-9366-41c4c886fd07))
+    (uuid e32abf58-5ac0-4786-8ab7-67e73ac3747e))
   (wire
     (pts (xy 312.42 203.2) (xy 304.8 203.2))
     (stroke (width 0) (type default))
-    (uuid ae217d11-c647-4605-b8d8-1eb7fc9ff2c9))
+    (uuid 39ab2072-95a7-422b-a7fe-d5d3dad5f6bf))
   (wire
     (pts (xy 304.8 203.2) (xy 304.8 190.5))
     (stroke (width 0) (type default))
-    (uuid 29fc985f-ba28-49b4-b6ea-bbf9ce745b56))
+    (uuid 0e7fcebf-7ff7-4995-9817-386f298940f7))
   (wire
     (pts (xy 304.8 190.5) (xy 297.18 190.5))
     (stroke (width 0) (type default))
-    (uuid 329da9b7-7652-45a6-8b3d-99a1375b463e))
+    (uuid 0e2f4d0c-a9f8-4a61-930e-bb82b9f642ac))
   (wire
     (pts (xy 297.18 190.5) (xy 289.56 190.5))
     (stroke (width 0) (type default))
-    (uuid 85a92617-2798-439b-94e4-d343790662a4))
+    (uuid 126d6024-9dc3-4d2d-80cc-f088817a7cca))
   (wire
     (pts (xy 297.18 198.12) (xy 297.18 205.74))
     (stroke (width 0) (type default))
-    (uuid fd004030-e939-41d2-9211-d50d2bea985e))
+    (uuid a56b05a9-fbf9-4870-948c-bed66b9bb080))
   (wire
     (pts (xy 312.42 205.74) (xy 297.18 205.74))
     (stroke (width 0) (type default))
-    (uuid 6ada1a44-a54b-4785-8881-fccb0a27a68c))
+    (uuid 9ffe31ed-8e75-4a73-8e11-fb932a86f7b5))
   (wire
     (pts (xy 297.18 205.74) (xy 284.48 205.74))
     (stroke (width 0) (type default))
-    (uuid 2f218eb7-9684-48cf-bfa9-026c7abaeedc))
+    (uuid defdceaf-a479-4252-8e67-c2cd3e38952b))
   (wire
     (pts (xy 267.97 210.82) (xy 271.78 210.82))
     (stroke (width 0) (type default))
-    (uuid 54455bcc-77b5-415a-aa3b-dd37607cdc8d))
+    (uuid d8b90cb5-4dd8-4f89-9c3c-5ff56c70a324))
   (wire
     (pts (xy 271.78 210.82) (xy 276.86 210.82))
     (stroke (width 0) (type default))
-    (uuid 1f183c73-0714-43f1-9ecf-55b7c49374c7))
+    (uuid 5093bc46-690b-4e0f-83c1-ad7ea65cd93e))
   (wire
     (pts (xy 260.35 210.82) (xy 257.81 210.82))
     (stroke (width 0) (type default))
-    (uuid 9a0c6b35-cd8f-4447-bae9-8f912b0c64b6))
+    (uuid 5d2ca64f-5aca-44a0-9098-be4163a01fbd))
   (wire
     (pts (xy 312.42 208.28) (xy 302.26 208.28))
     (stroke (width 0) (type default))
-    (uuid bd7cba38-4140-452c-a644-6c671b19a084))
+    (uuid 0ef59f58-ae5c-4133-98c6-b2b29c2b8cb8))
   (wire
     (pts (xy 302.26 208.28) (xy 302.26 226.06))
     (stroke (width 0) (type default))
-    (uuid e1fd0ada-34a2-4a69-9713-0f804a52934e))
+    (uuid 9feef2b1-a664-4a14-8aed-e9b5d155c75f))
   (wire
     (pts (xy 312.42 210.82) (xy 309.88 210.82))
     (stroke (width 0) (type default))
-    (uuid 2491688e-8bd5-4673-adbe-4ba888ff52a6))
+    (uuid b51f17be-1ef5-4071-8fce-7da28fb43990))
   (wire
     (pts (xy 309.88 210.82) (xy 309.88 213.36))
     (stroke (width 0) (type default))
-    (uuid cd63bf8f-c9e3-4506-864a-e377d23cf65d))
+    (uuid dc8c236f-9be6-47cd-abe9-56f4827f3bd5))
   (wire
     (pts (xy 302.26 226.06) (xy 298.45 226.06))
     (stroke (width 0) (type default))
-    (uuid 6d03c10c-61f5-4a7f-9581-a170acce3719))
+    (uuid 20210013-766f-4615-8052-52a772f865d2))
   (wire
     (pts (xy 290.83 226.06) (xy 289.56 226.06))
     (stroke (width 0) (type default))
-    (uuid e6bd6f3d-3711-4791-9723-a1d7aa5720da))
+    (uuid 2a9f5f5f-a1c7-4b42-8dbf-45fa68859470))
   (wire
     (pts (xy 289.56 226.06) (xy 287.02 226.06))
     (stroke (width 0) (type default))
-    (uuid 3b41db70-c790-4c33-83fc-a0b23ae02ce6))
+    (uuid 0bbc070c-0e52-4f36-99b5-715bd9ad11fc))
   (wire
     (pts (xy 287.02 226.06) (xy 281.94 226.06))
     (stroke (width 0) (type default))
-    (uuid 196567c0-f399-45c6-92f5-3a42306810e1))
+    (uuid aaf81c95-4f3a-415d-85c7-da9155dfdfb2))
   (wire
     (pts (xy 302.26 226.06) (xy 302.26 231.14))
     (stroke (width 0) (type default))
-    (uuid 3ce5ddca-1a2c-49eb-a89d-1ed221139d8c))
+    (uuid 1e502290-8722-4343-bbcb-4d50612cdde5))
   (wire
     (pts (xy 302.26 231.14) (xy 295.91 231.14))
     (stroke (width 0) (type default))
-    (uuid 1090d940-22fe-47f3-b836-eab72f4ebaa0))
+    (uuid 0d304e67-2c19-48ad-b1cf-9929f735d2c6))
   (wire
     (pts (xy 293.37 231.14) (xy 289.56 231.14))
     (stroke (width 0) (type default))
-    (uuid da041af6-5273-4812-8613-458a443c205d))
+    (uuid 74ceec58-69b6-4402-9ad9-54b914af7d60))
   (wire
     (pts (xy 289.56 231.14) (xy 289.56 226.06))
     (stroke (width 0) (type default))
-    (uuid fae1944d-d52a-4a49-9048-b1e190ae5bd2))
+    (uuid 73b5a10f-6063-4ae6-8571-74b2e5071382))
   (wire
     (pts (xy 373.38 210.82) (xy 370.84 210.82))
     (stroke (width 0) (type default))
-    (uuid 75d3da52-18af-4386-bc11-1800c7e55dbd))
+    (uuid 95adbff1-93f0-4691-8899-08087d00c3a4))
   (wire
     (pts (xy 373.38 213.36) (xy 360.68 213.36))
     (stroke (width 0) (type default))
-    (uuid 3e5da0b9-b0ed-4266-a075-473cdabe501e))
+    (uuid e39e453d-b1e3-4c79-9cdb-d6db2a0d4601))
   (wire
     (pts (xy 373.38 215.9) (xy 370.84 215.9))
     (stroke (width 0) (type default))
-    (uuid af94a263-b9d9-4297-836c-541c4309186e))
+    (uuid b6e61f93-8560-4828-8739-ca30c3b588a3))
   (wire
     (pts (xy 373.38 218.44) (xy 360.68 218.44))
     (stroke (width 0) (type default))
-    (uuid 9d5b6fb1-701c-4b19-b1e7-1ec33b0aee91))
+    (uuid 1c63a1ba-5f09-492b-9420-c2c2da065d92))
   (wire
     (pts (xy 373.38 220.98) (xy 360.68 220.98))
     (stroke (width 0) (type default))
-    (uuid abe9bf1e-cff3-4b68-9ba5-f63d651646f9))
+    (uuid da354991-6b7c-4f9f-abbc-da500dde8cba))
   (wire
     (pts (xy 373.38 223.52) (xy 360.68 223.52))
     (stroke (width 0) (type default))
-    (uuid e2a64269-559f-4ecc-9303-cbcb9119d7a8))
+    (uuid 84dada27-70e8-4001-9bcd-0b9292f295b6))
   (wire
     (pts (xy 373.38 226.06) (xy 360.68 226.06))
     (stroke (width 0) (type default))
-    (uuid 4a081b08-f983-480e-b953-4eb0869a7c7b))
+    (uuid 092dfe10-1bfa-4db2-8390-b553d137d753))
   (wire
     (pts (xy 373.38 228.6) (xy 360.68 228.6))
     (stroke (width 0) (type default))
-    (uuid c93833ea-20f7-4fc3-84b0-46d837d14ff1))
+    (uuid 2aadd546-42da-45d4-b823-3510173be768))
   (wire
     (pts (xy 373.38 231.14) (xy 360.68 231.14))
     (stroke (width 0) (type default))
-    (uuid b23e9612-dbe9-49e9-af43-40c83fee3325))
+    (uuid bbadfa3e-a08d-4349-9e34-13527a432840))
   (wire
     (pts (xy 373.38 233.68) (xy 360.68 233.68))
     (stroke (width 0) (type default))
-    (uuid c830c664-b69a-4260-9dbd-23744ea7d924))
+    (uuid 67c789e7-d063-44cb-8dd3-5e729547eeec))
   (wire
     (pts (xy 373.38 236.22) (xy 360.68 236.22))
     (stroke (width 0) (type default))
-    (uuid c4738858-ccac-40cb-88ca-6a1196d76aee))
+    (uuid 301dbe9f-0c45-46d5-9f9b-92e04d1520d2))
   (wire
     (pts (xy 373.38 238.76) (xy 370.84 238.76))
     (stroke (width 0) (type default))
-    (uuid c1251a3e-3565-49fb-90e5-aac13273ccbd))
+    (uuid d699d201-642a-4c9b-8249-3faf6bf0a089))
   (junction
     (at 134.62 50.8)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 194e766c-7c40-4361-96f4-41f0a243a8d0))
+    (uuid f5532fb0-f098-4f45-bdc9-4841728a2e64))
   (junction
     (at 137.16 215.9)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 4fc35edb-9d87-4797-ac4a-83394718e320))
+    (uuid 5173f347-5c80-4706-b7bb-95b894d0e335))
   (junction
     (at 152.4 190.5)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid fa9e0340-bfb9-4782-9e0c-6a3304c412d0))
+    (uuid 26988674-5155-4ad9-9ee0-a93bceb07547))
   (junction
     (at 167.64 50.8)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 7fdc08e9-eaaf-4c35-9c8f-3f76b7c76704))
+    (uuid 19bc4884-38f1-4ef1-99ab-804da3ffa5b9))
   (junction
     (at 167.64 215.9)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid fad01e73-ef73-46c6-88c6-7585312519d4))
+    (uuid eef99a81-1fdd-4277-a3ad-af050572b851))
   (junction
     (at 172.72 50.8)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 0d992825-a058-4926-8847-1393099a52a3))
+    (uuid 7e6376c7-bbad-472f-9ea5-9733a5121674))
   (junction
     (at 172.72 215.9)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 0c0b7b69-d1a3-4143-b771-29c590a24452))
+    (uuid fabf3ce3-af10-4e86-a650-b3ef51a98859))
   (junction
     (at 190.5 71.12)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 2b437485-2a90-4ac9-bb32-09e5e7e42017))
+    (uuid 444f6c5b-27c3-4215-b4bb-44b74e199dde))
   (junction
     (at 200.66 50.8)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 3c63b9e3-8410-47f1-8c2a-585296836221))
+    (uuid 2d9cedb8-5261-4f8c-936d-0b0f84b31406))
   (junction
     (at 200.66 58.42)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 96f2aa00-e2e3-4e95-9220-a637a0a2bc5e))
+    (uuid 09f93c7d-1db2-4fb8-80df-e471b7c42786))
   (junction
     (at 213.36 152.4)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid ab14dccc-294e-411d-93f1-575f5f5be40e))
+    (uuid 6d66efe9-921e-4a8b-b850-d57a947d698a))
   (junction
     (at 226.06 134.62)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 4290df72-3bf4-470d-9adc-cd75201b1f9b))
+    (uuid 72752474-330a-4ed1-88dc-7f48b04fff1f))
   (junction
     (at 226.06 152.4)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 75ecb758-b27a-40f3-af9a-816559a09ef1))
+    (uuid 5bcc8cfb-8266-48fd-8596-049d0f1ad53c))
   (junction
     (at 228.6 83.82)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid c64d5574-6681-49ba-8a8d-1f406db4ddf9))
+    (uuid 24e3ad6b-692f-46c2-a424-63a8002d3e08))
   (junction
     (at 241.3 83.82)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid b44fbd15-ccdb-45c7-b9ac-8fb683f09571))
+    (uuid 54eb2ab4-512d-45e7-886f-87445597b9b9))
   (junction
     (at 259.08 83.82)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 62fe789b-b440-44cc-92ed-f9094bf41fb0))
+    (uuid 45327f1b-8ec0-4c80-9d9f-c224be6cbe7a))
   (junction
     (at 271.78 210.82)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 47994a7b-0584-470e-b0a9-716d2694f8c1))
+    (uuid 3a7af804-fdea-4aca-8e49-11e73e449be7))
   (junction
     (at 281.94 134.62)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 0853b46c-c930-42e2-9fbc-dcbde50e7fbe))
+    (uuid fc1437c5-3718-4b80-9bf8-a21abcfe6376))
   (junction
     (at 287.02 226.06)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid 80b2913d-f0a0-46f5-a0f3-6af9aa55953a))
+    (uuid 50f83656-6b85-4cd9-bc92-784cc5bcfa68))
   (junction
     (at 289.56 226.06)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid b7bb748f-274f-4004-9162-f5d9c4327c97))
+    (uuid be577f0f-35fc-4060-b954-afbad8b71dd0))
   (junction
     (at 297.18 190.5)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid a5fbe304-991b-456e-a46c-32e3bea79c36))
+    (uuid 25a411db-552e-4d9a-9016-b180f855a472))
   (junction
     (at 297.18 205.74)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid bd07876d-43e4-4c29-a457-125f8bec1756))
+    (uuid ea46ce09-ad02-4bbd-8dc5-d0833d72a761))
   (junction
     (at 302.26 226.06)
     (diameter 0)
     (color 0 0 0 0)
-    (uuid e6eae398-4efa-4c4c-9b70-8e8701526ca6))
+    (uuid e1797d4f-df92-479f-ac52-6bbeb7667553))
   (sheet_instances (path "/" (page "1"))))
