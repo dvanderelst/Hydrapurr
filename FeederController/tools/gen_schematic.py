@@ -335,95 +335,427 @@ NOTES = [
 
 
 # --------------------------------------------------------------------------
-# Build
+# Build: placement and wiring
 # --------------------------------------------------------------------------
 def uid():
     return str(uuid.uuid4())
 
 
 DIRS = {0: (1, 0), 90: (0, 1), 180: (-1, 0), 270: (0, -1)}
+G = 2.54
 
 
-def build():
-    root = uid()
-    custom = {'HydraPurr:Feather_ESP32S3_ReverseTFT': feather_symbol(),
-              'HydraPurr:Pololu_U3V16F12': pololu_symbol()}
-    libsyms = {}
-    items = []
-    for ref, lid, value, fp, x, y, nets, extra, dnp in PARTS:
-        if lid not in libsyms:
-            if lid in custom:
-                libsyms[lid] = custom[lid]
+def r(v):
+    return round(v, 3)
+
+
+def tf(vx, vy, rot, mirror):
+    """Symbol-space vector (y up) -> schematic-space vector (y down)."""
+    x, y = vx, -vy
+    if mirror == 'x':
+        y = -y
+    if rot == 90:
+        x, y = y, -x
+    elif rot == 180:
+        x, y = -x, -y
+    elif rot == 270:
+        x, y = -y, x
+    return x, y
+
+
+class Sheet:
+    def __init__(self):
+        self.root = uid()
+        self.custom = {'HydraPurr:Feather_ESP32S3_ReverseTFT': feather_symbol(),
+                       'HydraPurr:Pololu_U3V16F12': pololu_symbol()}
+        self.libsyms = {}
+        self.items = []
+        self.parts = {p[0]: p for p in PARTS}
+        self.placed = {}          # ref -> {pin: ((x, y), (ox, oy))}
+        self.wires = []           # ((x1, y1), (x2, y2))
+        self.pinpts = []          # every pin end point (parts and power symbols)
+        self.npwr = 0
+
+    # -- symbols ------------------------------------------------------------
+    def libsym(self, lid):
+        if lid not in self.libsyms:
+            if lid in self.custom:
+                self.libsyms[lid] = self.custom[lid]
             else:
                 lib, name = lid.split(':')
-                libsyms[lid] = flattened(lib, name)
-        sym = libsyms[lid]
+                self.libsyms[lid] = flattened(lib, name)
+        return self.libsyms[lid]
+
+    def _instance(self, ref, lid, value, fp, x, y, rot, mirror, dnp, extra, refpos, power=False):
+        sym = self.libsym(lid)
         pins = pins_of(sym)
-        missing = set(pins) - set(nets)
-        if missing and not ref.startswith('H'):
-            raise SystemExit(f'{ref}: pins not assigned: {sorted(missing)}')
-        is_power = lid.startswith('power:')
-        angles = {a for (_, _, a, _, _) in pins.values()}
-        extra = dict(extra)
-        if '_refpos' in extra:
-            dx, dy = extra.pop('_refpos')
-            rpos, vpos, rj = (x + dx, y + dy), (x + dx, y + dy + 2.54), ['justify', 'left']
-        elif 0 in angles and 180 in angles:               # pins left and right: text above
-            rpos, vpos, rj = (x, y - 8.89), (x, y - 6.35), []
+        geo = {}
+        for num, (px, py, ang, _, _) in pins.items():
+            dx, dy = tf(px, py, rot, mirror)
+            bx, by = tf(*DIRS[ang], rot, mirror)
+            geo[num] = ((r(x + dx), r(y + dy)), (-round(bx), -round(by)))
+            self.pinpts.append(geo[num][0])
+        hidden = power
+        if refpos is None:
+            outs = {o for (_, o) in geo.values()}
+            if (1, 0) in outs and (-1, 0) in outs:
+                body = max([abs(pt[1] - y) for pt, _ in geo.values()] + [1.27])
+                top = y - max(body, 3.81) if len(geo) > 2 else y - 1.27
+                rpos, vpos, just = (x, top - 3.81), (x, top - 1.78), []
+            else:
+                rpos, vpos, just = (x + 5.08, y - 1.27), (x + 5.08, y + 1.27), ['justify', 'left']
         else:
-            rpos, vpos, rj = (x + 5.08, y - 1.27), (x + 5.08, y + 1.27), ['justify', 'left']
-        inst = ['symbol', ['lib_id', Q(lid)], ['at', x, y, 0], ['unit', 1],
-                ['in_bom', 'no' if is_power else 'yes'], ['on_board', 'no' if is_power else 'yes'],
-                ['dnp', 'yes' if dnp else 'no'], ['uuid', uid()],
-                ['property', Q('Reference'), Q(ref), ['at', rpos[0], rpos[1], 0],
-                 ['effects', ['font', ['size', 1.27, 1.27]]] + ([rj] if rj else []) + (['hide'] if is_power else [])],
-                ['property', Q('Value'), Q(value), ['at', vpos[0], vpos[1], 0],
-                 ['effects', ['font', ['size', 1.27, 1.27]]] + ([rj] if rj else []) + (['hide'] if is_power else [])],
-                ['property', Q('Footprint'), Q(fp), ['at', x, y, 0], font_hide()],
-                ['property', Q('Datasheet'), Q('~'), ['at', x, y, 0], font_hide()]]
+            rx, ry = refpos[0], refpos[1]
+            side = refpos[2] if len(refpos) > 2 else 'left'
+            rpos, vpos, just = (x + rx, y + ry), (x + rx, y + ry + 2.54), ['justify', side]
+        fang = rot if rot in (90, 270) else 0     # keep text horizontal on rotated parts
+        if fang:
+            just = []                             # centred, as KiCad does for rotated parts
+
+        def field(k, v, pos, hide):
+            eff = ['effects', ['font', ['size', 1.27, 1.27]]] + ([just] if just else []) + (['hide'] if hide else [])
+            return ['property', Q(k), Q(v), ['at', pos[0], pos[1], fang], eff]
+        inst = ['symbol', ['lib_id', Q(lid)], ['at', x, y, rot]]
+        if mirror:
+            inst.append(['mirror', mirror])
+        inst += [['unit', 1], ['in_bom', 'no' if power else 'yes'],
+                 ['on_board', 'no' if power else 'yes'], ['dnp', 'yes' if dnp else 'no'],
+                 ['uuid', uid()],
+                 field('Reference', ref, rpos, True if power else False),
+                 field('Value', value, (x, y + 3.81) if power and value == 'GND' else
+                       ((x, y - 3.81) if power and refpos is None else vpos), False if not power or lid != 'power:PWR_FLAG' else False),
+                 ['property', Q('Footprint'), Q(fp), ['at', x, y, 0], font_hide()],
+                 ['property', Q('Datasheet'), Q('~'), ['at', x, y, 0], font_hide()]]
         for k, v in extra.items():
             inst.append(['property', Q(k), Q(v), ['at', x, y, 0], font_hide()])
         for num in pins:
             inst.append(['pin', Q(num), ['uuid', uid()]])
         inst.append(['instances', ['project', Q(PROJECT_NAME),
-                                   ['path', Q('/' + root), ['reference', Q(ref)], ['unit', 1]]]])
-        items.append(inst)
+                                   ['path', Q('/' + self.root), ['reference', Q(ref)], ['unit', 1]]]])
+        self.items.append(inst)
+        return geo
 
-        for num, net in nets.items():
-            px, py, ang, _, _ = pins[num]
-            ax, ay = x + px, y - py                       # schematic y points down
-            bx, by = DIRS[ang]                            # pin points toward the body
-            ox, oy = -bx, by                              # outward, schematic coords
-            if net is None:
-                items.append(['no_connect', ['at', ax, ay], ['uuid', uid()]])
-                continue
-            ex, ey = ax + ox * 2.54, ay + oy * 2.54
-            items.append(['wire', ['pts', ['xy', ax, ay], ['xy', ex, ey]],
-                          ['stroke', ['width', 0], ['type', 'default']], ['uuid', uid()]])
-            if ox == 1:
-                lang, just = 0, ['justify', 'left', 'bottom']
-            elif ox == -1:
-                lang, just = 180, ['justify', 'right', 'bottom']
-            elif oy == -1:
-                lang, just = 90, ['justify', 'left', 'bottom']
+    def place(self, ref, x, y, rot=0, mirror=None, refpos=None):
+        _, lid, value, fp, _, _, nets, extra, dnp = self.parts[ref]
+        extra = {k: v for k, v in extra.items() if not k.startswith('_')}
+        self.placed[ref] = self._instance(ref, lid, value, fp, x, y, rot, mirror, dnp, extra, refpos)
+        return self.placed[ref]
+
+    def P(self, ref, pin):
+        return self.placed[ref][str(pin)][0]
+
+    def power(self, net, pt, rot=0):
+        """Power symbol whose pin sits at pt. GND hangs below, others stand above."""
+        self.npwr += 1
+        lid = 'power:PWR_FLAG' if net == 'PWR_FLAG' else f'power:{net}'
+        ref = f'#FLG{self.npwr:02d}' if net == 'PWR_FLAG' else f'#PWR{self.npwr:02d}'
+        x, y = pt
+        if rot:
+            vpos = {90: (-1.27, 0), 270: (1.27, 0)}[rot]
+        self._instance(ref, lid, net, '', x, y, rot, None, False, {}, None, power=True)
+        if rot:   # sideways symbol: put its value text beside it, horizontal
+            prop = find(self.items[-1], 'property')[1]
+            off = -5.08 if (net == 'GND') == (rot == 270) else 5.08
+            prop[3] = ['at', r(x + off), y, 0]
+            prop[4] = ['effects', ['font', ['size', 1.27, 1.27]],
+                       ['justify', 'right' if off < 0 else 'left']]
+
+    # -- wires, labels ------------------------------------------------------
+    def wire(self, *pts):
+        for a, b in zip(pts, pts[1:]):
+            a, b = (r(a[0]), r(a[1])), (r(b[0]), r(b[1]))
+            if a != b:
+                assert a[0] == b[0] or a[1] == b[1], f'diagonal wire {a} {b}'
+                self.wires.append((a, b))
+
+    def stub(self, ref, pin, length=G):
+        pt, (ox, oy) = self.placed[ref][str(pin)]
+        end = (r(pt[0] + ox * length), r(pt[1] + oy * length))
+        self.wire(pt, end)
+        return end, (ox, oy)
+
+    def label(self, net, pt, direction, glob=False):
+        """Net label at pt; direction = way the text runs (L or R, U or D)."""
+        ang, just = {'R': (0, 'left'), 'L': (180, 'right'), 'U': (90, 'left'), 'D': (270, 'right')}[direction]
+        if glob:
+            self.items.append(['global_label', Q(net), ['shape', 'passive'], ['at', pt[0], pt[1], ang],
+                               ['fields_autoplaced'], ['effects', ['font', ['size', 1.27, 1.27]], ['justify', just]],
+                               ['uuid', uid()],
+                               ['property', Q('Intersheetrefs'), Q('${INTERSHEET_REFS}'), ['at', pt[0], pt[1], 0],
+                                font_hide()]])
+        else:
+            self.items.append(['label', Q(net), ['at', pt[0], pt[1], ang], ['fields_autoplaced'],
+                               ['effects', ['font', ['size', 1.27, 1.27]], ['justify', just, 'bottom']],
+                               ['uuid', uid()]])
+
+    def pin_label(self, ref, pin, net, length=G, glob=False):
+        end, (ox, oy) = self.stub(ref, pin, length)
+        d = {(1, 0): 'R', (-1, 0): 'L', (0, -1): 'U', (0, 1): 'D'}[(ox, oy)]
+        self.label(net, end, d, glob)
+
+    def pin_power(self, ref, pin, net, length=G):
+        end, (ox, oy) = self.stub(ref, pin, length) if length else (self.P(ref, pin), self.placed[ref][str(pin)][1])
+        rot = 0
+        if (ox, oy) in ((1, 0), (-1, 0)):     # sideways: point the symbol away from the pin
+            if net == 'GND':
+                rot = 270 if ox == -1 else 90
             else:
-                lang, just = 270, ['justify', 'right', 'bottom']
-            items.append(['label', Q(net), ['at', ex, ey, lang], ['fields_autoplaced'],
-                          ['effects', ['font', ['size', 1.27, 1.27]], just], ['uuid', uid()]])
+                rot = 90 if ox == -1 else 270
+        self.power(net, end, rot)
 
-    for x, y, text in NOTES:
-        items.append(['text', Q(text), ['at', x, y, 0],
-                      ['effects', ['font', ['size', 2, 2], 'bold'], ['justify', 'left', 'bottom']],
-                      ['uuid', uid()]])
+    def nc(self, ref, pin):
+        self.items.append(['no_connect', ['at', *self.P(ref, pin)], ['uuid', uid()]])
 
-    sch = ['kicad_sch', ['version', '20230121'], ['generator', 'eeschema'],
-           ['uuid', root], ['paper', Q('A3')],
-           ['title_block', ['title', Q('HydraPurr carrier PCB')], ['date', Q('2026-11-13')],
-            ['rev', Q('draft 1')],
-            ['comment', 1, Q('Feather ESP32-S3 Reverse TFT + Adalogger FeatherWing, feeder driver, sensor connectors')]],
-           ['lib_symbols'] + list(libsyms.values())] + items + \
-          [['sheet_instances', ['path', Q('/'), ['page', Q('1')]]]]
-    return sch, custom
+    def text(self, x, y, s, size=2.0, bold=True):
+        eff = ['font', ['size', size, size]] + (['bold'] if bold else [])
+        self.items.append(['text', Q(s), ['at', x, y, 0], ['effects', eff, ['justify', 'left', 'bottom']],
+                           ['uuid', uid()]])
+
+    # -- finish -------------------------------------------------------------
+    def finish(self):
+        ends = {}
+        for a, b in self.wires:
+            for pt in (a, b):
+                ends[pt] = ends.get(pt, 0) + 1
+        for pt in self.pinpts:
+            if pt in ends:
+                ends[pt] += 1
+
+        def inside(pt, seg):
+            (x1, y1), (x2, y2) = seg
+            if x1 == x2 == pt[0]:
+                return min(y1, y2) < pt[1] < max(y1, y2)
+            if y1 == y2 == pt[1]:
+                return min(x1, x2) < pt[0] < max(x1, x2)
+            return False
+        junctions = {pt for pt, n in ends.items() if n >= 3}
+        for pt in list(ends):
+            if any(inside(pt, s) for s in self.wires):
+                junctions.add(pt)
+        for pt in self.pinpts:
+            for s in self.wires:
+                if inside(pt, s):
+                    raise SystemExit(f'pin at {pt} lies on the middle of wire {s}')
+        for a, b in self.wires:
+            self.items.append(['wire', ['pts', ['xy', *a], ['xy', *b]],
+                               ['stroke', ['width', 0], ['type', 'default']], ['uuid', uid()]])
+        for pt in sorted(junctions):
+            self.items.append(['junction', ['at', *pt], ['diameter', 0], ['color', 0, 0, 0, 0], ['uuid', uid()]])
+        return ['kicad_sch', ['version', '20230121'], ['generator', 'eeschema'],
+                ['uuid', self.root], ['paper', Q('A3')],
+                ['title_block', ['title', Q('HydraPurr carrier PCB')], ['date', Q('2026-11-13')],
+                 ['rev', Q('draft 2')],
+                 ['comment', 1, Q('Feather ESP32-S3 Reverse TFT + Adalogger FeatherWing, feeder driver, sensor connectors')]],
+                ['lib_symbols'] + list(self.libsyms.values())] + self.items + \
+               [['sheet_instances', ['path', Q('/'), ['page', Q('1')]]]]
+
+
+def build():
+    S = Sheet()
+    P, W = S.P, S.wire
+
+    # ===== Feather ==========================================================
+    S.text(25.4, 50.8, 'FEATHER on ADALOGGER')
+    S.place('A1', 63.5, 101.6, refpos=(-12.7, 41.91))
+    for pin, net in S.parts['A1'][6].items():
+        if net is None:
+            S.nc('A1', pin)
+        elif net == '+3V3':
+            S.pin_power('A1', pin, '+3V3', 2.54)
+        elif net == '+5V':
+            S.pin_power('A1', pin, '+5V', 7.62)
+        elif net == 'GND':
+            S.pin_power('A1', pin, 'GND', 2.54)
+        else:
+            S.pin_label('A1', pin, net)
+    # power flags: these rails come from off this board (USB, Feather regulator)
+    S.text(25.4, 154.94, 'Power flags (supplied by the Feather)', 1.27, False)
+    for i, net in enumerate(['+5V', '+3V3', 'GND']):
+        x = 30.48 + i * 25.4
+        S.power(net, (x, 165.1))
+        S.power('PWR_FLAG', (x + 10.16, 165.1))
+        W((x, 165.1), (x + 10.16, 165.1))
+
+    # ===== Sheet 1: feeder driver ==========================================
+    S.text(127, 30.48, 'FEEDER DRIVER (high-side switch)', 1.75)
+    S.text(127, 34.29, 'A0 high: Q2 on, Q1 gate at 0 V, feeder runs. A0 floating: R2 keeps Q2 off, R4 keeps Q1 off.',
+           1.27, False)
+    rail = 50.8
+    S.place('C1', 134.62, rail + 6.35)
+    S.place('U1', 152.4, rail, refpos=(-7.62, -8.89))
+    S.place('C2', 172.72, rail + 6.35)
+    S.place('F1', 190.5, rail, rot=90, refpos=(-3.81, -6.35))
+    S.place('R4', 200.66, rail + 3.81)
+    S.place('Q1', 215.9, rail + 7.62, mirror='x', refpos=(5.08, -3.81))
+    S.power('+5V', (129.54, rail))
+    W((129.54, rail), (134.62, rail), P('U1', 3))
+    W((134.62, rail), P('C1', 1))
+    S.pin_power('C1', 2, 'GND', 0)
+    S.pin_power('U1', 2, 'GND', 0)
+    W(P('U1', 1), (167.64, rail), (172.72, rail), P('F1', 1))
+    S.power('+12V', (167.64, rail))
+    W((172.72, rail), P('C2', 1))
+    S.pin_power('C2', 2, 'GND', 0)
+    W(P('F1', 2), (200.66, rail), (P('Q1', 3)[0], rail), P('Q1', 3))
+    S.label('+12V_F', (209.55, rail), 'R')
+    gate = P('R4', 2)
+    W(gate, P('Q1', 1))
+    S.place('Q2', gate[0] - 2.54, gate[1] + 12.7)
+    W(P('Q2', 1), gate)
+    S.pin_power('Q2', 3, 'GND', 0)
+    base_y = P('Q2', 2)[1]
+    S.place('R2', 190.5, base_y + 3.81, refpos=(-2.54, 1.27, 'right'))
+    S.place('R1', 185.42, base_y, rot=90, refpos=(-3.81, -6.35))
+    W(P('R1', 2), P('R2', 1), P('Q2', 2))
+    S.pin_power('R2', 2, 'GND', 0)
+    S.pin_label('R1', 1, 'FEEDER_EN')
+    fp_y = 83.82
+    drain = P('Q1', 2)
+    S.place('D1', 228.6, fp_y + 6.35, rot=270, refpos=(-6.35, -1.27))
+    S.place('C3', 241.3, fp_y + 6.35)
+    S.place('R3', 259.08, fp_y + 6.35)
+    S.place('LED1', 259.08, fp_y + 17.78, rot=90, refpos=(6.35, -1.27))
+    S.place('J1', 284.48, fp_y + 2.54, refpos=(2.54, -6.35))
+    W(drain, (drain[0], fp_y), (228.6, fp_y), (241.3, fp_y), (259.08, fp_y), P('J1', 1))
+    S.label('FEEDER+', (264.16, fp_y), 'R')
+    for ref in ('D1', 'C3', 'R3'):
+        W((P(ref, 1)[0], fp_y), P(ref, 1))
+    S.pin_power('D1', 2, 'GND', 0)
+    S.pin_power('C3', 2, 'GND', 0)
+    W(P('R3', 2), P('LED1', 2))
+    S.pin_power('LED1', 1, 'GND', 0)
+    S.nc('J1', 2)
+    j3 = P('J1', 3)
+    W(j3, (j3[0] - 5.08, j3[1]))
+    S.power('GND', (j3[0] - 5.08, j3[1]))
+
+    # ===== Sheet 2, row 1: touch, Sharp, contact LED, I2C =====================
+    S.text(127, 121.92, 'TOUCH WIRE', 1.75)
+    S.place('R5', 147.32, 134.62, rot=90, refpos=(-3.81, -6.35))
+    S.place('J2', 165.1, 137.16, refpos=(2.54, -6.35))
+    S.pin_label('R5', 1, 'TOUCH')
+    W(P('R5', 2), P('J2', 1))
+    S.nc('J2', 2)
+    j = P('J2', 3)
+    W(j, (j[0] - 5.08, j[1]))
+    S.power('GND', (j[0] - 5.08, j[1]))
+    S.text(127, 147.32, 'Short trace, no ground pour under it.', 1.27, False)
+
+    S.text(203.2, 121.92, 'WATER LEVEL (SHARP)', 1.75)
+    S.place('J3', 251.46, 137.16, refpos=(2.54, -6.35))
+    S.place('R6', 233.68, 134.62, rot=270, refpos=(-3.81, -6.35))
+    S.place('C6', 226.06, 140.97, refpos=(-10.16, 1.27))
+    S.place('C4', 213.36, 158.75, refpos=(-2.54, -1.27, 'right'))
+    S.place('C5', 226.06, 158.75)
+    W(P('J3', 1), P('R6', 1))
+    W(P('R6', 2), (226.06, 134.62), (220.98, 134.62))
+    S.label('SHARP_VO', (220.98, 134.62), 'L')
+    W((226.06, 134.62), P('C6', 1))
+    S.pin_power('C6', 2, 'GND', 0)
+    j = P('J3', 2)
+    W(j, (240.03, j[1]), (240.03, j[1] + 2.54))
+    S.power('GND', (240.03, j[1] + 2.54))
+    j = P('J3', 3)
+    W(j, (243.84, j[1]), (243.84, 152.4), (226.06, 152.4), (213.36, 152.4), (205.74, 152.4))
+    S.power('+5V', (205.74, 152.4))
+    W((226.06, 152.4), P('C5', 1))
+    W((213.36, 152.4), P('C4', 1))
+    S.pin_power('C4', 2, 'GND', 0)
+    S.pin_power('C5', 2, 'GND', 0)
+
+    S.text(274.32, 121.92, 'CONTACT LED', 1.75)
+    S.place('R13', 289.56, 134.62, rot=90, refpos=(-3.81, -6.35))
+    S.place('LED2', 297.18, 142.24, rot=90, refpos=(6.35, -1.27))
+    S.place('R14', 289.56, 154.94, rot=90, refpos=(0, -6.35))
+    S.place('J5', 312.42, 157.48, refpos=(2.54, -6.35))
+    W((276.86, 134.62), (281.94, 134.62), P('R13', 1))
+    S.label('LED_CONTACT', (276.86, 134.62), 'L')
+    W(P('R13', 2), (P('LED2', 2)[0], 134.62), P('LED2', 2))
+    S.pin_power('LED2', 1, 'GND', 0)
+    W((281.94, 134.62), (281.94, 154.94), P('R14', 1))
+    W(P('R14', 2), P('J5', 1))
+    S.nc('J5', 2)
+    j = P('J5', 3)
+    W(j, (j[0] - 5.08, j[1]), (j[0] - 5.08, j[1] + 2.54))
+    S.power('GND', (j[0] - 5.08, j[1] + 2.54))
+
+    S.text(325.12, 121.92, 'I2C (STEMMA order)', 1.75)
+    S.place('J6', 350.52, 137.16, refpos=(2.54, -7.62))
+    S.pin_label('J6', 1, 'GND', 2.54, glob=True)
+    S.pin_label('J6', 2, '+3V3', 12.7, glob=True)
+    S.pin_label('J6', 3, 'SDA', 5.08)
+    S.pin_label('J6', 4, 'SCL', 5.08)
+
+    # ===== Sheet 2, row 2: RFID supply, RFID data/reset, spare, holes =========
+    S.text(127, 180.34, 'RFID SUPPLY', 1.75)
+    S.text(127, 184.15, 'JP2 1-2 = USB 5 V via FB1, C7 (default). Fit U2, C8, C9 and set JP2 2-3 for 6 V.', 1.27, False)
+    S.place('FB1', 139.7, 190.5, rot=90, refpos=(0, 5.08))
+    S.place('C7', 152.4, 196.85)
+    S.place('C8', 137.16, 222.25)
+    S.place('U2', 152.4, 215.9, refpos=(-5.08, -10.16))
+    S.place('C9', 167.64, 222.25)
+    S.place('JP2', 185.42, 205.74, refpos=(2.54, -6.35))
+    S.power('+5V', (127, 190.5))
+    W((127, 190.5), P('FB1', 1))
+    W(P('FB1', 2), (152.4, 190.5), (175.26, 190.5), (175.26, P('JP2', 1)[1]), P('JP2', 1))
+    S.label('+5V_RFID', (157.48, 190.5), 'R')
+    W((152.4, 190.5), P('C7', 1))
+    S.pin_power('C7', 2, 'GND', 0)
+    S.power('+12V', (127, 215.9))
+    W((127, 215.9), (137.16, 215.9), P('U2', 1))
+    W((137.16, 215.9), P('C8', 1))
+    S.pin_power('C8', 2, 'GND', 0)
+    S.pin_power('U2', 2, 'GND', 0)
+    W(P('U2', 3), (167.64, 215.9), (172.72, 215.9), (172.72, P('JP2', 3)[1]), P('JP2', 3))
+    S.power('+6V', (172.72, 215.9))
+    W((167.64, 215.9), P('C9', 1))
+    S.pin_power('C9', 2, 'GND', 0)
+    S.pin_label('JP2', 2, 'RFID_VCC')
+
+    S.text(254, 180.34, 'RFID DATA and RESET', 1.75)
+    S.text(254, 184.15, 'TX high = RST low (inverted, as the old board).', 1.27, False)
+    S.text(254, 241.3, 'JP1 open = 5 V TX (default). Close only for the 3.3 V TX pad.', 1.27, False)
+    S.place('J4', 317.5, 205.74, refpos=(2.54, -7.62))
+    p1, p2, p3, p4 = (P('J4', n) for n in (1, 2, 3, 4))
+    S.place('R10', 297.18, 194.31)
+    W(p1, (304.8, p1[1]), (304.8, 190.5), (297.18, 190.5), (289.56, 190.5))
+    S.label('RFID_VCC', (289.56, 190.5), 'L')
+    W(P('R10', 2), (297.18, p2[1]))
+    S.place('Q3', 281.94, p2[1] + 5.08)
+    W(p2, (297.18, p2[1]), P('Q3', 1))
+    S.pin_power('Q3', 3, 'GND', 0)
+    qb = P('Q3', 2)
+    S.place('R9', 271.78, qb[1] + 3.81, refpos=(-2.54, 1.27, 'right'))
+    S.place('R8', 264.16, qb[1], rot=90, refpos=(-3.81, -6.35))
+    W(P('R8', 2), P('R9', 1), qb)
+    S.pin_power('R9', 2, 'GND', 0)
+    S.pin_label('R8', 1, 'RFID_RST')
+    W(p3, (302.26, p3[1]), (302.26, 226.06))
+    W(p4, (309.88, p4[1]), (309.88, p4[1] + 2.54))
+    S.power('GND', (309.88, p4[1] + 2.54))
+    S.place('R11', 294.64, 226.06, rot=270, refpos=(0, -6.35))
+    S.place('R12', 287.02, 229.87, refpos=(-10.16, 1.27))
+    S.place('JP1', 295.91, 236.22, rot=270, refpos=(11.43, -1.27))
+    W((302.26, 226.06), P('R11', 1))
+    W(P('R11', 2), (289.56, 226.06), (287.02, 226.06), (281.94, 226.06))
+    S.label('RFID_RX', (281.94, 226.06), 'L')
+    S.pin_power('R12', 2, 'GND', 0)
+    jp1, jp2 = P('JP1', 1), P('JP1', 2)
+    W((302.26, 226.06), (302.26, jp1[1]), jp1)
+    W(jp2, (289.56, jp2[1]), (289.56, 226.06))
+
+    S.text(345.44, 180.34, 'SPARE PINS, MOUNTING HOLES', 1.75)
+    S.place('J7', 378.46, 223.52, refpos=(2.54, -17.78))
+    for pin, net in S.parts['J7'][6].items():
+        is_pwr = net in ('+5V', '+3V3', 'GND')
+        S.pin_label('J7', pin, net, 2.54 if is_pwr and pin != '2' else 12.7, glob=is_pwr)
+    for ref, x, y in (('H1', 345.44, 193.04), ('H2', 358.14, 193.04),
+                      ('H3', 345.44, 203.2), ('H4', 358.14, 203.2)):
+        S.place(ref, x, y)
+
+    S.text(25.4, 281.94, 'All parts through-hole. DNP: C6, U2, C8, C9. '
+                         'Generated by tools/gen_schematic.py; check with --check.', 1.5, False)
+    return S.finish(), S.custom
 
 
 def write(force):
@@ -448,35 +780,39 @@ def write(force):
 
 
 def check():
-    """Export the netlist with kicad-cli and compare it with PARTS."""
+    """Export the netlist with kicad-cli; compare pin groups with PARTS."""
     out = os.path.join(HERE, 'check.net')
     subprocess.run(['kicad-cli', 'sch', 'export', 'netlist', '--format', 'kicadsexpr',
                     '-o', out, SCH], check=True, capture_output=True)
     tree = parse(open(out).read())[0]
-    got = {}
-    for net in find(find(tree, 'nets')[0], 'net'):
-        name = find(net, 'name')[0][1].lstrip('/')
-        for node in find(net, 'node'):
-            r, p = find(node, 'ref')[0][1], find(node, 'pin')[0][1]
-            got[(r, p)] = name
     os.remove(out)
-    bad = 0
-    want_nets = {}
+    got = {}
+    names = {}
+    for net in find(find(tree, 'nets')[0], 'net'):
+        name = find(net, 'name')[0][1]
+        members = frozenset((find(n, 'ref')[0][1], find(n, 'pin')[0][1]) for n in find(net, 'node'))
+        for m in members:
+            got[m] = members
+            names[m] = name
+    want = {}
     for ref, _, _, _, _, _, nets, _, _ in PARTS:
         if ref.startswith('#'):
             continue
         for p, n in nets.items():
-            if n is None:
-                continue
-            want_nets.setdefault(n, set()).add((ref, p))
-            if got.get((ref, p)) != n:
-                bad += 1
-                print(f'MISMATCH {ref}.{p}: want {n}, netlist has {got.get((ref, p))}')
-    for n, members in sorted(want_nets.items()):
+            if n is not None:
+                want.setdefault(n, set()).add((ref, p))
+    bad = 0
+    for n, members in sorted(want.items()):
+        any_m = next(iter(members))
+        have = got.get(any_m, frozenset())
+        if have != frozenset(members):
+            bad += 1
+            print(f'NET {n}: want {sorted(members)}')
+            print(f'      netlist {names.get(any_m)}: {sorted(have)}')
         if len(members) < 2:
             bad += 1
-            print(f'NET {n} has only one pin: {members}')
-    print(f'{len(want_nets)} nets, {sum(len(m) for m in want_nets.values())} connections, {bad} problems')
+            print(f'NET {n} has only one pin')
+    print(f'{len(want)} nets, {sum(len(m) for m in want.values())} connections, {bad} problems')
     return bad
 
 
