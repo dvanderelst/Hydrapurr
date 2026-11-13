@@ -1,3 +1,4 @@
 (fp_lib_table
   (version 7)
+  (lib (name "HydraPurr")(type "KiCad")(uri "${KIPRJMOD}/HydraPurr.pretty")(options "")(descr "HydraPurr custom footprints"))
 )

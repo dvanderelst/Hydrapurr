@@ -402,10 +402,24 @@ board's pin names, footprint `Module:Adafruit_Feather_WithMountingHoles`) and
 exports the netlist with `kicad-cli` and compares the pin groups with PARTS
 (names ignored): 35 nets, 122 connections, 0 mismatches. **KiCad 7's kicad-cli has no ERC** (KiCad 8
 has); run ERC in eeschema. Once the schematic is edited by hand, don't
-re-run the generator (it refuses without `--force`). Assumption to check:
-the Reverse TFT uses the standard Feather pin positions (long header RST,
-3V, NC, GND, A0–A5, SCK, MO, MI, RX, TX, NC; short header from SDA: SDA,
-SCL, D5, D6, D9–D13, USB, EN, BAT). F1 uses the MF-RHT050 footprint (check
+re-run the generator (it refuses without `--force`). Feather pin positions
+checked against Adafruit's Reverse TFT display-side pinout: match the
+symbol.
+
+**Stack (decided 2026-11-13):** Feather Reverse TFT on top, screen up; under
+it the Adalogger **upside down** (coin cell and microSD facing the carrier);
+the carrier takes pins from the Adalogger's **secondary rows**. Seen from
+above that is a mirrored FeatherWing, so A1 uses the project footprint
+`HydraPurr:Feather_Adalogger_Inverted_Stack` (`HydraPurr.pretty`, made by
+`tools/gen_stack_footprint.py`, registered in `fp-lib-table`), not KiCad's
+Adafruit_Feather. Positions from Adafruit's board file
+(github.com/adafruit/Adafruit-Adalogger-FeatherWing-PCB): secondary rows
+2.03 mm inside the header rows (16.26 mm apart), long side 16 holes, short
+side 11 holes EN..SDA, VBAT hole moved to (19.05, 17.40) for the coin cell.
+Pad numbers = Feather pin numbers. Plan: 8.5 mm female sockets on the
+carrier (1×16, 1×11, optional 1×1 VBAT), male pins in the Adalogger's
+secondary rows; keep tall parts away from the coin cell and the SD end, and
+put the SD end at the board edge so the card can be swapped. F1 uses the MF-RHT050 footprint (check
 the pitch of the fuse bought). Q2/Q3 = PN2222A (2N2222), footprint pinout E-B-C;
 a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6RL) is still in
 `fp-lib-table` but no longer used.

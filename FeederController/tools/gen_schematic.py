@@ -165,7 +165,7 @@ def feather_symbol():
         if p[1] == 'Value':
             p[2] = Q('Feather_ESP32S3_ReverseTFT')
         elif p[1] == 'Footprint':
-            p[2] = Q('Module:Adafruit_Feather_WithMountingHoles')
+            p[2] = Q('HydraPurr:Feather_Adalogger_Inverted_Stack')
         elif p[1] == 'Datasheet':
             p[2] = Q('https://learn.adafruit.com/esp32-s3-reverse-tft-feather/pinouts')
         elif p[1] == 'ki_description':
@@ -211,7 +211,7 @@ FP_LED = 'LED_THT:LED_D3.0mm'
 PARTS = [
     # --- Feather (sits on the Adalogger, which plugs into this board) -------
     ('A1', 'HydraPurr:Feather_ESP32S3_ReverseTFT', 'Feather ESP32-S3 Reverse TFT',
-     'Module:Adafruit_Feather_WithMountingHoles', 63.5, 101.6,
+     'HydraPurr:Feather_Adalogger_Inverted_Stack', 63.5, 101.6,
      {'1': None, '2': '+3V3', '3': None, '4': 'GND', '5': 'FEEDER_EN', '6': 'A1',
       '7': 'A2', '8': 'A3', '9': 'A4', '10': 'SHARP_VO', '11': None, '12': None,
       '13': None, '14': 'RFID_RX', '15': 'RFID_RST', '16': None, '17': 'SDA',
