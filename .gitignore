@@ -19,3 +19,4 @@ Simplified/settings.toml*
 FeederController/fp-info-cache
 *-backups/
 *.kicad_prl
+*.lck
