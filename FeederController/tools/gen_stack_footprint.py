@@ -89,10 +89,22 @@ def build():
          '(effects (font (size 1 1) (thickness 0.15))))',
          f'  (fp_text value "{NAME}" (at {xy(25.4, 24.5)}) (layer "F.Fab") '
          '(effects (font (size 1 1) (thickness 0.15))))']
-    # board outline (Feather and Adalogger share it)
-    L.append(rect(0, 0, 50.8, 22.86, 'F.SilkS'))
+    # board outline (Feather and Adalogger share it): full on Fab, corner marks on silk
     L.append(rect(0, 0, 50.8, 22.86, 'F.Fab', 0.1))
-    L.append(rect(-0.5, -0.5, 54.7, 23.36, 'F.CrtYd', 0.05))     # SD socket sticks out 3.4 mm
+    for cx, cy, dx, dy in ((0, 0, 1, 1), (50.8, 0, -1, 1), (0, 22.86, 1, -1), (50.8, 22.86, -1, -1)):
+        L.append(line(cx, cy, cx + 3 * dx, cy, 'F.SilkS'))
+        L.append(line(cx, cy, cx, cy + 3 * dy, 'F.SilkS'))
+    # Courtyard only where something occupies the space between the Adalogger
+    # and this board: the two socket rows (+VBAT), the coin cell holder and
+    # the microSD socket (which sticks out 3.4 mm past the end). Low parts
+    # (resistors, small ceramics, TO-92) may go under the rest of the logger;
+    # with 8.5 mm sockets there are ~8 mm of clearance.
+    L.append(rect(4.85, 1.8, 45.95, 4.8, 'F.CrtYd', 0.05))          # 16-pin socket
+    poly = [(18.0, 16.4), (20.1, 16.4), (20.1, 18.06), (45.95, 18.06), (45.95, 21.06), (18.0, 21.06)]
+    pts = ' '.join(f'(xy {xy(x, y)})' for x, y in poly)
+    L.append(f'  (fp_poly (pts {pts}) (stroke (width 0.05) (type solid)) (fill none) (layer "F.CrtYd"))')
+    L.append(rect(2.4, 4.85, 17.9, 20.7, 'F.CrtYd', 0.05))          # coin cell holder
+    L.append(rect(33.7, 4.85, 54.2, 18.0, 'F.CrtYd', 0.05))         # microSD socket
     # parts on the Adalogger's underside, facing this board: keep tall parts away
     L.append(rect(2.4, 4.8, 17.9, 20.7, 'F.Fab', 0.1, dash=True))
     L.append(text('coin cell (faces down)', 10.15, 12.75, 'F.Fab', 0.8))
