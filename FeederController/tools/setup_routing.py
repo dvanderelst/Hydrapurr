@@ -10,7 +10,13 @@
   adds capacitance and shifts the touch baseline.
   (Not a rule area: KiCad 7's Specctra DSN export turns any rule area into
   a full keep-out, so Freerouting could not reach the pins inside it.)
+- Four thin rule areas (0.1 mm) just inside the board edge, no tracks or
+  vias: the DSN export turns them into keep-outs, so Freerouting stays
+  clear of the edge (it ignores KiCad's copper-to-edge clearance and uses
+  its own 0.25 mm board_edge default). In KiCad they change nothing: the
+  0.3 mm edge rule forbids copper there anyway; ground pour stays allowed.
 Fill the zones in KiCad afterwards (press B), then run DRC.
+--board-only: leave the project file alone (KiCad's main window may be open).
 Re-running replaces the zones / rule area it made (matched by name).
 """
 import json
@@ -25,6 +31,7 @@ PROJ = os.path.dirname(HERE)
 PCB = os.path.join(PROJ, 'FeederController.kicad_pcb')
 PRO = os.path.join(PROJ, 'FeederController.kicad_pro')
 BOARD = (100.0, 100.0, 180.0, 160.0)
+EDGE_STRIP = 0.1                              # mm, keep-out strips inside the edge
 TOUCH_AREA = (150.0, 147.0, 167.0, 160.0)     # D12 pad, R5, J2 pin 1 (x1, y1, x2, y2)
 
 POWER = ['+5V', '+12V', '/+12V_F', '/FEEDER+', '+6V', '/+5V_RFID', '/RFID_VCC', '+3V3', 'GND']
@@ -69,7 +76,8 @@ def rect_pts(x1, y1, x2, y2):
 def setup_board():
     tree = g.parse(open(PCB).read())[0]
     gnd = next(n for n in g.find(tree, 'net') if n[2] == 'GND')
-    names = {'GND plane (bottom)', 'GND plane (top)', 'No ground near touch line'}
+    names = {'GND plane (bottom)', 'GND plane (top)', 'No ground near touch line',
+             'Edge strip top', 'Edge strip bottom', 'Edge strip left', 'Edge strip right'}
     tree[1:] = [e for e in tree[1:] if not (isinstance(e, list) and e and e[0] == 'zone'
                                             and g.find(e, 'name') and g.find(e, 'name')[0][1] in names)]
     x1, y1, x2, y2 = BOARD
@@ -85,6 +93,17 @@ def setup_board():
                      ['filled_areas_thickness', 'no'],
                      ['fill', 'yes', ['thermal_gap', '0.5'], ['thermal_bridge_width', '0.5']],
                      ['polygon', list(pts)]])
+    s = EDGE_STRIP
+    for name, rect in (('Edge strip top', (x1, y1, x2, y1 + s)), ('Edge strip bottom', (x1, y2 - s, x2, y2)),
+                       ('Edge strip left', (x1, y1, x1 + s, y2)), ('Edge strip right', (x2 - s, y1, x2, y2))):
+        tree.append(['zone', ['net', '0'], ['net_name', g.Q('')], ['layers', g.Q('F.Cu'), g.Q('B.Cu')],
+                     ['tstamp', g.uid()], ['name', g.Q(name)], ['hatch', 'edge', '0.5'],
+                     ['connect_pads', ['clearance', '0']], ['min_thickness', '0.25'],
+                     ['filled_areas_thickness', 'no'],
+                     ['keepout', ['tracks', 'not_allowed'], ['vias', 'not_allowed'], ['pads', 'allowed'],
+                      ['copperpour', 'allowed'], ['footprints', 'allowed']],
+                     ['fill', ['thermal_gap', '0.5'], ['thermal_bridge_width', '0.5']],
+                     ['polygon', rect_pts(*rect)]])
     with open(PCB, 'w') as fh:
         fh.write(g.dump(tree) + '\n')
 
@@ -93,7 +112,8 @@ if __name__ == '__main__':
     lock = os.path.join(PROJ, '~FeederController.kicad_pcb.lck')
     if os.path.exists(lock):
         raise SystemExit('KiCad has the board open (lock file); save and close it first.')
-    setup_project()
+    if '--board-only' not in sys.argv:
+        setup_project()
+        print('net classes set in', PRO)
     setup_board()
-    print('net classes set in', PRO)
-    print('GND zones (B.Cu, F.Cu) with a notch at the touch line written to', PCB)
+    print('GND zones (B.Cu, F.Cu) with a notch at the touch line, edge keep-out strips written to', PCB)

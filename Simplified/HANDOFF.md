@@ -440,9 +440,10 @@ keep-out for Freerouting).
 copper-to-edge 0.3 mm, min thermal spokes 1 (all in `FeederController.kicad_pro`,
 set by `tools/setup_routing.py`). The plugin exports `temp-freerouting.dsn`
 on every run and Freerouting rebuilds its clearance matrix from it, so
-**before each run set the matrix's board_edge row and column to 300 by
-hand**: Freerouting does not take the edge clearance from the DSN and
-defaults to 250. Then route, import, fill zones (B), DRC, save the report
+Freerouting does not take the edge clearance from the DSN (its board_edge
+default is 250 µm), so the board has four 0.1 mm rule areas just inside the
+edge (no tracks/vias, pour allowed): the DSN export makes them keep-outs and
+Freerouting keeps its 0.3 mm from them. No matrix editing needed. Then route, import, fill zones (B), DRC, save the report
 (`DRC.rpt`, ignored by git). U1's GND pad gets its own short track (boost
 input current). Edit KiCad settings only with KiCad fully closed (the
 project window holds settings in memory). `tools/place_parts.py`
