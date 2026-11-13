@@ -337,7 +337,9 @@ Decided with the user:
 - **High-side MOSFET switch, no relay:** boost (always on) → PTC fuse 0.5 A
   → P-MOSFET IRF9540N (source on 12 V, drain = FEEDER+) → feeder; FEEDER− =
   GND. Gate pulled up to 12 V by 10 kΩ; PN2222A NPN pulls it low, driven from
-  **A0** via 4.7 kΩ with 47 kΩ base pulldown. A0 high = feeder on (same as
+  **A0** via 4.7 kΩ with **4.7 kΩ** base pulldown (was 47 kΩ: too weak
+  against the ESP32's ~45 kΩ internal pull-up, which ESP-IDF's pin reset
+  enables and may be on during boot/reset; R9 on the RFID reset likewise). A0 high = feeder on (same as
   `feeder_on()`); floating/reset = off. Across the output: 1N5819 flyback
   (cathode to FEEDER+), 100 nF, green LED + 1 kΩ. 1000 µF on 5 V, 100 µF
   on 12 V. Chosen over a low-side switch so the feeder cable is dead while
@@ -539,3 +541,7 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   before reading anything into the Sharp noise.
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
+- **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay
+  off if A0/TX carry the internal pull-up during boot or after code.py stops.
+  To check on the board: A0 voltage with nothing connected, during boot and
+  after Ctrl-C. Firmware backstop: drive A0 low first thing in `boot.py`.
