@@ -427,8 +427,13 @@ nets, updates the schematic Footprint field, checks courtyard overlaps,
 board edge, keep-outs). Pololu U1 **stands upright** on a right-angle header
 (keep-out ~2 mm on the Q1 side). No tall parts (TO-220, big electrolytics)
 in front of the stack's USB end: the Feather's USB-C plug sits there
-15-18 mm up. R5, R13, R14 are standing resistors (P2.54 vertical) in the
-strip below the stack: R5 right under D12, then J2. `tools/place_parts.py`
+15-18 mm up (C7 and the optional U2 now sit at its edge: user's choice,
+check C7's height). All resistors lie flat (P10.16, user's choice). Strip
+below the stack: LED2, J5, R5 (right under D12), J2; R13/R14 lie under the
+logger in the pocket between coin cell and SD socket. J7 stands next to
+the stack. GND zones on both layers, notched at x 150-167, y 147-160
+around D12/R5/J2 (no rule area: KiCad 7's DSN export makes it a full
+keep-out for Freerouting). `tools/place_parts.py`
 was only the first pass (80 × 80) and is superseded. F1 uses the MF-RHT050 footprint (check
 the pitch of the fuse bought). Q2/Q3 = PN2222A (2N2222), footprint pinout E-B-C;
 a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6RL) is still in

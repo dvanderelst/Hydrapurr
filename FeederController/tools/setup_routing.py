@@ -25,7 +25,7 @@ PROJ = os.path.dirname(HERE)
 PCB = os.path.join(PROJ, 'FeederController.kicad_pcb')
 PRO = os.path.join(PROJ, 'FeederController.kicad_pro')
 BOARD = (100.0, 100.0, 180.0, 160.0)
-TOUCH_AREA = (151.5, 147.0, 165.5, 160.0)     # D12 pad, R5, J2 (x1, y1, x2, y2)
+TOUCH_AREA = (150.0, 147.0, 167.0, 160.0)     # D12 pad, R5, J2 pin 1 (x1, y1, x2, y2)
 
 POWER = ['+5V', '+12V', '/+12V_F', '/FEEDER+', '+6V', '/+5V_RFID', '/RFID_VCC', '+3V3', 'GND']
 TOUCH = ['/TOUCH', 'Net-(J2-Pin_1)']

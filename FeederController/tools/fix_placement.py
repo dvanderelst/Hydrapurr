@@ -22,18 +22,17 @@ SCH = os.path.join(PROJ, 'FeederController.kicad_sch')
 KIFP = '/usr/share/kicad/footprints'
 BOARD = (100.0, 100.0, 180.0, 160.0)          # x1, y1, x2, y2 (user's 80 x 60 mm outline)
 
-VERT_R = 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical'
-SWAP = {'R5': VERT_R, 'R13': VERT_R, 'R14': VERT_R}
+HORIZ_R = 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'
+# 2026-11-13: all resistors flat (the user's choice); R5, R13, R14 were standing.
+SWAP = {'R5': HORIZ_R, 'R13': HORIZ_R, 'R14': HORIZ_R}
 
 MOVE = {
-    'H3': (108.5, 156.5, 0),
-    'C1': (129.5, 123, 0),          # clear of R2
-    'C7': (120.5, 130.7, 0),        # out of the USB plug zone
-    'U2': (118, 151, 0),            # TO-220 out of the USB plug zone
-    # strip below the stack: R13 LED2 R14 J5 | R5 J2 (R5 right under D12)
-    'R13': (126, 156.4, 0), 'LED2': (132, 156.3, 0), 'R14': (138.5, 156.4, 0),
-    'J5': (145, 156, 0),
-    'R5': (155.9, 156.4, 0), 'J2': (162.5, 156, 0),
+    # strip below the stack, right of J7: LED2 J5 | R5 (pad 1 ~4 mm from D12) J2
+    'LED2': (126.5, 156.3, 0), 'J5': (134.5, 156.0, 0),
+    'R5': (151.6, 156.4, 0), 'J2': (165.5, 156.0, 0),
+    # R13, R14 flat under the logger, in the pocket between coin cell and SD
+    # socket; pad 1 (LED_CONTACT) on the right, towards D9
+    'R13': (159.41, 137.5, 180), 'R14': (159.41, 141.5, 180),
 }
 
 TALL = pp.TALL
@@ -131,8 +130,11 @@ def main():
             if r in allowed or (name.startswith('USB') and r not in TALL):
                 continue
             if any(pp.overlap(b, (kx1, ky1, kx2, ky2)) for b in bl):
-                problems += 1
-                print(f'keep-out "{name}" hit by {r}')
+                if name.startswith('USB'):      # user's call: warn only
+                    print(f'WARNING keep-out "{name}" hit by {r}')
+                else:
+                    problems += 1
+                    print(f'keep-out "{name}" hit by {r}')
     print(f'{len(fps)} footprints, {problems} problems')
     if '--check' in sys.argv or problems:
         return problems
