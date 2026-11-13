@@ -14,3 +14,8 @@ BoardCode/sd_mount.log
 
 # WiFi and web-workflow passwords for the Simplified board
 Simplified/settings.toml*
+
+# KiCad: cache, backups, per-user project state
+FeederController/fp-info-cache
+*-backups/
+*.kicad_prl

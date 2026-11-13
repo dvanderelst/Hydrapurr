@@ -1,0 +1,3804 @@
+(kicad_sch
+  (version 20230121)
+  (generator eeschema)
+  (uuid f12a98b2-0ed9-449a-b4a9-394248edbb42)
+  (paper "A3")
+  (title_block
+    (title "HydraPurr carrier PCB")
+    (date "2026-11-13")
+    (rev "draft 1")
+    (comment
+      1
+      "Feather ESP32-S3 Reverse TFT + Adalogger FeatherWing, feeder driver, sensor connectors"))
+  (lib_symbols
+    (symbol
+      "HydraPurr:Feather_ESP32S3_ReverseTFT"
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "A" (at -10.16 29.21 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property
+        "Value"
+        "Feather_ESP32S3_ReverseTFT"
+        (at 2.54 -31.75 0)
+        (effects (font (size 1.27 1.27)) (justify left)))
+      (property
+        "Footprint"
+        "Module:Adafruit_Feather_WithMountingHoles"
+        (at 2.54 -34.29 0)
+        (effects (font (size 1.27 1.27)) (justify left) hide))
+      (property
+        "Datasheet"
+        "https://learn.adafruit.com/esp32-s3-reverse-tft-feather/pinouts"
+        (at 0 -20.32 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_keywords"
+        "Adafruit feather microcontroller module"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Adafruit Feather ESP32-S3 Reverse TFT (Feather pin positions). On this board it sits on the Adalogger FeatherWing (stacking headers)."
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "Adafruit*Feather*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "Feather_ESP32S3_ReverseTFT_0_1"
+        (rectangle
+          (start -10.16 27.94)
+          (end 10.16 -30.48)
+          (stroke (width 0.254) (type default))
+          (fill (type background))))
+      (symbol
+        "Feather_ESP32S3_ReverseTFT_1_1"
+        (pin
+          input
+          line
+          (at 12.7 20.32 180)
+          (length 2.54)
+          (name "~{RESET}" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at 12.7 -7.62 180)
+          (length 2.54)
+          (name "A5" (effects (font (size 1.27 1.27))))
+          (number "10" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 -2.54 0)
+          (length 2.54)
+          (name "SCK" (effects (font (size 1.27 1.27))))
+          (number "11" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 -5.08 0)
+          (length 2.54)
+          (name "MOSI" (effects (font (size 1.27 1.27))))
+          (number "12" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 -7.62 0)
+          (length 2.54)
+          (name "MISO" (effects (font (size 1.27 1.27))))
+          (number "13" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 -12.7 0)
+          (length 2.54)
+          (name "RX" (effects (font (size 1.27 1.27))))
+          (number "14" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 -15.24 0)
+          (length 2.54)
+          (name "TX" (effects (font (size 1.27 1.27))))
+          (number "15" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 2.54 0)
+          (length 2.54)
+          (name "NC" (effects (font (size 1.27 1.27))))
+          (number "16" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 -20.32 0)
+          (length 2.54)
+          (name "SDA" (effects (font (size 1.27 1.27))))
+          (number "17" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 -22.86 0)
+          (length 2.54)
+          (name "SCL" (effects (font (size 1.27 1.27))))
+          (number "18" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 20.32 0)
+          (length 2.54)
+          (name "D5" (effects (font (size 1.27 1.27))))
+          (number "19" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_in
+          line
+          (at 2.54 30.48 270)
+          (length 2.54)
+          (name "3V3" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 17.78 0)
+          (length 2.54)
+          (name "D6" (effects (font (size 1.27 1.27))))
+          (number "20" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 15.24 0)
+          (length 2.54)
+          (name "D9" (effects (font (size 1.27 1.27))))
+          (number "21" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 12.7 0)
+          (length 2.54)
+          (name "D10" (effects (font (size 1.27 1.27))))
+          (number "22" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 10.16 0)
+          (length 2.54)
+          (name "D11" (effects (font (size 1.27 1.27))))
+          (number "23" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 7.62 0)
+          (length 2.54)
+          (name "D12" (effects (font (size 1.27 1.27))))
+          (number "24" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at -12.7 5.08 0)
+          (length 2.54)
+          (name "D13" (effects (font (size 1.27 1.27))))
+          (number "25" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_in
+          line
+          (at 5.08 30.48 270)
+          (length 2.54)
+          (name "USB" (effects (font (size 1.27 1.27))))
+          (number "26" (effects (font (size 1.27 1.27)))))
+        (pin
+          input
+          line
+          (at 12.7 12.7 180)
+          (length 2.54)
+          (name "EN" (effects (font (size 1.27 1.27))))
+          (number "27" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_in
+          line
+          (at -2.54 30.48 270)
+          (length 2.54)
+          (name "VBAT" (effects (font (size 1.27 1.27))))
+          (number "28" (effects (font (size 1.27 1.27)))))
+        (pin
+          input
+          line
+          (at 12.7 10.16 180)
+          (length 2.54)
+          (name "NC" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_in
+          line
+          (at 0 -33.02 90)
+          (length 2.54)
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at 12.7 5.08 180)
+          (length 2.54)
+          (name "A0" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at 12.7 2.54 180)
+          (length 2.54)
+          (name "A1" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at 12.7 0 180)
+          (length 2.54)
+          (name "A2" (effects (font (size 1.27 1.27))))
+          (number "7" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at 12.7 -2.54 180)
+          (length 2.54)
+          (name "A3" (effects (font (size 1.27 1.27))))
+          (number "8" (effects (font (size 1.27 1.27)))))
+        (pin
+          bidirectional
+          line
+          (at 12.7 -5.08 180)
+          (length 2.54)
+          (name "A4" (effects (font (size 1.27 1.27))))
+          (number "9" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "HydraPurr:Pololu_U3V16F12"
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "U" (at 0 6.35 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "Pololu_U3V16F12" (at 0 -10.16 0) (effects (font (size 1.27 1.27))))
+      (property
+        "Footprint"
+        "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "Datasheet"
+        "https://www.pololu.com/product/4945"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Pololu 12 V step-up regulator U3V16F12 (#4945). Pins along one edge: 1 VOUT, 2 GND, 3 VIN."
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "Pololu_U3V16F12_0_1"
+        (rectangle
+          (start -7.62 3.81)
+          (end 7.62 -3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type background))))
+      (symbol
+        "Pololu_U3V16F12_1_1"
+        (pin
+          power_in
+          line
+          (at -10.16 0 0)
+          (length 2.54)
+          (name "VIN" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_out
+          line
+          (at 10.16 0 180)
+          (length 2.54)
+          (name "VOUT" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_in
+          line
+          (at 0 -6.35 90)
+          (length 2.54)
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Device:C_Polarized"
+      (pin_numbers hide)
+      (pin_names (offset 0.254))
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "C" (at 0.635 2.54 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property
+        "Value"
+        "C_Polarized"
+        (at 0.635 -2.54 0)
+        (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Footprint" "" (at 0.9652 -3.81 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "cap capacitor" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_description" "Polarized capacitor" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "CP_*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "C_Polarized_0_1"
+        (rectangle
+          (start -2.286 0.508)
+          (end 2.286 1.016)
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy -1.778 2.286) (xy -0.762 2.286))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy -1.27 2.794) (xy -1.27 1.778))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (rectangle
+          (start 2.286 -0.508)
+          (end -2.286 -1.016)
+          (stroke (width 0) (type default))
+          (fill (type outline))))
+      (symbol
+        "C_Polarized_1_1"
+        (pin
+          passive
+          line
+          (at 0 3.81 270)
+          (length 2.794)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 0 -3.81 90)
+          (length 2.794)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Device:Polyfuse"
+      (pin_numbers hide)
+      (pin_names (offset 0))
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "F" (at -2.54 0 90) (effects (font (size 1.27 1.27))))
+      (property "Value" "Polyfuse" (at 2.54 0 90) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 1.27 -5.08 0) (effects (font (size 1.27 1.27)) (justify left) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_keywords"
+        "resettable fuse PTC PPTC polyfuse polyswitch"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Resettable fuse, polymeric positive temperature coefficient"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "*polyfuse* *PTC*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "Polyfuse_0_1"
+        (rectangle
+          (start -0.762 2.54)
+          (end 0.762 -2.54)
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline (pts (xy 0 2.54) (xy 0 -2.54)) (stroke (width 0) (type default)) (fill (type none)))
+        (polyline
+          (pts (xy -1.524 2.54) (xy -1.524 1.524) (xy 1.524 -1.524) (xy 1.524 -2.54))
+          (stroke (width 0) (type default))
+          (fill (type none))))
+      (symbol
+        "Polyfuse_1_1"
+        (pin
+          passive
+          line
+          (at 0 3.81 270)
+          (length 1.27)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 0 -3.81 90)
+          (length 1.27)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Device:R"
+      (pin_numbers hide)
+      (pin_names (offset 0))
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "R" (at 2.032 0 90) (effects (font (size 1.27 1.27))))
+      (property "Value" "R" (at 0 0 90) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at -1.778 0 90) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "R res resistor" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_description" "Resistor" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "R_*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "R_0_1"
+        (rectangle
+          (start -1.016 -2.54)
+          (end 1.016 2.54)
+          (stroke (width 0.254) (type default))
+          (fill (type none))))
+      (symbol
+        "R_1_1"
+        (pin
+          passive
+          line
+          (at 0 3.81 270)
+          (length 1.27)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 0 -3.81 90)
+          (length 1.27)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Transistor_FET:IRF9540N"
+      (pin_names hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "Q" (at 5.08 1.905 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Value" "IRF9540N" (at 5.08 0 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property
+        "Footprint"
+        "Package_TO_SOT_THT:TO-220-3_Vertical"
+        (at 5.08 -1.905 0)
+        (effects (font (size 1.27 1.27) italic) (justify left) hide))
+      (property
+        "Datasheet"
+        "http://www.irf.com/product-info/datasheets/data/irf9540n.pdf"
+        (at 5.08 -3.81 0)
+        (effects (font (size 1.27 1.27)) (justify left) hide))
+      (property
+        "ki_keywords"
+        "P-Channel MOSFET HEXFET"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "-23A Id, -100V Vds, 117mOhm Rds, P-Channel HEXFET Power MOSFET, TO-220"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "TO?220*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "IRF9540N_0_1"
+        (polyline (pts (xy 0.254 0) (xy -2.54 0)) (stroke (width 0) (type default)) (fill (type none)))
+        (polyline
+          (pts (xy 0.254 1.905) (xy 0.254 -1.905))
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 0.762 -1.27) (xy 0.762 -2.286))
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 0.762 0.508) (xy 0.762 -0.508))
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 0.762 2.286) (xy 0.762 1.27))
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 2.54 2.54) (xy 2.54 1.778))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 2.54 -2.54) (xy 2.54 0) (xy 0.762 0))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 0.762 1.778) (xy 3.302 1.778) (xy 3.302 -1.778) (xy 0.762 -1.778))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 2.286 0) (xy 1.27 0.381) (xy 1.27 -0.381) (xy 2.286 0))
+          (stroke (width 0) (type default))
+          (fill (type outline)))
+        (polyline
+          (pts (xy 2.794 -0.508) (xy 2.921 -0.381) (xy 3.683 -0.381) (xy 3.81 -0.254))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 3.302 -0.381) (xy 2.921 0.254) (xy 3.683 0.254) (xy 3.302 -0.381))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (circle (center 1.651 0) (radius 2.794) (stroke (width 0.254) (type default)) (fill (type none)))
+        (circle
+          (center 2.54 -1.778)
+          (radius 0.254)
+          (stroke (width 0) (type default))
+          (fill (type outline)))
+        (circle (center 2.54 1.778) (radius 0.254) (stroke (width 0) (type default)) (fill (type outline))))
+      (symbol
+        "IRF9540N_1_1"
+        (pin
+          input
+          line
+          (at -5.08 0 0)
+          (length 2.54)
+          (name "G" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 2.54 5.08 270)
+          (length 2.54)
+          (name "D" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 2.54 -5.08 90)
+          (length 2.54)
+          (name "S" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Transistor_BJT:BC547"
+      (pin_names (offset 0) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "Q" (at 5.08 1.905 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Value" "BC547" (at 5.08 0 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property
+        "Footprint"
+        "Package_TO_SOT_THT:TO-92_Inline"
+        (at 5.08 -1.905 0)
+        (effects (font (size 1.27 1.27) italic) (justify left) hide))
+      (property
+        "Datasheet"
+        "https://www.onsemi.com/pub/Collateral/BC550-D.pdf"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) (justify left) hide))
+      (property "ki_keywords" "NPN Transistor" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "0.1A Ic, 45V Vce, Small Signal NPN Transistor, TO-92"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "TO?92*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "BC547_0_1"
+        (polyline (pts (xy 0 0) (xy 0.635 0)) (stroke (width 0) (type default)) (fill (type none)))
+        (polyline
+          (pts (xy 0.635 0.635) (xy 2.54 2.54))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 0.635 -0.635) (xy 2.54 -2.54) (xy 2.54 -2.54))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 0.635 1.905) (xy 0.635 -1.905) (xy 0.635 -1.905))
+          (stroke (width 0.508) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy 1.27 -1.778) (xy 1.778 -1.27) (xy 2.286 -2.286) (xy 1.27 -1.778) (xy 1.27 -1.778))
+          (stroke (width 0) (type default))
+          (fill (type outline)))
+        (circle (center 1.27 0) (radius 2.8194) (stroke (width 0.254) (type default)) (fill (type none))))
+      (symbol
+        "BC547_1_1"
+        (pin
+          passive
+          line
+          (at 2.54 5.08 270)
+          (length 2.54)
+          (name "C" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          input
+          line
+          (at -5.08 0 0)
+          (length 5.08)
+          (name "B" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 2.54 -5.08 90)
+          (length 2.54)
+          (name "E" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Device:D_Schottky"
+      (pin_numbers hide)
+      (pin_names (offset 1.016) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "D" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "D_Schottky" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "diode Schottky" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_description" "Schottky diode" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_fp_filters"
+        "TO-???* *_Diode_* *SingleDiode* D_*"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "D_Schottky_0_1"
+        (polyline (pts (xy 1.27 0) (xy -1.27 0)) (stroke (width 0) (type default)) (fill (type none)))
+        (polyline
+          (pts (xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27))
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline
+          (pts
+            (xy -1.905 0.635)
+            (xy -1.905 1.27)
+            (xy -1.27 1.27)
+            (xy -1.27 -1.27)
+            (xy -0.635 -1.27)
+            (xy -0.635 -0.635))
+          (stroke (width 0.254) (type default))
+          (fill (type none))))
+      (symbol
+        "D_Schottky_1_1"
+        (pin
+          passive
+          line
+          (at -3.81 0 0)
+          (length 2.54)
+          (name "K" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 3.81 0 180)
+          (length 2.54)
+          (name "A" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Device:C"
+      (pin_numbers hide)
+      (pin_names (offset 0.254))
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "C" (at 0.635 2.54 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Value" "C" (at 0.635 -2.54 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Footprint" "" (at 0.9652 -3.81 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "cap capacitor" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Unpolarized capacitor"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "C_*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "C_0_1"
+        (polyline
+          (pts (xy -2.032 -0.762) (xy 2.032 -0.762))
+          (stroke (width 0.508) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy -2.032 0.762) (xy 2.032 0.762))
+          (stroke (width 0.508) (type default))
+          (fill (type none))))
+      (symbol
+        "C_1_1"
+        (pin
+          passive
+          line
+          (at 0 3.81 270)
+          (length 2.794)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 0 -3.81 90)
+          (length 2.794)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Device:LED"
+      (pin_numbers hide)
+      (pin_names (offset 1.016) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "D" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "LED" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "LED diode" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Light emitting diode"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_fp_filters"
+        "LED* LED_SMD:* LED_THT:*"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "LED_0_1"
+        (polyline
+          (pts (xy -1.27 -1.27) (xy -1.27 1.27))
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline (pts (xy -1.27 0) (xy 1.27 0)) (stroke (width 0) (type default)) (fill (type none)))
+        (polyline
+          (pts (xy 1.27 -1.27) (xy 1.27 1.27) (xy -1.27 0) (xy 1.27 -1.27))
+          (stroke (width 0.254) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy -3.048 -0.762) (xy -4.572 -2.286) (xy -3.81 -2.286) (xy -4.572 -2.286) (xy -4.572 -1.524))
+          (stroke (width 0) (type default))
+          (fill (type none)))
+        (polyline
+          (pts (xy -1.778 -0.762) (xy -3.302 -2.286) (xy -2.54 -2.286) (xy -3.302 -2.286) (xy -3.302 -1.524))
+          (stroke (width 0) (type default))
+          (fill (type none))))
+      (symbol
+        "LED_1_1"
+        (pin
+          passive
+          line
+          (at -3.81 0 0)
+          (length 2.54)
+          (name "K" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 3.81 0 180)
+          (length 2.54)
+          (name "A" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Connector_Generic:Conn_01x03"
+      (pin_names (offset 1.016) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "J" (at 0 5.08 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "Conn_01x03" (at 0 -5.08 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "connector" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "Connector*:*_1x??_*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "Conn_01x03_1_1"
+        (rectangle
+          (start -1.27 -2.413)
+          (end 0 -2.667)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 0.127)
+          (end 0 -0.127)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 2.667)
+          (end 0 2.413)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 3.81)
+          (end 1.27 -3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type background)))
+        (pin
+          passive
+          line
+          (at -5.08 2.54 0)
+          (length 3.81)
+          (name "Pin_1" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 0 0)
+          (length 3.81)
+          (name "Pin_2" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -2.54 0)
+          (length 3.81)
+          (name "Pin_3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Device:FerriteBead"
+      (pin_numbers hide)
+      (pin_names (offset 0))
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "FB" (at -3.81 0.635 90) (effects (font (size 1.27 1.27))))
+      (property "Value" "FerriteBead" (at 3.81 0 90) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at -1.778 0 90) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_keywords"
+        "L ferrite bead inductor filter"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_description" "Ferrite bead" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_fp_filters"
+        "Inductor_* L_* *Ferrite*"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "FerriteBead_0_1"
+        (polyline (pts (xy 0 -1.27) (xy 0 -1.2192)) (stroke (width 0) (type default)) (fill (type none)))
+        (polyline (pts (xy 0 1.27) (xy 0 1.2954)) (stroke (width 0) (type default)) (fill (type none)))
+        (polyline
+          (pts
+            (xy -2.7686 0.4064)
+            (xy -1.7018 2.2606)
+            (xy 2.7686 -0.3048)
+            (xy 1.6764 -2.159)
+            (xy -2.7686 0.4064))
+          (stroke (width 0) (type default))
+          (fill (type none))))
+      (symbol
+        "FerriteBead_1_1"
+        (pin
+          passive
+          line
+          (at 0 3.81 270)
+          (length 2.54)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at 0 -3.81 90)
+          (length 2.54)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Regulator_Linear:L7806"
+      (pin_names (offset 0.254))
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "U" (at -3.81 3.175 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "L7806" (at 0 3.175 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property
+        "Footprint"
+        ""
+        (at 0.635 -3.81 0)
+        (effects (font (size 1.27 1.27) italic) (justify left) hide))
+      (property
+        "Datasheet"
+        "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf"
+        (at 0 -1.27 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_keywords"
+        "Voltage Regulator 1.5A Positive"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Positive 1.5A 35V Linear Regulator, Fixed Output 6V, TO-220/TO-263/TO-252"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_fp_filters"
+        "TO?252* TO?263* TO?220*"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "L7806_0_1"
+        (rectangle
+          (start -5.08 1.905)
+          (end 5.08 -5.08)
+          (stroke (width 0.254) (type default))
+          (fill (type background))))
+      (symbol
+        "L7806_1_1"
+        (pin
+          power_in
+          line
+          (at -7.62 0 0)
+          (length 2.54)
+          (name "IN" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_in
+          line
+          (at 0 -7.62 90)
+          (length 2.54)
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin
+          power_out
+          line
+          (at 7.62 0 180)
+          (length 2.54)
+          (name "OUT" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Connector_Generic:Conn_01x04"
+      (pin_names (offset 1.016) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "J" (at 0 5.08 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "Conn_01x04" (at 0 -7.62 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "connector" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "Connector*:*_1x??_*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "Conn_01x04_1_1"
+        (rectangle
+          (start -1.27 -4.953)
+          (end 0 -5.207)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 -2.413)
+          (end 0 -2.667)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 0.127)
+          (end 0 -0.127)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 2.667)
+          (end 0 2.413)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 3.81)
+          (end 1.27 -6.35)
+          (stroke (width 0.254) (type default))
+          (fill (type background)))
+        (pin
+          passive
+          line
+          (at -5.08 2.54 0)
+          (length 3.81)
+          (name "Pin_1" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 0 0)
+          (length 3.81)
+          (name "Pin_2" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -2.54 0)
+          (length 3.81)
+          (name "Pin_3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -5.08 0)
+          (length 3.81)
+          (name "Pin_4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Connector_Generic:Conn_01x02"
+      (pin_names (offset 1.016) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "J" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "Conn_01x02" (at 0 -5.08 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "connector" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "Connector*:*_1x??_*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "Conn_01x02_1_1"
+        (rectangle
+          (start -1.27 -2.413)
+          (end 0 -2.667)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 0.127)
+          (end 0 -0.127)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 1.27)
+          (end 1.27 -3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type background)))
+        (pin
+          passive
+          line
+          (at -5.08 0 0)
+          (length 3.81)
+          (name "Pin_1" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -2.54 0)
+          (length 3.81)
+          (name "Pin_2" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Connector_Generic:Conn_01x12"
+      (pin_names (offset 1.016) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "J" (at 0 15.24 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "Conn_01x12" (at 0 -17.78 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "connector" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Generic connector, single row, 01x12, script generated (kicad-library-utils/schlib/autogen/connector/)"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "Connector*:*_1x??_*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "Conn_01x12_1_1"
+        (rectangle
+          (start -1.27 -15.113)
+          (end 0 -15.367)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 -12.573)
+          (end 0 -12.827)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 -10.033)
+          (end 0 -10.287)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 -7.493)
+          (end 0 -7.747)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 -4.953)
+          (end 0 -5.207)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 -2.413)
+          (end 0 -2.667)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 0.127)
+          (end 0 -0.127)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 2.667)
+          (end 0 2.413)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 5.207)
+          (end 0 4.953)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 7.747)
+          (end 0 7.493)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 10.287)
+          (end 0 10.033)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 12.827)
+          (end 0 12.573)
+          (stroke (width 0.1524) (type default))
+          (fill (type none)))
+        (rectangle
+          (start -1.27 13.97)
+          (end 1.27 -16.51)
+          (stroke (width 0.254) (type default))
+          (fill (type background)))
+        (pin
+          passive
+          line
+          (at -5.08 12.7 0)
+          (length 3.81)
+          (name "Pin_1" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -10.16 0)
+          (length 3.81)
+          (name "Pin_10" (effects (font (size 1.27 1.27))))
+          (number "10" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -12.7 0)
+          (length 3.81)
+          (name "Pin_11" (effects (font (size 1.27 1.27))))
+          (number "11" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -15.24 0)
+          (length 3.81)
+          (name "Pin_12" (effects (font (size 1.27 1.27))))
+          (number "12" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 10.16 0)
+          (length 3.81)
+          (name "Pin_2" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 7.62 0)
+          (length 3.81)
+          (name "Pin_3" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 5.08 0)
+          (length 3.81)
+          (name "Pin_4" (effects (font (size 1.27 1.27))))
+          (number "4" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 2.54 0)
+          (length 3.81)
+          (name "Pin_5" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 0 0)
+          (length 3.81)
+          (name "Pin_6" (effects (font (size 1.27 1.27))))
+          (number "6" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -2.54 0)
+          (length 3.81)
+          (name "Pin_7" (effects (font (size 1.27 1.27))))
+          (number "7" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -5.08 0)
+          (length 3.81)
+          (name "Pin_8" (effects (font (size 1.27 1.27))))
+          (number "8" (effects (font (size 1.27 1.27)))))
+        (pin
+          passive
+          line
+          (at -5.08 -7.62 0)
+          (length 3.81)
+          (name "Pin_9" (effects (font (size 1.27 1.27))))
+          (number "9" (effects (font (size 1.27 1.27)))))))
+    (symbol
+      "Mechanical:MountingHole"
+      (pin_names (offset 1.016))
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "H" (at 0 5.08 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "MountingHole" (at 0 3.175 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "mounting hole" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Mounting Hole without connection"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (property "ki_fp_filters" "MountingHole*" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "MountingHole_0_1"
+        (circle (center 0 0) (radius 1.27) (stroke (width 1.27) (type default)) (fill (type none)))))
+    (symbol
+      "power:PWR_FLAG"
+      (power)
+      (pin_numbers hide)
+      (pin_names (offset 0) hide)
+      (in_bom yes)
+      (on_board yes)
+      (property "Reference" "#FLG" (at 0 1.905 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Value" "PWR_FLAG" (at 0 3.81 0) (effects (font (size 1.27 1.27))))
+      (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property "ki_keywords" "flag power" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+      (property
+        "ki_description"
+        "Special symbol for telling ERC where power comes from"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide))
+      (symbol
+        "PWR_FLAG_0_0"
+        (pin
+          power_out
+          line
+          (at 0 0 90)
+          (length 0)
+          (name "pwr" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))))
+      (symbol
+        "PWR_FLAG_0_1"
+        (polyline
+          (pts (xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27))
+          (stroke (width 0) (type default))
+          (fill (type none))))))
+  (symbol
+    (lib_id "HydraPurr:Feather_ESP32S3_ReverseTFT")
+    (at 63.5 101.6 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 6dd39e61-a571-4207-83b9-79bf01e57f36)
+    (property "Reference" "A1" (at 50.8 139.7 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "Feather ESP32-S3 Reverse TFT"
+      (at 50.8 142.24 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Module:Adafruit_Feather_WithMountingHoles"
+      (at 63.5 101.6 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 63.5 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Female 1x16 + 1x12 sockets. SPI, D10 and RST pass between the Feather and the Adalogger only."
+      (at 63.5 101.6 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid a95fd6a8-472e-411d-918a-977a7ba195b8))
+    (pin "10" (uuid 4dfbb3e7-e247-4af6-b0f3-9b0b301f1466))
+    (pin "11" (uuid 1de08bac-f7a6-40c8-ac19-1fbf1dbb1d51))
+    (pin "12" (uuid 7f58ed74-d8fd-45eb-8e82-410354ad185c))
+    (pin "13" (uuid a0b18be3-8e22-4473-9695-78287dad0bd4))
+    (pin "14" (uuid 5303138b-2a05-46e2-8e15-901ef6cac3ef))
+    (pin "15" (uuid b115ffda-537e-4b92-8b97-b7df87828540))
+    (pin "16" (uuid ca1f755b-5fea-49b0-bace-0bd444cee0a3))
+    (pin "17" (uuid 80761895-67de-4b05-bc78-9fd021d2531f))
+    (pin "18" (uuid 150b17d2-d697-409c-8180-5ae40f2004ce))
+    (pin "19" (uuid 8e3a4ca8-166e-474b-a139-ee358a4a26fe))
+    (pin "2" (uuid f143fea0-4c8b-47d8-9d1b-e4136073680b))
+    (pin "20" (uuid af48a9b3-e6ee-40d3-b8ed-87c2b40e78fd))
+    (pin "21" (uuid aa25cb03-4cf5-4bf5-8fa5-21c3022fdb0b))
+    (pin "22" (uuid ac34ee43-b1fb-4d85-876b-5ba3627026d8))
+    (pin "23" (uuid e3f452e8-8615-459b-9c2a-72f85af7c0e4))
+    (pin "24" (uuid 5a4bca20-7039-424a-9a38-a5aa77b9771c))
+    (pin "25" (uuid 34a56104-4497-4805-a3ae-06b78d4223e2))
+    (pin "26" (uuid 80f94cb8-736d-41ac-a631-cca688872b4c))
+    (pin "27" (uuid 0f6f03f4-2844-4c95-926e-9dc0e29e4ea5))
+    (pin "28" (uuid 9b46234d-91b5-434e-8dc1-68321178a234))
+    (pin "3" (uuid e27c4450-81b9-4472-9b40-39ca051b1542))
+    (pin "4" (uuid e3d7f428-db53-421e-8974-c13fd8425a4f))
+    (pin "5" (uuid b531157a-7a1a-4ac4-85db-d31ed15bc02b))
+    (pin "6" (uuid 2cfc05dd-96f0-45de-8b2f-ef8ac85a0fad))
+    (pin "7" (uuid c9b23393-143b-499b-9e5d-bb8b67c354ee))
+    (pin "8" (uuid 7b1eab2a-fe63-4ce6-81f9-3ed41adb5f3a))
+    (pin "9" (uuid 2eb284c1-8e5d-459a-9649-ffd85035984f))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "A1") (unit 1)))))
+  (no_connect (at 76.2 81.28) (uuid 222313bb-a9db-4fc6-bbd1-087d61adcf2a))
+  (wire
+    (pts (xy 66.04 71.12) (xy 66.04 68.58))
+    (stroke (width 0) (type default))
+    (uuid 7c66995c-0ba7-4279-ab68-93af8acac540))
+  (label
+    "+3V3"
+    (at 66.04 68.58 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid a595b347-afe0-453f-af56-6d6c37aecc60))
+  (no_connect (at 76.2 91.44) (uuid 2da84d7a-cc2e-46df-b2d6-6795ca40cc63))
+  (wire
+    (pts (xy 63.5 134.62) (xy 63.5 137.16))
+    (stroke (width 0) (type default))
+    (uuid 6876ba07-372f-4d89-9866-45c65f7bfd10))
+  (label
+    "GND"
+    (at 63.5 137.16 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid fc07ca1a-980c-4509-9c27-d4f08f640109))
+  (wire
+    (pts (xy 76.2 96.52) (xy 78.74 96.52))
+    (stroke (width 0) (type default))
+    (uuid fd227bd7-70cd-4b42-a366-5abec0f89aec))
+  (label
+    "FEEDER_EN"
+    (at 78.74 96.52 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 51d9781a-d848-486c-9f2d-0d2988657caa))
+  (wire
+    (pts (xy 76.2 99.06) (xy 78.74 99.06))
+    (stroke (width 0) (type default))
+    (uuid e99f6ad7-4cca-4a27-97c4-f43e3134c137))
+  (label
+    "A1"
+    (at 78.74 99.06 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid dd19f68e-7445-4852-9c52-d75912017447))
+  (wire
+    (pts (xy 76.2 101.6) (xy 78.74 101.6))
+    (stroke (width 0) (type default))
+    (uuid df4eb051-9d17-4139-808e-f83f5e6fd4cd))
+  (label
+    "A2"
+    (at 78.74 101.6 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 8c03db85-47fd-4566-936d-c7544c8579ef))
+  (wire
+    (pts (xy 76.2 104.14) (xy 78.74 104.14))
+    (stroke (width 0) (type default))
+    (uuid ecf5f880-5545-4c81-9cf4-7054b16e5ae0))
+  (label
+    "A3"
+    (at 78.74 104.14 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid f3d91dca-de5e-4495-9245-89c715d6448e))
+  (wire
+    (pts (xy 76.2 106.68) (xy 78.74 106.68))
+    (stroke (width 0) (type default))
+    (uuid 051750d8-57c8-49aa-ac31-211455706501))
+  (label
+    "A4"
+    (at 78.74 106.68 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 38ba0ed3-e6ed-477a-8084-964d16301fdf))
+  (wire
+    (pts (xy 76.2 109.22) (xy 78.74 109.22))
+    (stroke (width 0) (type default))
+    (uuid 39b8e0e6-c1e8-49b1-9ec7-48f006bab7a0))
+  (label
+    "SHARP_VO"
+    (at 78.74 109.22 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 7f308054-e442-4eb8-aec7-b91635c38860))
+  (no_connect (at 50.8 104.14) (uuid 3ee26dda-b620-4818-8411-d827d50bd2de))
+  (no_connect (at 50.8 106.68) (uuid 33792b8e-4e0d-464a-94b0-1b3e6028378b))
+  (no_connect (at 50.8 109.22) (uuid 4c79d822-6a19-4081-97a3-0912f49d9991))
+  (wire
+    (pts (xy 50.8 114.3) (xy 48.26 114.3))
+    (stroke (width 0) (type default))
+    (uuid 74d63c33-6245-4712-a634-6da654f2959e))
+  (label
+    "RFID_RX"
+    (at 48.26 114.3 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid e55fb4d6-4d12-4c43-bdd5-32c2d9639e60))
+  (wire
+    (pts (xy 50.8 116.84) (xy 48.26 116.84))
+    (stroke (width 0) (type default))
+    (uuid 6a604614-304a-4c6d-9c3d-501d4ad46a22))
+  (label
+    "RFID_RST"
+    (at 48.26 116.84 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid db2254fd-932d-4435-8bc0-a6451cac89e7))
+  (no_connect (at 50.8 99.06) (uuid e39bef32-6828-4512-9fc5-79b45d641d59))
+  (wire
+    (pts (xy 50.8 121.92) (xy 48.26 121.92))
+    (stroke (width 0) (type default))
+    (uuid 619e2888-11fd-4eeb-89f7-5b30dc9108c7))
+  (label
+    "SDA"
+    (at 48.26 121.92 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid a51c6b23-a0d9-4a30-872d-b902ebcfe3fe))
+  (wire
+    (pts (xy 50.8 124.46) (xy 48.26 124.46))
+    (stroke (width 0) (type default))
+    (uuid 968f492b-ddc3-4d8c-aefb-3bdb5e01cdac))
+  (label
+    "SCL"
+    (at 48.26 124.46 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 54241282-6355-4b8e-8d2a-906d53ca5744))
+  (wire
+    (pts (xy 50.8 81.28) (xy 48.26 81.28))
+    (stroke (width 0) (type default))
+    (uuid 0538b8c4-a519-4cee-b6d2-39b9f02bc937))
+  (label
+    "D5"
+    (at 48.26 81.28 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 9d27d454-9dd2-4349-9a81-df24f2cec021))
+  (wire
+    (pts (xy 50.8 83.82) (xy 48.26 83.82))
+    (stroke (width 0) (type default))
+    (uuid 66234390-42ea-4e12-99c1-af6cb650442f))
+  (label
+    "D6"
+    (at 48.26 83.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 3fd714c9-7910-483c-b84d-02e0aff8a7d4))
+  (wire
+    (pts (xy 50.8 86.36) (xy 48.26 86.36))
+    (stroke (width 0) (type default))
+    (uuid 941cdad5-8a03-4b74-9206-aa06b675bdec))
+  (label
+    "LED_CONTACT"
+    (at 48.26 86.36 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 2bc4b30e-7b7f-4a2e-a825-08843fe69f57))
+  (no_connect (at 50.8 88.9) (uuid 7b051900-f2ba-4144-92cf-84709f474061))
+  (wire
+    (pts (xy 50.8 91.44) (xy 48.26 91.44))
+    (stroke (width 0) (type default))
+    (uuid 2bee919c-59e7-4339-b9bf-b09cc13eb100))
+  (label
+    "D11"
+    (at 48.26 91.44 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid dd6c75bd-24a6-443f-bc41-e12390ac7cf6))
+  (wire
+    (pts (xy 50.8 93.98) (xy 48.26 93.98))
+    (stroke (width 0) (type default))
+    (uuid 02b195f3-1508-43e7-90cf-87d8dc05b468))
+  (label
+    "TOUCH"
+    (at 48.26 93.98 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid c1ec9ae7-eb2a-492f-a41d-1e896bf9e1d2))
+  (wire
+    (pts (xy 50.8 96.52) (xy 48.26 96.52))
+    (stroke (width 0) (type default))
+    (uuid df7355c5-8ec9-4e52-ab2b-5b455327e8b3))
+  (label
+    "D13"
+    (at 48.26 96.52 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid f05c4bb0-4627-4dc1-b202-8819b77f3631))
+  (wire
+    (pts (xy 68.58 71.12) (xy 68.58 68.58))
+    (stroke (width 0) (type default))
+    (uuid bc4ef4ec-aed7-4139-adca-aafebe7cf1df))
+  (label
+    "+5V"
+    (at 68.58 68.58 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 6f6a3180-b0af-4d16-a00d-41298e8e8cb4))
+  (no_connect (at 76.2 88.9) (uuid a6350d04-cb81-41a5-bc51-76c2c55e8cf6))
+  (no_connect (at 60.96 71.12) (uuid 2d7d3e84-65ef-4edf-ae7e-0a692dee152b))
+  (symbol
+    (lib_id "HydraPurr:Pololu_U3V16F12")
+    (at 139.7 45.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 52243f39-a192-4ddc-87dc-735f872d504c)
+    (property "Reference" "U1" (at 139.7 36.83 0) (effects (font (size 1.27 1.27))))
+    (property
+      "Value"
+      "Pololu U3V16F12 12V step-up"
+      (at 139.7 39.37 0)
+      (effects (font (size 1.27 1.27))))
+    (property
+      "Footprint"
+      "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+      (at 139.7 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 139.7 45.72 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Mounted flat on a straight header, soldered in. Silkscreen VIN/VOUT."
+      (at 139.7 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "3" (uuid 00f08eec-c03b-4f7e-9f87-6e5a099c9716))
+    (pin "1" (uuid f6b02e28-a260-4365-a3fc-d4d4f3671cb3))
+    (pin "2" (uuid a373dfdd-fc62-40c7-97ea-79edd8816a3d))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "U1") (unit 1)))))
+  (wire
+    (pts (xy 149.86 45.72) (xy 152.4 45.72))
+    (stroke (width 0) (type default))
+    (uuid 262e7ba2-6bd8-410f-8978-4061e3ddaaf7))
+  (label
+    "+12V"
+    (at 152.4 45.72 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 43925751-c7b1-452a-ac6f-05f9eae2b8b8))
+  (wire
+    (pts (xy 139.7 52.07) (xy 139.7 54.61))
+    (stroke (width 0) (type default))
+    (uuid 59889f16-cb22-40d1-b859-2fd16ffa5993))
+  (label
+    "GND"
+    (at 139.7 54.61 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid eb9ebc06-e2e3-41c1-aafd-c0f6bfb714ec))
+  (wire
+    (pts (xy 129.54 45.72) (xy 127 45.72))
+    (stroke (width 0) (type default))
+    (uuid 78fa7188-3f89-4469-ab7a-27078ac020c0))
+  (label
+    "+5V"
+    (at 127 45.72 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 05f4b04e-f1bf-4268-99bb-525398ae98f0))
+  (symbol
+    (lib_id "Device:C_Polarized")
+    (at 167.64 45.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid c1e4b5c4-2251-443b-bedc-d3902ea6784c)
+    (property "Reference" "C1" (at 172.72 44.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "1000uF 16V"
+      (at 172.72 46.99 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm"
+      (at 167.64 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 167.64 45.72 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 5abf106c-f173-4acf-aa0a-1bd20d2e2e02))
+    (pin "2" (uuid b1b6457b-a71a-4cd8-a172-f66dd41e9523))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C1") (unit 1)))))
+  (wire
+    (pts (xy 167.64 41.91) (xy 167.64 39.37))
+    (stroke (width 0) (type default))
+    (uuid c9db674e-14c2-4b27-ab39-5e692b548f53))
+  (label
+    "+5V"
+    (at 167.64 39.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid ee978ab2-b48b-446f-96e8-d44d3921ac37))
+  (wire
+    (pts (xy 167.64 49.53) (xy 167.64 52.07))
+    (stroke (width 0) (type default))
+    (uuid c974f636-a956-4aa1-9946-46070b0e2587))
+  (label
+    "GND"
+    (at 167.64 52.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 38d1b6c7-94cf-49e2-ac0c-b197cc7557cb))
+  (symbol
+    (lib_id "Device:C_Polarized")
+    (at 190.5 45.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 85be9eb2-4c92-4ea7-8209-43b0b5f0f015)
+    (property "Reference" "C2" (at 195.58 44.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "100uF 25V" (at 195.58 46.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm"
+      (at 190.5 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 190.5 45.72 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid e5b70845-b460-4b37-bbc5-c12623cb03d6))
+    (pin "2" (uuid 6090f126-27ba-4edf-9378-f3d0ebb7a05a))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C2") (unit 1)))))
+  (wire
+    (pts (xy 190.5 41.91) (xy 190.5 39.37))
+    (stroke (width 0) (type default))
+    (uuid 0976085b-500a-48cb-886f-d8488a0bfe1c))
+  (label
+    "+12V"
+    (at 190.5 39.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 4408e4d7-e80a-49e1-98c3-51f3d2244e50))
+  (wire
+    (pts (xy 190.5 49.53) (xy 190.5 52.07))
+    (stroke (width 0) (type default))
+    (uuid eb65e49b-8980-40b5-a067-6d2669ffd4d2))
+  (label
+    "GND"
+    (at 190.5 52.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid c609208f-3bdc-43f1-83ca-c88b0470c0cf))
+  (symbol
+    (lib_id "Device:Polyfuse")
+    (at 213.36 45.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid cf94caa6-3613-4d0d-8298-57d71c765bfc)
+    (property "Reference" "F1" (at 218.44 44.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "0.5A PTC" (at 218.44 46.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Fuse:Fuse_Bourns_MF-RHT050"
+      (at 213.36 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 213.36 45.72 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "MF-RHT050 footprint; check the pitch against the fuse you buy."
+      (at 213.36 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 52ce37fe-5f52-4972-9a28-f36ea5b31138))
+    (pin "2" (uuid 69cecc85-7222-409e-b19c-126aef5a7a4d))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "F1") (unit 1)))))
+  (wire
+    (pts (xy 213.36 41.91) (xy 213.36 39.37))
+    (stroke (width 0) (type default))
+    (uuid 621b10aa-dd83-42a4-9d10-af530c8392da))
+  (label
+    "+12V"
+    (at 213.36 39.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 2db4daa4-f95e-4547-a7d8-a0b361d0e08c))
+  (wire
+    (pts (xy 213.36 49.53) (xy 213.36 52.07))
+    (stroke (width 0) (type default))
+    (uuid f96c3edd-d705-4a50-8c44-573ec4a5972d))
+  (label
+    "+12V_F"
+    (at 213.36 52.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 77b1d2ca-9a18-44c9-b6ab-7ba8a15454c6))
+  (symbol
+    (lib_id "Device:R")
+    (at 236.22 45.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 4b4389b1-0ed2-41c3-8790-db72769146a8)
+    (property "Reference" "R4" (at 241.3 44.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "10k" (at 241.3 46.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 236.22 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 236.22 45.72 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 5da4d9ce-dde0-49eb-9b9a-55749cb89156))
+    (pin "2" (uuid edff5222-427f-4152-bce5-70463b63d81c))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R4") (unit 1)))))
+  (wire
+    (pts (xy 236.22 41.91) (xy 236.22 39.37))
+    (stroke (width 0) (type default))
+    (uuid ee40847c-9148-4954-8885-e98e6c53fe59))
+  (label
+    "+12V_F"
+    (at 236.22 39.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 1171a488-5914-4365-8482-98107ebfdcb9))
+  (wire
+    (pts (xy 236.22 49.53) (xy 236.22 52.07))
+    (stroke (width 0) (type default))
+    (uuid 499c0609-2570-4449-b951-6623bbcc8013))
+  (label
+    "Q1_GATE"
+    (at 236.22 52.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid beb3380e-d418-4536-b877-274ac5a3dfcf))
+  (symbol
+    (lib_id "Transistor_FET:IRF9540N")
+    (at 261.62 45.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid f3607cbf-ecd1-4592-adec-fc7e39e8260c)
+    (property "Reference" "Q1" (at 266.7 44.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "IRF9540N" (at 266.7 46.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Package_TO_SOT_THT:TO-220-3_Vertical"
+      (at 261.62 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 261.62 45.72 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "High-side switch: source on +12V_F, drain = FEEDER+."
+      (at 261.62 45.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid be396fb9-1ccb-4b67-801b-4a261d0d4cbc))
+    (pin "2" (uuid 584f0541-a6dc-44a1-9725-afbf803a103d))
+    (pin "3" (uuid efd5b87a-70a5-46eb-9ee6-64da67819164))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "Q1") (unit 1)))))
+  (wire
+    (pts (xy 256.54 45.72) (xy 254 45.72))
+    (stroke (width 0) (type default))
+    (uuid e8ae4874-cab7-42cc-b437-d1f2893a1a41))
+  (label
+    "Q1_GATE"
+    (at 254 45.72 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 7dea3a2d-d022-4db1-b13a-d78870955f35))
+  (wire
+    (pts (xy 264.16 40.64) (xy 264.16 38.1))
+    (stroke (width 0) (type default))
+    (uuid ed8a88b7-59b0-44a0-b78d-78ef4a1a2278))
+  (label
+    "FEEDER+"
+    (at 264.16 38.1 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 4ac70635-8cd8-456a-acbf-0a1c091210e1))
+  (wire
+    (pts (xy 264.16 50.8) (xy 264.16 53.34))
+    (stroke (width 0) (type default))
+    (uuid 87f4c23c-1d84-4851-a267-45e622ff79e6))
+  (label
+    "+12V_F"
+    (at 264.16 53.34 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 850a8630-afb8-41c8-a2bb-1d40ced1f4ff))
+  (symbol
+    (lib_id "Transistor_BJT:BC547")
+    (at 142.24 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 11e91fa4-d7bc-4bfa-8fed-e449642f5be7)
+    (property "Reference" "Q2" (at 147.32 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "BC547" (at 147.32 85.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Package_TO_SOT_THT:TO-92_Inline"
+      (at 142.24 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 142.24 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 4855e627-c4f5-4825-ba0e-007b8705def7))
+    (pin "2" (uuid b5ee6a4c-91c9-4d94-a27d-8b8955f5e23b))
+    (pin "3" (uuid 4a3de6ef-3e15-4e98-ab26-788e876b7684))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "Q2") (unit 1)))))
+  (wire
+    (pts (xy 144.78 78.74) (xy 144.78 76.2))
+    (stroke (width 0) (type default))
+    (uuid 73a05eb0-8887-4b11-9e86-82fb75c7c296))
+  (label
+    "Q1_GATE"
+    (at 144.78 76.2 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid fde40409-dadb-476f-85d7-2e8dffac2b80))
+  (wire
+    (pts (xy 137.16 83.82) (xy 134.62 83.82))
+    (stroke (width 0) (type default))
+    (uuid 49ba1323-b4b9-4968-bae4-b12e015a03e7))
+  (label
+    "Q2_BASE"
+    (at 134.62 83.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 9950cd31-6e05-4b39-869e-211818754af5))
+  (wire
+    (pts (xy 144.78 88.9) (xy 144.78 91.44))
+    (stroke (width 0) (type default))
+    (uuid 198073d0-dc64-488a-847f-454d1676eec7))
+  (label
+    "GND"
+    (at 144.78 91.44 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 4635448d-aa70-4fb3-903e-fd98784a9dcb))
+  (symbol
+    (lib_id "Device:R")
+    (at 167.64 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 610c5ff6-524f-4674-8e75-0ef92d81b79a)
+    (property "Reference" "R1" (at 172.72 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "4.7k" (at 172.72 85.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 167.64 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 167.64 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid a6f24ede-fc40-48e3-8f0c-d90af75339ad))
+    (pin "2" (uuid ed8d7bcf-6101-4f16-aceb-bb8cb44b68a7))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R1") (unit 1)))))
+  (wire
+    (pts (xy 167.64 80.01) (xy 167.64 77.47))
+    (stroke (width 0) (type default))
+    (uuid f92555a4-7d41-4da4-a70b-f7242a992ed3))
+  (label
+    "FEEDER_EN"
+    (at 167.64 77.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 87ddefa3-3bc1-45d4-b884-e69569be5d06))
+  (wire
+    (pts (xy 167.64 87.63) (xy 167.64 90.17))
+    (stroke (width 0) (type default))
+    (uuid e26a71dd-4c55-4e87-b4ef-c0775946347c))
+  (label
+    "Q2_BASE"
+    (at 167.64 90.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 99d49be9-8b3f-42c6-b01f-ef41e78bac24))
+  (symbol
+    (lib_id "Device:R")
+    (at 190.5 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 3d5c21ff-1a4f-4bd9-806a-d36d9d612a20)
+    (property "Reference" "R2" (at 195.58 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "47k" (at 195.58 85.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 190.5 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 190.5 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 247283cc-4277-4825-b148-b0c2c95d9477))
+    (pin "2" (uuid 8d41f980-a05a-4acf-9a8a-eccdf7cd8ebc))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R2") (unit 1)))))
+  (wire
+    (pts (xy 190.5 80.01) (xy 190.5 77.47))
+    (stroke (width 0) (type default))
+    (uuid 8568d9ea-ba9f-4619-be9e-898b24070f70))
+  (label
+    "Q2_BASE"
+    (at 190.5 77.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 9514e5cd-901b-4762-8e01-940328b8e05f))
+  (wire
+    (pts (xy 190.5 87.63) (xy 190.5 90.17))
+    (stroke (width 0) (type default))
+    (uuid 127ba26d-aecd-47e3-9171-11859c727690))
+  (label
+    "GND"
+    (at 190.5 90.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 14512134-5511-41b8-81bd-da640d8ce546))
+  (symbol
+    (lib_id "Device:D_Schottky")
+    (at 220.98 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 12111b47-9ae3-4f0c-a851-eae58b5596e0)
+    (property "Reference" "D1" (at 220.98 74.93 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "1N5819" (at 220.98 77.47 0) (effects (font (size 1.27 1.27))))
+    (property
+      "Footprint"
+      "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
+      (at 220.98 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 220.98 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 855a4509-8ee3-4214-bfc1-6c8c990039de))
+    (pin "2" (uuid 0052da62-a302-414d-b5a7-c4dd9b95addb))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "D1") (unit 1)))))
+  (wire
+    (pts (xy 217.17 83.82) (xy 214.63 83.82))
+    (stroke (width 0) (type default))
+    (uuid dc93dedd-2452-4b13-9eca-c876eac0ea63))
+  (label
+    "FEEDER+"
+    (at 214.63 83.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 4b653a89-8ef7-405a-89fb-1f3b334f42fd))
+  (wire
+    (pts (xy 224.79 83.82) (xy 227.33 83.82))
+    (stroke (width 0) (type default))
+    (uuid 50d61653-19ad-461a-9c6e-6d1bac94902a))
+  (label
+    "GND"
+    (at 227.33 83.82 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 2010d5eb-12ee-4bec-87cf-de30325028ae))
+  (symbol
+    (lib_id "Device:C")
+    (at 246.38 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 58fdfc1c-3f6e-49ac-9b73-b12257ab38e5)
+    (property "Reference" "C3" (at 251.46 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "100nF 50V" (at 251.46 85.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
+      (at 246.38 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 246.38 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 36af4ab1-f9bf-44c3-8eef-23a231061531))
+    (pin "2" (uuid 774398fb-988b-4fc8-bf3d-f1aea029e057))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C3") (unit 1)))))
+  (wire
+    (pts (xy 246.38 80.01) (xy 246.38 77.47))
+    (stroke (width 0) (type default))
+    (uuid fec288ed-aa39-4908-ba0d-106024dee5cb))
+  (label
+    "FEEDER+"
+    (at 246.38 77.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid bc610df3-6d05-4a99-adad-30057abeec96))
+  (wire
+    (pts (xy 246.38 87.63) (xy 246.38 90.17))
+    (stroke (width 0) (type default))
+    (uuid 8599c5ed-3d86-42b0-ae63-bbcf4a6fe714))
+  (label
+    "GND"
+    (at 246.38 90.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d58293c6-d5a3-4f19-905d-5ea74d00d453))
+  (symbol
+    (lib_id "Device:R")
+    (at 266.7 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 1c0228a5-22ee-4ef6-be82-5f87f3ac0a66)
+    (property "Reference" "R3" (at 271.78 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "1k" (at 271.78 85.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 266.7 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 266.7 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid de2f6914-80a0-4e26-8a9d-b6194dee7a53))
+    (pin "2" (uuid 27be1465-e57a-4169-a048-a52ab9c24e5f))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R3") (unit 1)))))
+  (wire
+    (pts (xy 266.7 80.01) (xy 266.7 77.47))
+    (stroke (width 0) (type default))
+    (uuid ba18dd23-607b-4ee9-9696-4824c4de98ba))
+  (label
+    "FEEDER+"
+    (at 266.7 77.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 8146ea41-89be-4e29-935a-192d3c937f74))
+  (wire
+    (pts (xy 266.7 87.63) (xy 266.7 90.17))
+    (stroke (width 0) (type default))
+    (uuid 98530d80-8aab-4fbc-9611-63fc34538cb1))
+  (label
+    "LED1_A"
+    (at 266.7 90.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 2da78a3b-9d7f-45cd-9fdb-a094d223b969))
+  (symbol
+    (lib_id "Device:LED")
+    (at 292.1 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 9e7ea042-ae36-4010-9199-7c02672acbb8)
+    (property "Reference" "LED1" (at 292.1 74.93 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "green" (at 292.1 77.47 0) (effects (font (size 1.27 1.27))))
+    (property
+      "Footprint"
+      "LED_THT:LED_D3.0mm"
+      (at 292.1 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 292.1 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 905217f8-89db-43e7-8333-46decd1a96b1))
+    (pin "2" (uuid cbe534cc-327d-4a89-8cf0-988013551c1e))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "LED1") (unit 1)))))
+  (wire
+    (pts (xy 288.29 83.82) (xy 285.75 83.82))
+    (stroke (width 0) (type default))
+    (uuid c0f8e0c0-acc5-4146-b2cb-a887da75345b))
+  (label
+    "GND"
+    (at 285.75 83.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid f0acbd6c-645f-4f1c-a137-9ac190e5ef01))
+  (wire
+    (pts (xy 295.91 83.82) (xy 298.45 83.82))
+    (stroke (width 0) (type default))
+    (uuid aa5567ac-9429-4487-ac07-0a53aebe8518))
+  (label
+    "LED1_A"
+    (at 298.45 83.82 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 2afdde7a-d1bd-4b51-8fe2-ce03cb3f1dcf))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x03")
+    (at 330.2 83.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 5b8592cf-9539-4d8d-b3ed-5a5b9e338578)
+    (property "Reference" "J1" (at 335.28 82.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "Feeder" (at 335.28 85.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical"
+      (at 330.2 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 330.2 83.82 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "1 FEEDER+, 2 empty (no LiPo fits), 3 FEEDER- = GND."
+      (at 330.2 83.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 874db2aa-7c67-43f0-8915-1454d78939eb))
+    (pin "2" (uuid f1349f07-336c-4ae6-9012-ae115ba7c206))
+    (pin "3" (uuid a91fb145-15b1-4a26-8d54-a7b098d273b4))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "J1") (unit 1)))))
+  (wire
+    (pts (xy 325.12 81.28) (xy 322.58 81.28))
+    (stroke (width 0) (type default))
+    (uuid 237bbb7a-203b-419f-9658-e58706477063))
+  (label
+    "FEEDER+"
+    (at 322.58 81.28 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid ad1d8a5e-d550-4887-8d97-27face5c3924))
+  (no_connect (at 325.12 83.82) (uuid 29e9f0a1-6fc4-409a-910d-5faa490d9b3b))
+  (wire
+    (pts (xy 325.12 86.36) (xy 322.58 86.36))
+    (stroke (width 0) (type default))
+    (uuid cda4b25b-39b4-4d89-8b25-a140d839de3c))
+  (label
+    "GND"
+    (at 322.58 86.36 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d0d7e8dd-b72e-4b72-926d-9d498a552e99))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x03")
+    (at 142.24 134.62 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 7166ff5b-b347-4700-a9be-0ebfea83a7c1)
+    (property "Reference" "J2" (at 147.32 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "Touch wire"
+      (at 147.32 135.89 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical"
+      (at 142.24 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 142.24 134.62 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Short trace from D12, no ground pour under it."
+      (at 142.24 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid b803b5d4-de34-4c58-9cb8-f35fd6747273))
+    (pin "2" (uuid 57c60132-7b82-4fc8-a69d-6de1f6f468fd))
+    (pin "3" (uuid dbb41471-bb6b-4323-b28c-3e50eb6987ac))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "J2") (unit 1)))))
+  (wire
+    (pts (xy 137.16 132.08) (xy 134.62 132.08))
+    (stroke (width 0) (type default))
+    (uuid 2bef9d10-6dc9-4112-ad66-c00869c56703))
+  (label
+    "TOUCH_J"
+    (at 134.62 132.08 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid b1329960-aef4-4a06-92f0-da32b7480673))
+  (no_connect (at 137.16 134.62) (uuid 339bba41-23d2-40ad-8631-e90f283d4854))
+  (wire
+    (pts (xy 137.16 137.16) (xy 134.62 137.16))
+    (stroke (width 0) (type default))
+    (uuid defbeb11-85fc-40d6-a0b4-63117d34c63b))
+  (label
+    "GND"
+    (at 134.62 137.16 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 14efd2a4-d57f-4972-8efc-b7bcde89e38b))
+  (symbol
+    (lib_id "Device:R")
+    (at 165.1 134.62 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid c8718302-1b7f-4ae9-9ed0-545823a3c3b4)
+    (property "Reference" "R5" (at 170.18 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "0R" (at 170.18 135.89 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 165.1 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 165.1 134.62 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Wire link; room for a series resistor later."
+      (at 165.1 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid c4e3590b-4277-478a-b349-25ec48ba3b0b))
+    (pin "2" (uuid 9f681605-9f52-49fb-878b-0d950826e234))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R5") (unit 1)))))
+  (wire
+    (pts (xy 165.1 130.81) (xy 165.1 128.27))
+    (stroke (width 0) (type default))
+    (uuid 925d03c2-909b-4d13-a21c-eb96ea7bc8bf))
+  (label
+    "TOUCH"
+    (at 165.1 128.27 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid ed0bd6d3-e31e-4179-a39d-84bbdb8d05d3))
+  (wire
+    (pts (xy 165.1 138.43) (xy 165.1 140.97))
+    (stroke (width 0) (type default))
+    (uuid 44bb38ae-a11e-4099-87bb-d14f977bd216))
+  (label
+    "TOUCH_J"
+    (at 165.1 140.97 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d67dc5f2-e6fb-45b6-98b5-aac9e1637232))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x03")
+    (at 203.2 134.62 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid f6b48024-a43a-425d-940a-acecaff7c76c)
+    (property "Reference" "J3" (at 208.28 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "Sharp" (at 208.28 135.89 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical"
+      (at 203.2 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 203.2 134.62 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Sensor pin order: 1 Vo, 2 GND, 3 Vcc. ZH-to-PH adapter cable."
+      (at 203.2 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid ba78330f-ea89-4a54-92be-9e63c19ea36a))
+    (pin "2" (uuid 07a43355-95e3-4d4f-b1b3-4acf43a5d177))
+    (pin "3" (uuid 535ddfec-ebe0-48d6-9166-8dfb0a58a53c))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "J3") (unit 1)))))
+  (wire
+    (pts (xy 198.12 132.08) (xy 195.58 132.08))
+    (stroke (width 0) (type default))
+    (uuid 9458b5c9-00c0-4fa0-b70f-4951ac1116b1))
+  (label
+    "SHARP_OUT"
+    (at 195.58 132.08 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 0f5035c8-73f5-4d22-b0b8-e41c892af99a))
+  (wire
+    (pts (xy 198.12 134.62) (xy 195.58 134.62))
+    (stroke (width 0) (type default))
+    (uuid d83dc8e9-f822-424b-8876-737779b9392a))
+  (label
+    "GND"
+    (at 195.58 134.62 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 815afe5b-a1c9-4b9c-a01f-b52071ec378f))
+  (wire
+    (pts (xy 198.12 137.16) (xy 195.58 137.16))
+    (stroke (width 0) (type default))
+    (uuid bc1f8245-2735-4047-ba91-1b11bf4235dd))
+  (label
+    "+5V"
+    (at 195.58 137.16 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 14f3915e-5cc9-4957-8986-8f91b993b4fa))
+  (symbol
+    (lib_id "Device:C")
+    (at 226.06 134.62 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 68fc3726-7ffd-4574-8ebd-e47c5a840220)
+    (property "Reference" "C4" (at 231.14 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "10uF 10V" (at 231.14 135.89 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
+      (at 226.06 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 226.06 134.62 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid fbbf1000-a889-448f-8b1d-2eac9ee0e7a0))
+    (pin "2" (uuid cba8020e-03b3-427d-9b92-4b0070038646))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C4") (unit 1)))))
+  (wire
+    (pts (xy 226.06 130.81) (xy 226.06 128.27))
+    (stroke (width 0) (type default))
+    (uuid db18040d-05d7-4965-89b4-ba856ab53b36))
+  (label
+    "+5V"
+    (at 226.06 128.27 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 8b7f3e77-be2e-4b04-bd0d-0b3081fbf88a))
+  (wire
+    (pts (xy 226.06 138.43) (xy 226.06 140.97))
+    (stroke (width 0) (type default))
+    (uuid 5dd2f035-3417-40a3-be37-5de84bd2f072))
+  (label
+    "GND"
+    (at 226.06 140.97 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 2b2bc21b-ceab-4eb6-86c2-693dfc1f6034))
+  (symbol
+    (lib_id "Device:C_Polarized")
+    (at 246.38 134.62 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 984abed2-aa2f-44dc-b00b-610ab9a2bba8)
+    (property "Reference" "C5" (at 251.46 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "100uF 10V"
+      (at 251.46 135.89 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm"
+      (at 246.38 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 246.38 134.62 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 04f903c2-cf4b-47aa-9667-70de5a3a1341))
+    (pin "2" (uuid e71d57f8-3ef5-4333-a2e0-4976d994a770))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C5") (unit 1)))))
+  (wire
+    (pts (xy 246.38 130.81) (xy 246.38 128.27))
+    (stroke (width 0) (type default))
+    (uuid bb89a1af-0312-4b51-8ef6-ea295847011c))
+  (label
+    "+5V"
+    (at 246.38 128.27 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid aba2d0f0-df7a-48e3-a9d5-185145192933))
+  (wire
+    (pts (xy 246.38 138.43) (xy 246.38 140.97))
+    (stroke (width 0) (type default))
+    (uuid 8ddae428-e373-4034-a68e-7f59e818c4c6))
+  (label
+    "GND"
+    (at 246.38 140.97 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d6a9a07c-4368-4db9-b0e7-fb66bac974f9))
+  (symbol
+    (lib_id "Device:R")
+    (at 266.7 134.62 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid d3aa9067-ae0b-4ac9-9ddf-7ecf2b56772b)
+    (property "Reference" "R6" (at 271.78 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "1k" (at 271.78 135.89 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 266.7 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 266.7 134.62 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 56e5c3fa-ed75-45c7-89d7-ffef9b501fe1))
+    (pin "2" (uuid bef18026-9aff-4a43-b343-8f08894f76bb))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R6") (unit 1)))))
+  (wire
+    (pts (xy 266.7 130.81) (xy 266.7 128.27))
+    (stroke (width 0) (type default))
+    (uuid c344b0aa-d5dc-4b33-ac60-2c4fefa5ce4c))
+  (label
+    "SHARP_OUT"
+    (at 266.7 128.27 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 710cdc33-2dd4-41fb-8a84-fb9f66c8fb4d))
+  (wire
+    (pts (xy 266.7 138.43) (xy 266.7 140.97))
+    (stroke (width 0) (type default))
+    (uuid 46558328-16b8-4381-a46d-45333c558ff8))
+  (label
+    "SHARP_VO"
+    (at 266.7 140.97 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 762287ea-168e-42fc-9543-681bb18a20dd))
+  (symbol
+    (lib_id "Device:C")
+    (at 287.02 134.62 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp yes)
+    (uuid 05d20212-b0b1-4c18-9aa2-172e7e83ca4e)
+    (property "Reference" "C6" (at 292.1 133.35 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "100nF" (at 292.1 135.89 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
+      (at 287.02 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 287.02 134.62 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Optional filter; fit only if readings are noisy."
+      (at 287.02 134.62 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid a81cdff5-344d-4039-9df1-18ae04b1961f))
+    (pin "2" (uuid f83e559d-e866-4a18-912d-e4df0681cce0))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C6") (unit 1)))))
+  (wire
+    (pts (xy 287.02 130.81) (xy 287.02 128.27))
+    (stroke (width 0) (type default))
+    (uuid b04ccc48-e398-4b4c-b3ce-bcc7c5cf081a))
+  (label
+    "SHARP_VO"
+    (at 287.02 128.27 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 4d629184-e574-4fd2-ab07-1818afae212c))
+  (wire
+    (pts (xy 287.02 138.43) (xy 287.02 140.97))
+    (stroke (width 0) (type default))
+    (uuid 4bb91c22-fee6-445f-b341-d0f1e8c98628))
+  (label
+    "GND"
+    (at 287.02 140.97 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid a9591bf5-e7d3-47dd-8539-52c6fd04f558))
+  (symbol
+    (lib_id "Device:FerriteBead")
+    (at 142.24 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 2f75da43-1362-432c-bd03-5e9b9a24be71)
+    (property "Reference" "FB1" (at 147.32 171.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "Ferrite bead"
+      (at 147.32 173.99 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Inductor_THT:L_Axial_L5.3mm_D2.2mm_P10.16mm_Horizontal_Vishay_IM-1"
+      (at 142.24 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 142.24 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 9222b14d-d30d-4c01-be6c-c5fb7a0d540f))
+    (pin "2" (uuid df6b85dd-a294-475a-b71c-2b43b451c306))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "FB1") (unit 1)))))
+  (wire
+    (pts (xy 142.24 168.91) (xy 142.24 166.37))
+    (stroke (width 0) (type default))
+    (uuid c632140e-b951-4517-b6d8-2a5a5a7d0901))
+  (label
+    "+5V"
+    (at 142.24 166.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 9da463f6-c490-413a-a41b-8ac230b07647))
+  (wire
+    (pts (xy 142.24 176.53) (xy 142.24 179.07))
+    (stroke (width 0) (type default))
+    (uuid a0dd12c3-989a-4378-8950-8d5e1489fc96))
+  (label
+    "+5V_RFID"
+    (at 142.24 179.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 93d3174b-b172-444e-83fd-9af711c59318))
+  (symbol
+    (lib_id "Device:C_Polarized")
+    (at 165.1 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 44895cc7-7720-4051-bcb2-9cb57a39ef55)
+    (property "Reference" "C7" (at 170.18 171.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "470uF 10V"
+      (at 170.18 173.99 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm"
+      (at 165.1 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 165.1 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid d1e09696-a9b4-4073-99ac-df827f916da4))
+    (pin "2" (uuid 41a160e6-196e-4288-ba47-1297f3afdda1))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C7") (unit 1)))))
+  (wire
+    (pts (xy 165.1 168.91) (xy 165.1 166.37))
+    (stroke (width 0) (type default))
+    (uuid f18241ff-2dea-4588-abb2-65ef6d8b2217))
+  (label
+    "+5V_RFID"
+    (at 165.1 166.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 243613a6-3d2d-48ef-9712-ceeb2706f4a5))
+  (wire
+    (pts (xy 165.1 176.53) (xy 165.1 179.07))
+    (stroke (width 0) (type default))
+    (uuid d904950f-32f6-4664-8052-5510f67d1798))
+  (label
+    "GND"
+    (at 165.1 179.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid ddaa3f2a-0b91-4671-8966-1f4640bb1778))
+  (symbol
+    (lib_id "Regulator_Linear:L7806")
+    (at 200.66 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp yes)
+    (uuid a98979be-bbca-4100-b112-6175159d779f)
+    (property "Reference" "U2" (at 200.66 163.83 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "LM7806" (at 200.66 166.37 0) (effects (font (size 1.27 1.27))))
+    (property
+      "Footprint"
+      "Package_TO_SOT_THT:TO-220-3_Vertical"
+      (at 200.66 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 200.66 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Optional: 6 V for longer RFID read range (JP2 on 2-3)."
+      (at 200.66 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 6b6d8780-a33f-4884-8078-e362be7e54fd))
+    (pin "2" (uuid a2f56576-d0e5-4ec7-83ab-806753534820))
+    (pin "3" (uuid 46d64628-a28d-4434-8001-f4ee44672e57))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "U2") (unit 1)))))
+  (wire
+    (pts (xy 193.04 172.72) (xy 190.5 172.72))
+    (stroke (width 0) (type default))
+    (uuid 37a21491-bab6-46bc-9f76-e646003d2aea))
+  (label
+    "+12V"
+    (at 190.5 172.72 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 933506a4-4176-4211-9656-3558fa25ab19))
+  (wire
+    (pts (xy 200.66 180.34) (xy 200.66 182.88))
+    (stroke (width 0) (type default))
+    (uuid a646d2f4-9014-4f0f-a34a-677bc2bdda53))
+  (label
+    "GND"
+    (at 200.66 182.88 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid cdf7534b-6798-42f6-87a7-4cc7eba649ef))
+  (wire
+    (pts (xy 208.28 172.72) (xy 210.82 172.72))
+    (stroke (width 0) (type default))
+    (uuid d65f1c0a-58a3-4a13-ac1b-2622932c9c4e))
+  (label
+    "+6V"
+    (at 210.82 172.72 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid a994e291-2ad1-4c9e-b527-352f24b4536c))
+  (symbol
+    (lib_id "Device:C")
+    (at 228.6 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp yes)
+    (uuid eb79a659-bf1d-4f94-a8fd-cf576df6072f)
+    (property "Reference" "C8" (at 233.68 171.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "330nF" (at 233.68 173.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
+      (at 228.6 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 228.6 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 0ad32517-38e6-4d8c-ae1d-765ce8897647))
+    (pin "2" (uuid a5a43523-9b1e-4a5f-ba5c-26311ca8775c))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C8") (unit 1)))))
+  (wire
+    (pts (xy 228.6 168.91) (xy 228.6 166.37))
+    (stroke (width 0) (type default))
+    (uuid cac72493-0517-4bdf-918b-a145b123cb01))
+  (label
+    "+12V"
+    (at 228.6 166.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid df289524-f052-4203-aeb1-901e9d850b03))
+  (wire
+    (pts (xy 228.6 176.53) (xy 228.6 179.07))
+    (stroke (width 0) (type default))
+    (uuid 635d4cf5-763e-4efe-ac25-1669e76da14c))
+  (label
+    "GND"
+    (at 228.6 179.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 015d365d-f492-425e-8141-b2a79f6abc10))
+  (symbol
+    (lib_id "Device:C")
+    (at 248.92 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp yes)
+    (uuid 3cc71f40-3e53-4207-82d1-7a72263becd4)
+    (property "Reference" "C9" (at 254 171.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "100nF" (at 254 173.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
+      (at 248.92 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 248.92 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 1e4729bc-f535-465a-921d-ac8596435d38))
+    (pin "2" (uuid bda08d07-84f1-435a-b6d6-ea0afd4e12d9))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "C9") (unit 1)))))
+  (wire
+    (pts (xy 248.92 168.91) (xy 248.92 166.37))
+    (stroke (width 0) (type default))
+    (uuid 8744256b-bf87-4a7f-b113-2f7cfa0daae3))
+  (label
+    "+6V"
+    (at 248.92 166.37 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid dfb3914e-2922-470b-bd01-1a39608d22a4))
+  (wire
+    (pts (xy 248.92 176.53) (xy 248.92 179.07))
+    (stroke (width 0) (type default))
+    (uuid f5c49270-7e70-4440-adaa-199f27b7f589))
+  (label
+    "GND"
+    (at 248.92 179.07 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 2f2ede89-e3ae-4288-9fb7-c100f6ec4c8f))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x03")
+    (at 279.4 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 9527d21a-edef-48a5-96ab-716cf7aae189)
+    (property "Reference" "JP2" (at 284.48 171.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "1-2 = 5V, 2-3 = 6V"
+      (at 284.48 173.99 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+      (at 279.4 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 279.4 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Jumper on 1-2 by default."
+      (at 279.4 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid e73ca2dc-5d76-4b7a-8ece-8136250f5aee))
+    (pin "2" (uuid 5b473e57-b704-4ae8-8e17-f0e7f8de511e))
+    (pin "3" (uuid 2ea46215-8178-4a7b-9455-f5934152df92))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "JP2") (unit 1)))))
+  (wire
+    (pts (xy 274.32 170.18) (xy 271.78 170.18))
+    (stroke (width 0) (type default))
+    (uuid 7b292a94-c191-4c67-b0da-7c04130ae6e4))
+  (label
+    "+5V_RFID"
+    (at 271.78 170.18 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid a58fae4c-0ce2-4ab8-87bb-3a334129c716))
+  (wire
+    (pts (xy 274.32 172.72) (xy 271.78 172.72))
+    (stroke (width 0) (type default))
+    (uuid 3ca59e07-1fc1-4868-8044-16b1803ce4e4))
+  (label
+    "RFID_VCC"
+    (at 271.78 172.72 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 6a134fdd-057a-4568-9cea-719bbe40c6f2))
+  (wire
+    (pts (xy 274.32 175.26) (xy 271.78 175.26))
+    (stroke (width 0) (type default))
+    (uuid 9caa7fb9-083f-4b01-ba71-d79ce619856f))
+  (label
+    "+6V"
+    (at 271.78 175.26 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid e3be4f95-784f-4d79-aa45-1fddbf59f28d))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x04")
+    (at 139.7 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 36053a69-c15f-417a-93ff-6fb613528923)
+    (property "Reference" "J4" (at 144.78 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "RFID" (at 144.78 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical"
+      (at 139.7 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 139.7 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "WL-134 order: 1 VCC, 2 RST, 3 TX, 4 GND (check pin 4 on the module)."
+      (at 139.7 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 8264a3e4-ce72-420b-bf62-0d41e425b7f0))
+    (pin "2" (uuid 0e125cf6-1251-4b4c-bd9b-449c10b2bf67))
+    (pin "3" (uuid 53792528-785e-43f0-a6a5-616e7305e266))
+    (pin "4" (uuid 221712c6-d5ec-48ac-a02b-53472736dd61))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "J4") (unit 1)))))
+  (wire
+    (pts (xy 134.62 208.28) (xy 132.08 208.28))
+    (stroke (width 0) (type default))
+    (uuid 9636ed59-1b09-4d40-85e2-5561e4a74e04))
+  (label
+    "RFID_VCC"
+    (at 132.08 208.28 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 56e18f40-4e25-4c0e-b086-7c82c88da116))
+  (wire
+    (pts (xy 134.62 210.82) (xy 132.08 210.82))
+    (stroke (width 0) (type default))
+    (uuid 4660804e-3433-4b50-96c1-684b97d571a6))
+  (label
+    "RFID_RST_N"
+    (at 132.08 210.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 7f0c96fc-f7ad-4fd1-9458-53cb04b96bc1))
+  (wire
+    (pts (xy 134.62 213.36) (xy 132.08 213.36))
+    (stroke (width 0) (type default))
+    (uuid d3029414-340d-487b-a2aa-35b199be6a6f))
+  (label
+    "RFID_TX5"
+    (at 132.08 213.36 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 837c7c24-e900-43af-a05b-283cf7ac5372))
+  (wire
+    (pts (xy 134.62 215.9) (xy 132.08 215.9))
+    (stroke (width 0) (type default))
+    (uuid cb4be94b-e258-4d7d-af79-4abfedf47300))
+  (label
+    "GND"
+    (at 132.08 215.9 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 04801380-07bb-44e5-8794-7351d9758a72))
+  (symbol
+    (lib_id "Transistor_BJT:BC547")
+    (at 167.64 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 050d54b2-cc26-487e-aed6-954e8ba03975)
+    (property "Reference" "Q3" (at 172.72 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "BC547" (at 172.72 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Package_TO_SOT_THT:TO-92_Inline"
+      (at 167.64 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 167.64 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 48e7bca1-29ec-486b-9ed4-61ee2febb473))
+    (pin "2" (uuid b7a0294e-5f4c-43ba-8340-4a3506e80a04))
+    (pin "3" (uuid 272b3fd3-cd91-4f2b-9044-d5ad7b59e0c3))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "Q3") (unit 1)))))
+  (wire
+    (pts (xy 170.18 205.74) (xy 170.18 203.2))
+    (stroke (width 0) (type default))
+    (uuid 9ce0e6ee-b9e7-4914-bd77-6f27a556cc63))
+  (label
+    "RFID_RST_N"
+    (at 170.18 203.2 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid aadec007-bd78-470e-b619-3c19f748ec93))
+  (wire
+    (pts (xy 162.56 210.82) (xy 160.02 210.82))
+    (stroke (width 0) (type default))
+    (uuid d5bcea5d-a739-4aa8-8c31-d1c4f2febad7))
+  (label
+    "Q3_BASE"
+    (at 160.02 210.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 99e2fecb-2d9f-4076-906c-6a9c04fd6e40))
+  (wire
+    (pts (xy 170.18 215.9) (xy 170.18 218.44))
+    (stroke (width 0) (type default))
+    (uuid 70ff3d09-fd2e-44e1-a4dc-eeb39c589ff2))
+  (label
+    "GND"
+    (at 170.18 218.44 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid e7aa20b1-1f53-4bc2-82a6-126cadcf2146))
+  (symbol
+    (lib_id "Device:R")
+    (at 193.04 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid ac92302e-ae45-4f25-b6d7-5389d2ea31e2)
+    (property "Reference" "R8" (at 198.12 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "4.7k" (at 198.12 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 193.04 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 193.04 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid d44971d6-87e2-4440-bfc9-5f741b6bbed2))
+    (pin "2" (uuid 94bf89bd-6859-4fa1-b31d-1908280b5296))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R8") (unit 1)))))
+  (wire
+    (pts (xy 193.04 207.01) (xy 193.04 204.47))
+    (stroke (width 0) (type default))
+    (uuid 461c1c7d-2ff1-4993-abc2-024d57947e7f))
+  (label
+    "RFID_RST"
+    (at 193.04 204.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 1606d700-3217-4275-a816-3c3cc7eb3dbe))
+  (wire
+    (pts (xy 193.04 214.63) (xy 193.04 217.17))
+    (stroke (width 0) (type default))
+    (uuid 5707fd55-cc45-463c-b8c3-41914d2f6243))
+  (label
+    "Q3_BASE"
+    (at 193.04 217.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 9d7398f8-34f0-489d-aa5d-5b47e2754edb))
+  (symbol
+    (lib_id "Device:R")
+    (at 215.9 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 39847730-20f2-4d61-8e1c-d01fb8aced45)
+    (property "Reference" "R9" (at 220.98 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "47k" (at 220.98 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 215.9 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 215.9 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid ea5fb1f5-f2e1-4855-a219-3edc3f107bdb))
+    (pin "2" (uuid a2844963-48de-4621-be4d-37524b415d60))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R9") (unit 1)))))
+  (wire
+    (pts (xy 215.9 207.01) (xy 215.9 204.47))
+    (stroke (width 0) (type default))
+    (uuid b2bc67b0-cd90-454a-b0ef-196afdaf1c11))
+  (label
+    "Q3_BASE"
+    (at 215.9 204.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 12a67bd6-8d74-424c-ab4d-9f9373603752))
+  (wire
+    (pts (xy 215.9 214.63) (xy 215.9 217.17))
+    (stroke (width 0) (type default))
+    (uuid 425431ee-8f2f-4248-91e1-ef14693713cb))
+  (label
+    "GND"
+    (at 215.9 217.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 4241c78e-27bc-49c8-9c68-1559a394172f))
+  (symbol
+    (lib_id "Device:R")
+    (at 241.3 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid d064c5c9-9af3-447c-9646-1e1e8b720bca)
+    (property "Reference" "R10" (at 246.38 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "10k" (at 246.38 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 241.3 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 241.3 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 91d75de8-7a1b-4783-9ce2-1affb737e0ee))
+    (pin "2" (uuid 6fd6d740-f73c-4f15-9aa2-05b1fda63719))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R10") (unit 1)))))
+  (wire
+    (pts (xy 241.3 207.01) (xy 241.3 204.47))
+    (stroke (width 0) (type default))
+    (uuid 35fb2019-bbb1-4626-a98b-e9bf4540e015))
+  (label
+    "RFID_VCC"
+    (at 241.3 204.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 67685726-8d08-408a-b797-c509dfa1af9d))
+  (wire
+    (pts (xy 241.3 214.63) (xy 241.3 217.17))
+    (stroke (width 0) (type default))
+    (uuid cdec8167-67ad-4eea-ba00-52bf72f6a919))
+  (label
+    "RFID_RST_N"
+    (at 241.3 217.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid c31b8f13-13c3-4808-9152-4b0b695e64ed))
+  (symbol
+    (lib_id "Device:R")
+    (at 266.7 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid fc422781-bafe-4a3f-a5bb-fd4560c9cdc5)
+    (property "Reference" "R11" (at 271.78 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "10k" (at 271.78 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 266.7 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 266.7 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid cfb6fe46-7f15-432c-aa24-5e64eb32f2d7))
+    (pin "2" (uuid 20c211a9-a7ab-487e-8f95-5cd06f5d54bc))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R11") (unit 1)))))
+  (wire
+    (pts (xy 266.7 207.01) (xy 266.7 204.47))
+    (stroke (width 0) (type default))
+    (uuid fab27812-9f89-4ab6-b493-42bdb3b4af0b))
+  (label
+    "RFID_TX5"
+    (at 266.7 204.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid bd3f8301-081e-44f1-aa50-37e30e8fc19a))
+  (wire
+    (pts (xy 266.7 214.63) (xy 266.7 217.17))
+    (stroke (width 0) (type default))
+    (uuid 079b2922-fb3a-48ef-ab2f-536f9616d564))
+  (label
+    "RFID_RX"
+    (at 266.7 217.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 6da9aa53-e204-4172-89ce-692096ef13d7))
+  (symbol
+    (lib_id "Device:R")
+    (at 292.1 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 42140779-0e81-465c-beb2-58ff1fc6e45f)
+    (property "Reference" "R12" (at 297.18 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "18k" (at 297.18 212.09 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 292.1 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 292.1 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 00efe817-9503-4156-bbd0-f8b47dd994cd))
+    (pin "2" (uuid 533a6108-7268-4fcb-8d5d-8b42ed3a9c64))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R12") (unit 1)))))
+  (wire
+    (pts (xy 292.1 207.01) (xy 292.1 204.47))
+    (stroke (width 0) (type default))
+    (uuid f3228766-9d50-435d-bef2-970d2263c766))
+  (label
+    "RFID_RX"
+    (at 292.1 204.47 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 265b49dd-1d3b-4033-9230-b0f6cd4d0c11))
+  (wire
+    (pts (xy 292.1 214.63) (xy 292.1 217.17))
+    (stroke (width 0) (type default))
+    (uuid 3744a56d-7101-41de-885d-4cb7e602257c))
+  (label
+    "GND"
+    (at 292.1 217.17 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 6793db6c-6119-4d55-990b-c1831a83624f))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x02")
+    (at 325.12 210.82 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid e81e61df-85ce-4a00-b7e8-c4fce412e164)
+    (property "Reference" "JP1" (at 330.2 209.55 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "OPEN = 5V TX"
+      (at 330.2 212.09 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+      (at 325.12 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 325.12 210.82 0) (effects (font (size 1.27 1.27)) hide))
+    (property
+      "Note"
+      "Close only when the module 3.3 V TX pad is wired. Never with 5 V TX."
+      (at 325.12 210.82 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 735ef76b-51b6-48ed-b17a-d76254a621c0))
+    (pin "2" (uuid abf653bc-7ca7-4e1d-97b1-849bea138e8a))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "JP1") (unit 1)))))
+  (wire
+    (pts (xy 320.04 210.82) (xy 317.5 210.82))
+    (stroke (width 0) (type default))
+    (uuid 50620bb1-b014-4886-a59f-661fbf2367fb))
+  (label
+    "RFID_TX5"
+    (at 317.5 210.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 7657a969-365c-4587-91a0-a7b91358ebb3))
+  (wire
+    (pts (xy 320.04 213.36) (xy 317.5 213.36))
+    (stroke (width 0) (type default))
+    (uuid e5616695-03d8-474e-9248-b9bb5c402b1b))
+  (label
+    "RFID_RX"
+    (at 317.5 213.36 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d91f7ef2-4301-416c-9176-eefa78ce274f))
+  (symbol
+    (lib_id "Device:R")
+    (at 142.24 254 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 3cc4b0b0-5fda-4c87-9172-2ca918633698)
+    (property "Reference" "R13" (at 147.32 252.73 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "330" (at 147.32 255.27 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 142.24 254 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 142.24 254 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid de54f227-4458-436f-8819-b8de35ce2e7d))
+    (pin "2" (uuid d3542cdb-3413-4f45-ae97-97a981467839))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R13") (unit 1)))))
+  (wire
+    (pts (xy 142.24 250.19) (xy 142.24 247.65))
+    (stroke (width 0) (type default))
+    (uuid 45dc5aae-81eb-48e8-945c-ca925b29d266))
+  (label
+    "LED_CONTACT"
+    (at 142.24 247.65 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 807620c6-a12b-4239-a4f5-4ba7e327d1c4))
+  (wire
+    (pts (xy 142.24 257.81) (xy 142.24 260.35))
+    (stroke (width 0) (type default))
+    (uuid 453a4010-6c0c-4948-8c57-fe2db359247c))
+  (label
+    "LED2_A"
+    (at 142.24 260.35 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid cf274716-bf3b-46ee-a20b-3bbd1b090067))
+  (symbol
+    (lib_id "Device:LED")
+    (at 167.64 254 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid abbaec9c-69aa-439c-ae95-f6055b706a5d)
+    (property "Reference" "LED2" (at 167.64 245.11 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "red" (at 167.64 247.65 0) (effects (font (size 1.27 1.27))))
+    (property
+      "Footprint"
+      "LED_THT:LED_D3.0mm"
+      (at 167.64 254 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 167.64 254 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 973d0966-cc6f-48f7-ba42-611106e3fe09))
+    (pin "2" (uuid 1a889978-7a78-4f9c-816b-cb46309d6e1c))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "LED2") (unit 1)))))
+  (wire
+    (pts (xy 163.83 254) (xy 161.29 254))
+    (stroke (width 0) (type default))
+    (uuid 4c7dccbc-721d-462f-a2ad-9f64294dc6ca))
+  (label
+    "GND"
+    (at 161.29 254 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 8c14944e-0512-4821-901c-5010325229b1))
+  (wire
+    (pts (xy 171.45 254) (xy 173.99 254))
+    (stroke (width 0) (type default))
+    (uuid 2e6b23ae-4ac4-426b-a04d-6ec3e4e08298))
+  (label
+    "LED2_A"
+    (at 173.99 254 0)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid d4f16823-16c8-4a3f-bff3-37e65296d257))
+  (symbol
+    (lib_id "Device:R")
+    (at 195.58 254 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 50ef0034-6c2a-4006-8fdf-badf02abe7f2)
+    (property "Reference" "R14" (at 200.66 252.73 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "330" (at 200.66 255.27 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+      (at 195.58 254 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 195.58 254 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 43d892e5-bc0a-43d2-859d-0d66a8faf433))
+    (pin "2" (uuid 2ab7e6b4-e1a3-4b29-9d99-c6b6559de1db))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "R14") (unit 1)))))
+  (wire
+    (pts (xy 195.58 250.19) (xy 195.58 247.65))
+    (stroke (width 0) (type default))
+    (uuid 616834b0-f9d9-4604-8d3e-40150bcf179b))
+  (label
+    "LED_CONTACT"
+    (at 195.58 247.65 90)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 58b51c90-5e68-40d2-b5f4-4b5f1139e684))
+  (wire
+    (pts (xy 195.58 257.81) (xy 195.58 260.35))
+    (stroke (width 0) (type default))
+    (uuid 3a4ad055-05ff-4c28-b20b-a8a743699688))
+  (label
+    "J5_LED"
+    (at 195.58 260.35 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 91f49d07-7b34-4b38-88fb-b1a9e1e414e9))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x03")
+    (at 228.6 254 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid d63a2ec9-73b0-4122-b96f-7e7c9c66a797)
+    (property "Reference" "J5" (at 233.68 252.73 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "Panel LED"
+      (at 233.68 255.27 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical"
+      (at 228.6 254 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 228.6 254 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Note" "1 LED+, 2 empty, 3 GND." (at 228.6 254 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid dbed8399-f8bb-4bde-a568-fa53cad40f76))
+    (pin "2" (uuid 39cb84fa-e35b-4630-979f-27909afb1bc6))
+    (pin "3" (uuid 792bf012-99f4-4d68-bd61-4276d68bce47))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "J5") (unit 1)))))
+  (wire
+    (pts (xy 223.52 251.46) (xy 220.98 251.46))
+    (stroke (width 0) (type default))
+    (uuid 12af4804-a148-435a-b434-1520e1d58bc2))
+  (label
+    "J5_LED"
+    (at 220.98 251.46 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 8bab6ece-f79f-4286-bf2f-8822247def1e))
+  (no_connect (at 223.52 254) (uuid 8ffd2f6c-c28c-4676-a497-9dd2b0747d49))
+  (wire
+    (pts (xy 223.52 256.54) (xy 220.98 256.54))
+    (stroke (width 0) (type default))
+    (uuid 8d9b98fe-3b38-40d6-b7a2-0701474703a8))
+  (label
+    "GND"
+    (at 220.98 256.54 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 9fbf1a02-e63b-4017-9003-28f4df4cb414))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x04")
+    (at 271.78 254 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid d7b95fb0-3891-4b37-9ae8-8665b1d9f8c9)
+    (property "Reference" "J6" (at 276.86 252.73 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "I2C" (at 276.86 255.27 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical"
+      (at 271.78 254 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 271.78 254 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 25d609b9-19dd-4e9a-9a0d-4abe66daa15e))
+    (pin "2" (uuid 6f1dac5a-afea-4ff4-b1c6-6bbcad7220f2))
+    (pin "3" (uuid 5cca58a1-0e52-44f3-a1fc-47e016fe2bd9))
+    (pin "4" (uuid b401e311-456f-40ea-a11a-17490a0d0e44))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "J6") (unit 1)))))
+  (wire
+    (pts (xy 266.7 251.46) (xy 264.16 251.46))
+    (stroke (width 0) (type default))
+    (uuid 5ce4e432-cced-44b3-9b58-19d9b25a6ce7))
+  (label
+    "GND"
+    (at 264.16 251.46 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid e7da4b47-9e97-42d6-9d31-592b2214f8c1))
+  (wire
+    (pts (xy 266.7 254) (xy 264.16 254))
+    (stroke (width 0) (type default))
+    (uuid c21f14f4-1769-4aca-87db-68ee018c26b8))
+  (label
+    "+3V3"
+    (at 264.16 254 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 6ccc9f97-326d-44cf-884a-eb6b4777715b))
+  (wire
+    (pts (xy 266.7 256.54) (xy 264.16 256.54))
+    (stroke (width 0) (type default))
+    (uuid 1834961e-7f6f-4180-b49d-869d94d4c3aa))
+  (label
+    "SDA"
+    (at 264.16 256.54 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid de256c36-11c5-46b2-8aeb-65db4a95cb86))
+  (wire
+    (pts (xy 266.7 259.08) (xy 264.16 259.08))
+    (stroke (width 0) (type default))
+    (uuid 004e2e54-8a94-4ffb-b83b-c5b5b443a737))
+  (label
+    "SCL"
+    (at 264.16 259.08 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 2131f677-39ec-4f71-979f-1401bf8ad6ae))
+  (symbol
+    (lib_id "Connector_Generic:Conn_01x12")
+    (at 370.84 205.74 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 063fd4e5-305d-40e9-8092-95d910b76ad3)
+    (property "Reference" "J7" (at 375.92 204.47 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Value"
+      "Spare pins"
+      (at 375.92 207.01 0)
+      (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "Connector_PinHeader_2.54mm:PinHeader_1x12_P2.54mm_Vertical"
+      (at 370.84 205.74 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 370.84 205.74 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 634b917e-457c-4760-b288-52f19d6f673b))
+    (pin "10" (uuid bab3259e-006e-4e10-bf32-c66c086cb04a))
+    (pin "11" (uuid bbdfaf02-f203-4d28-82f9-a9517e002714))
+    (pin "12" (uuid 0dbed416-e13d-4db5-af48-f5f3749187ad))
+    (pin "2" (uuid 480c65c3-57db-4884-9f75-18f013bd1c74))
+    (pin "3" (uuid f04b58c4-57f3-49b4-a9f4-4eda543b106e))
+    (pin "4" (uuid d7799a11-f303-4485-9bd1-b1998a090eeb))
+    (pin "5" (uuid c4ae4778-c605-4a7f-9b91-34c5be494dee))
+    (pin "6" (uuid 6de0947f-6b79-4446-a9ad-3ecf9a5b7497))
+    (pin "7" (uuid 8063a781-4273-4b64-86c0-d47d93798543))
+    (pin "8" (uuid 7e9fd9f7-5bf1-4712-8187-5d37eb1d79a6))
+    (pin "9" (uuid 668b7585-c5f6-4461-8f90-2c2c8f9bef2e))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "J7") (unit 1)))))
+  (wire
+    (pts (xy 365.76 193.04) (xy 363.22 193.04))
+    (stroke (width 0) (type default))
+    (uuid b8e82baf-4da3-4da6-9522-2d4462dfebbd))
+  (label
+    "+5V"
+    (at 363.22 193.04 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 7cc56692-f2b0-448c-87a2-b467f88a6f1f))
+  (wire
+    (pts (xy 365.76 195.58) (xy 363.22 195.58))
+    (stroke (width 0) (type default))
+    (uuid 6020ecdf-0dbb-4207-afd7-5be23fe11c7b))
+  (label
+    "+3V3"
+    (at 363.22 195.58 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 36aae35b-812b-432d-84a3-a4291427ded6))
+  (wire
+    (pts (xy 365.76 198.12) (xy 363.22 198.12))
+    (stroke (width 0) (type default))
+    (uuid 3bbbadcb-98f8-4bf9-9cd7-84f8c2a41be2))
+  (label
+    "GND"
+    (at 363.22 198.12 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 85490d70-93a1-4c22-a158-0fb1a4a32bb2))
+  (wire
+    (pts (xy 365.76 200.66) (xy 363.22 200.66))
+    (stroke (width 0) (type default))
+    (uuid a6109770-8d69-4666-b86f-6bd142c7fbd3))
+  (label
+    "D5"
+    (at 363.22 200.66 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d9a0fa5a-0d4a-46c5-897f-33a2c4a04ef3))
+  (wire
+    (pts (xy 365.76 203.2) (xy 363.22 203.2))
+    (stroke (width 0) (type default))
+    (uuid f0e080e0-34af-4851-a609-d62e500818a7))
+  (label
+    "D6"
+    (at 363.22 203.2 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d577c755-cc46-40ad-b2fd-bf9f27d385c1))
+  (wire
+    (pts (xy 365.76 205.74) (xy 363.22 205.74))
+    (stroke (width 0) (type default))
+    (uuid f7f92958-a602-4635-8e0d-7ceb473a05cf))
+  (label
+    "D11"
+    (at 363.22 205.74 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 6243a783-07df-43e0-96e8-a32d095b87ba))
+  (wire
+    (pts (xy 365.76 208.28) (xy 363.22 208.28))
+    (stroke (width 0) (type default))
+    (uuid c7ba39c6-1f7e-4a4e-b90e-5697bf535f58))
+  (label
+    "D13"
+    (at 363.22 208.28 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 2ffe174f-6cb3-4855-a386-ff800a96fcd5))
+  (wire
+    (pts (xy 365.76 210.82) (xy 363.22 210.82))
+    (stroke (width 0) (type default))
+    (uuid 7839fe9f-c76d-44ca-b45a-a6b8fc71e77c))
+  (label
+    "A1"
+    (at 363.22 210.82 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 51d7f24f-e60e-4716-b7cf-80716c4cd111))
+  (wire
+    (pts (xy 365.76 213.36) (xy 363.22 213.36))
+    (stroke (width 0) (type default))
+    (uuid 9dadee66-6008-48a4-aaeb-cc71c6761646))
+  (label
+    "A2"
+    (at 363.22 213.36 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid a759aa98-a710-48e3-ade2-ead47b8cacf0))
+  (wire
+    (pts (xy 365.76 215.9) (xy 363.22 215.9))
+    (stroke (width 0) (type default))
+    (uuid 9a3b0eb3-7cc1-4ea3-88ab-1fa50ebd7e6a))
+  (label
+    "A3"
+    (at 363.22 215.9 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 01310f3d-c137-4d56-a225-e5757c222d86))
+  (wire
+    (pts (xy 365.76 218.44) (xy 363.22 218.44))
+    (stroke (width 0) (type default))
+    (uuid f2b98f77-05b8-4fc9-adb8-e0b614cb6f61))
+  (label
+    "A4"
+    (at 363.22 218.44 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid d0747923-f08e-45c1-b930-00e1da0d0689))
+  (wire
+    (pts (xy 365.76 220.98) (xy 363.22 220.98))
+    (stroke (width 0) (type default))
+    (uuid 799a20e0-b359-4964-8984-2154c48894ca))
+  (label
+    "GND"
+    (at 363.22 220.98 180)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 0f404781-dcd0-4e9d-8b2d-f6edf9cbf503))
+  (symbol
+    (lib_id "Mechanical:MountingHole")
+    (at 365.76 160.02 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid ac72e102-4f66-4ade-b399-724e33a94335)
+    (property "Reference" "H1" (at 370.84 158.75 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "M3" (at 370.84 161.29 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "MountingHole:MountingHole_3.2mm_M3"
+      (at 365.76 160.02 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 365.76 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "H1") (unit 1)))))
+  (symbol
+    (lib_id "Mechanical:MountingHole")
+    (at 381 160.02 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 3dad0b3f-c9fa-455c-bdc8-7dee495c35f6)
+    (property "Reference" "H2" (at 386.08 158.75 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "M3" (at 386.08 161.29 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "MountingHole:MountingHole_3.2mm_M3"
+      (at 381 160.02 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 381 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "H2") (unit 1)))))
+  (symbol
+    (lib_id "Mechanical:MountingHole")
+    (at 365.76 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid 45456d0e-2876-4084-9056-fd4980b1121f)
+    (property "Reference" "H3" (at 370.84 171.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "M3" (at 370.84 173.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "MountingHole:MountingHole_3.2mm_M3"
+      (at 365.76 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 365.76 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "H3") (unit 1)))))
+  (symbol
+    (lib_id "Mechanical:MountingHole")
+    (at 381 172.72 0)
+    (unit 1)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid d80b8c4b-d01c-48b6-b746-a87dab80ffa4)
+    (property "Reference" "H4" (at 386.08 171.45 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "M3" (at 386.08 173.99 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property
+      "Footprint"
+      "MountingHole:MountingHole_3.2mm_M3"
+      (at 381 172.72 0)
+      (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 381 172.72 0) (effects (font (size 1.27 1.27)) hide))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "H4") (unit 1)))))
+  (symbol
+    (lib_id "power:PWR_FLAG")
+    (at 30.48 160.02 0)
+    (unit 1)
+    (in_bom no)
+    (on_board no)
+    (dnp no)
+    (uuid b6f4aa00-e489-4d94-9ff0-74989dea91dc)
+    (property
+      "Reference"
+      "#FLG01"
+      (at 35.56 158.75 0)
+      (effects (font (size 1.27 1.27)) (justify left) hide))
+    (property
+      "Value"
+      "PWR_FLAG"
+      (at 35.56 161.29 0)
+      (effects (font (size 1.27 1.27)) (justify left) hide))
+    (property "Footprint" "" (at 30.48 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 30.48 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 51c2d73a-c948-45d3-9846-68583d135963))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "#FLG01") (unit 1)))))
+  (wire
+    (pts (xy 30.48 160.02) (xy 30.48 162.56))
+    (stroke (width 0) (type default))
+    (uuid 5df213a6-3e10-4b1b-9bb4-85c8bc18db3a))
+  (label
+    "+5V"
+    (at 30.48 162.56 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 8a5554e8-e75b-4dfb-8aa9-3737b1442c1b))
+  (symbol
+    (lib_id "power:PWR_FLAG")
+    (at 50.8 160.02 0)
+    (unit 1)
+    (in_bom no)
+    (on_board no)
+    (dnp no)
+    (uuid ccffaf38-8026-40cd-9133-c907a97d58e3)
+    (property
+      "Reference"
+      "#FLG02"
+      (at 55.88 158.75 0)
+      (effects (font (size 1.27 1.27)) (justify left) hide))
+    (property
+      "Value"
+      "PWR_FLAG"
+      (at 55.88 161.29 0)
+      (effects (font (size 1.27 1.27)) (justify left) hide))
+    (property "Footprint" "" (at 50.8 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 50.8 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid 3ad5dfe2-5cb5-45a6-b81f-cec24cef964e))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "#FLG02") (unit 1)))))
+  (wire
+    (pts (xy 50.8 160.02) (xy 50.8 162.56))
+    (stroke (width 0) (type default))
+    (uuid 1a7d254c-0057-4829-b562-9ddaefaed53c))
+  (label
+    "+3V3"
+    (at 50.8 162.56 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 7ba70c02-bc27-446a-b778-bad0926a47db))
+  (symbol
+    (lib_id "power:PWR_FLAG")
+    (at 71.12 160.02 0)
+    (unit 1)
+    (in_bom no)
+    (on_board no)
+    (dnp no)
+    (uuid 2a28d860-4d8f-4a58-a7dc-b1eb0f23b731)
+    (property
+      "Reference"
+      "#FLG03"
+      (at 76.2 158.75 0)
+      (effects (font (size 1.27 1.27)) (justify left) hide))
+    (property
+      "Value"
+      "PWR_FLAG"
+      (at 76.2 161.29 0)
+      (effects (font (size 1.27 1.27)) (justify left) hide))
+    (property "Footprint" "" (at 71.12 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Datasheet" "~" (at 71.12 160.02 0) (effects (font (size 1.27 1.27)) hide))
+    (pin "1" (uuid caa8ab81-848e-43ae-91e8-140ecfba055b))
+    (instances
+      (project
+        "FeederController"
+        (path "/f12a98b2-0ed9-449a-b4a9-394248edbb42" (reference "#FLG03") (unit 1)))))
+  (wire
+    (pts (xy 71.12 160.02) (xy 71.12 162.56))
+    (stroke (width 0) (type default))
+    (uuid f536126b-4e9e-446c-a11e-fc4b6f299320))
+  (label
+    "GND"
+    (at 71.12 162.56 270)
+    (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid e8b8fb7f-ed9a-4c59-861f-cb3b528afc93))
+  (text
+    "SHEET 1 - FEEDER DRIVER (high-side). A0 high: Q2 on, gate 0 V, Q1 on, feeder runs. A0 floating: R2 keeps Q2 off, R4 keeps Q1 off."
+    (at 127 25.4 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid 00ef3820-906b-487e-a1c5-f436f7a44599))
+  (text
+    "SHEET 2 - TOUCH WIRE and SHARP WATER LEVEL"
+    (at 127 116.84 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid ba1b7e75-778e-491e-baa8-2945da8b5ccc))
+  (text
+    "RFID SUPPLY. Default JP2 1-2: USB 5 V via FB1 + C7. Fit U2, C8, C9 and move JP2 to 2-3 for 6 V."
+    (at 127 154.94 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid 0cb7b21b-d1bb-40a4-961a-7dcbb2eb7eee))
+  (text
+    "RFID DATA and RESET. TX high = RST low (inverted, as the old board). R11/R12: 5 V TX -> 3.2 V. JP1 closed only for the 3.3 V TX pad."
+    (at 127 193.04 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid 45a0c400-68d8-4758-b279-aafb2d522ef3))
+  (text
+    "CONTACT LED, I2C"
+    (at 127 231.14 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid 054e3cae-bbe9-4311-a78b-bca2f63be8c1))
+  (text
+    "MOUNTING HOLES, SPARE PINS"
+    (at 345.44 152.4 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid eb84335e-189a-4abd-8876-7c8027a22cf3))
+  (text
+    "FEATHER on ADALOGGER"
+    (at 25.4 50.8 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid 7af9ede7-53e2-42a1-9e4d-9c1b1fac9973))
+  (text
+    "All parts through-hole. DNP: C6, U2, C8, C9. Generated by tools/gen_schematic.py (draft)."
+    (at 25.4 281.94 0)
+    (effects (font (size 2 2) bold) (justify left bottom))
+    (uuid 539b53ee-40ff-43a2-9c52-86147475b31b))
+  (sheet_instances (path "/" (page "1"))))

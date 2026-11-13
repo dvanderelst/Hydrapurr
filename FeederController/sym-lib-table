@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "HydraPurr")(type "KiCad")(uri "${KIPRJMOD}/HydraPurr.kicad_sym")(options "")(descr "HydraPurr custom symbols"))
+)
