@@ -433,7 +433,19 @@ below the stack: LED2, J5, R5 (right under D12), J2; R13/R14 lie under the
 logger in the pocket between coin cell and SD socket. J7 stands next to
 the stack. GND zones on both layers, notched at x 150-167, y 147-160
 around D12/R5/J2 (no rule area: KiCad 7's DSN export makes it a full
-keep-out for Freerouting). `tools/place_parts.py`
+keep-out for Freerouting).
+
+**Routing routine (Freerouting plugin, 2026-11-13):** net classes Default
+0.3/0.3 mm, Power 0.8/0.3 mm, Touch 0.3/0.6 mm; board constraints
+copper-to-edge 0.3 mm, min thermal spokes 1 (all in `FeederController.kicad_pro`,
+set by `tools/setup_routing.py`). The plugin exports `temp-freerouting.dsn`
+on every run and Freerouting rebuilds its clearance matrix from it, so
+**before each run set the matrix's board_edge row and column to 300 by
+hand**: Freerouting does not take the edge clearance from the DSN and
+defaults to 250. Then route, import, fill zones (B), DRC, save the report
+(`DRC.rpt`, ignored by git). U1's GND pad gets its own short track (boost
+input current). Edit KiCad settings only with KiCad fully closed (the
+project window holds settings in memory). `tools/place_parts.py`
 was only the first pass (80 × 80) and is superseded. F1 uses the MF-RHT050 footprint (check
 the pitch of the fuse bought). Q2/Q3 = PN2222A (2N2222), footprint pinout E-B-C;
 a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6RL) is still in
