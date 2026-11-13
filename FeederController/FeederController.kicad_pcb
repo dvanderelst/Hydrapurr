@@ -2682,7 +2682,6 @@
     (property "ki_keywords" "R res resistor")
     (path "/04a95b4e-4b83-4083-9709-85c2b0a12340")
     (attr through_hole)
-    (tedit 5AE5139B)
     (fp_text
       reference
       "R14"
@@ -2707,52 +2706,52 @@
     (fp_line
       (start 1.37 0)
       (end 1.44 0)
-      (layer "F.SilkS")
       (stroke (width 0.12) (type solid))
+      (layer "F.SilkS")
       (tstamp cf8bf4f7-7a4e-4f25-ba41-ffe3a544759b))
     (fp_circle
       (center 0 0)
       (end 1.37 0)
-      (layer "F.SilkS")
-      (fill none)
       (stroke (width 0.12) (type solid))
+      (fill none)
+      (layer "F.SilkS")
       (tstamp 971bd421-3717-4ae5-ac2e-9a9c19b7f8d8))
-    (fp_line
-      (start 3.59 1.5)
-      (end 3.59 -1.5)
-      (layer "F.CrtYd")
-      (stroke (width 0.05) (type solid))
-      (tstamp 326efe26-7628-4c17-9770-a88c05aeaafc))
-    (fp_line
-      (start 3.59 -1.5)
-      (end -1.5 -1.5)
-      (layer "F.CrtYd")
-      (stroke (width 0.05) (type solid))
-      (tstamp 3bdb4fdb-59fb-414d-8358-e5cbe163141c))
     (fp_line
       (start -1.5 -1.5)
       (end -1.5 1.5)
-      (layer "F.CrtYd")
       (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
       (tstamp c0b88ba4-f3ab-4a2a-ab07-ea4a0048b2f1))
     (fp_line
       (start -1.5 1.5)
       (end 3.59 1.5)
-      (layer "F.CrtYd")
       (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
       (tstamp dd2a38fc-7f8b-48a8-9e0e-297d8f8854d7))
+    (fp_line
+      (start 3.59 -1.5)
+      (end -1.5 -1.5)
+      (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
+      (tstamp 3bdb4fdb-59fb-414d-8358-e5cbe163141c))
+    (fp_line
+      (start 3.59 1.5)
+      (end 3.59 -1.5)
+      (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
+      (tstamp 326efe26-7628-4c17-9770-a88c05aeaafc))
     (fp_line
       (start 0 0)
       (end 2.54 0)
-      (layer "F.Fab")
       (stroke (width 0.1) (type solid))
+      (layer "F.Fab")
       (tstamp 842cceaf-9bec-4425-890a-d7c155934e32))
     (fp_circle
       (center 0 0)
       (end 1.25 0)
-      (layer "F.Fab")
-      (fill none)
       (stroke (width 0.1) (type solid))
+      (fill none)
+      (layer "F.Fab")
       (tstamp f583ab9d-a863-446f-802e-42b20515718f))
     (pad
       "1"
@@ -2761,7 +2760,7 @@
       (at 0 0)
       (size 1.6 1.6)
       (drill 0.8)
-      (layers *.Cu *.Mask)
+      (layers "*.Cu" "*.Mask")
       (net 23 "/LED_CONTACT")
       (pintype "passive")
       (tstamp f5c30ff6-6d97-4771-b17a-6c348e357e77))
@@ -2772,7 +2771,7 @@
       (at 2.54 0)
       (size 1.6 1.6)
       (drill 0.8)
-      (layers *.Cu *.Mask)
+      (layers "*.Cu" "*.Mask")
       (net 41 "Net-(J5-Pin_1)")
       (pintype "passive")
       (tstamp 1492ab9d-d659-4b94-a384-54aea0a6da57))
@@ -2942,78 +2941,77 @@
     (property "ki_keywords" "R res resistor")
     (path "/02f215bb-27fd-4b77-bb46-1408cb1a4df6")
     (attr through_hole)
-    (tedit 5AE5139B)
     (fp_text
       reference
       "R13"
       (at 1.27 -2.37)
       (layer "F.SilkS")
       (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp a38aa6bc-0182-43b0-8b35-d3128fd7d52c))
+      (tstamp bb1144ca-2569-4059-bc29-eada7d6e265b))
     (fp_text
       value
       "330"
       (at 1.27 2.37)
       (layer "F.Fab")
       (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp d72c1421-dc4e-4cbc-90e5-fd2d2d598d9a))
+      (tstamp 755afceb-34b3-42a4-b1af-ab3235d83610))
     (fp_text
       user
       "${REFERENCE}"
       (at 1.27 -2.37)
       (layer "F.Fab")
       (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp 3244add2-5f11-4c54-9579-ab6914378ed5))
+      (tstamp 0bde8bd2-e23a-4b5b-b4d6-c12291290982))
     (fp_line
       (start 1.37 0)
       (end 1.44 0)
-      (layer "F.SilkS")
       (stroke (width 0.12) (type solid))
-      (tstamp cf8bf4f7-7a4e-4f25-ba41-ffe3a544759b))
+      (layer "F.SilkS")
+      (tstamp 21e17148-7288-4a4b-9bd8-d5253620abab))
     (fp_circle
       (center 0 0)
       (end 1.37 0)
-      (layer "F.SilkS")
-      (fill none)
       (stroke (width 0.12) (type solid))
-      (tstamp 971bd421-3717-4ae5-ac2e-9a9c19b7f8d8))
-    (fp_line
-      (start 3.59 1.5)
-      (end 3.59 -1.5)
-      (layer "F.CrtYd")
-      (stroke (width 0.05) (type solid))
-      (tstamp 326efe26-7628-4c17-9770-a88c05aeaafc))
-    (fp_line
-      (start 3.59 -1.5)
-      (end -1.5 -1.5)
-      (layer "F.CrtYd")
-      (stroke (width 0.05) (type solid))
-      (tstamp 3bdb4fdb-59fb-414d-8358-e5cbe163141c))
+      (fill none)
+      (layer "F.SilkS")
+      (tstamp e17efbe1-165e-4ef6-b7e2-17eecc41c227))
     (fp_line
       (start -1.5 -1.5)
       (end -1.5 1.5)
-      (layer "F.CrtYd")
       (stroke (width 0.05) (type solid))
-      (tstamp c0b88ba4-f3ab-4a2a-ab07-ea4a0048b2f1))
+      (layer "F.CrtYd")
+      (tstamp 9b19af26-410e-4038-a4c0-b9c9d2767e4a))
     (fp_line
       (start -1.5 1.5)
       (end 3.59 1.5)
-      (layer "F.CrtYd")
       (stroke (width 0.05) (type solid))
-      (tstamp dd2a38fc-7f8b-48a8-9e0e-297d8f8854d7))
+      (layer "F.CrtYd")
+      (tstamp 524ee19e-15d2-41ca-95ed-da758e0c94e4))
+    (fp_line
+      (start 3.59 -1.5)
+      (end -1.5 -1.5)
+      (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
+      (tstamp c59ce259-15f5-47a5-8522-8de6312b03b4))
+    (fp_line
+      (start 3.59 1.5)
+      (end 3.59 -1.5)
+      (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
+      (tstamp 41e872e2-814a-4bb9-b922-071a2d03d12a))
     (fp_line
       (start 0 0)
       (end 2.54 0)
-      (layer "F.Fab")
       (stroke (width 0.1) (type solid))
-      (tstamp 842cceaf-9bec-4425-890a-d7c155934e32))
+      (layer "F.Fab")
+      (tstamp 499ee371-dab1-472f-a88a-7dcf469fef87))
     (fp_circle
       (center 0 0)
       (end 1.25 0)
-      (layer "F.Fab")
-      (fill none)
       (stroke (width 0.1) (type solid))
-      (tstamp f583ab9d-a863-446f-802e-42b20515718f))
+      (fill none)
+      (layer "F.Fab")
+      (tstamp d04b41ba-613f-4924-bb72-3fc95e22de30))
     (pad
       "1"
       thru_hole
@@ -3021,10 +3019,10 @@
       (at 0 0)
       (size 1.6 1.6)
       (drill 0.8)
-      (layers *.Cu *.Mask)
+      (layers "*.Cu" "*.Mask")
       (net 23 "/LED_CONTACT")
       (pintype "passive")
-      (tstamp f5c30ff6-6d97-4771-b17a-6c348e357e77))
+      (tstamp faf4d569-3e7c-4f4a-8b81-63f45c7a1938))
     (pad
       "2"
       thru_hole
@@ -3032,10 +3030,10 @@
       (at 2.54 0)
       (size 1.6 1.6)
       (drill 0.8)
-      (layers *.Cu *.Mask)
+      (layers "*.Cu" "*.Mask")
       (net 44 "Net-(LED2-A)")
       (pintype "passive")
-      (tstamp 1492ab9d-d659-4b94-a384-54aea0a6da57))
+      (tstamp 54a05074-a940-409c-a2a8-dc6e79ff063d))
     (model
       "${KICAD6_3DMODEL_DIR}/Resistor_THT.3dshapes/R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical.wrl"
       (offset (xyz 0 0 0))
@@ -11682,78 +11680,77 @@
     (property "ki_keywords" "R res resistor")
     (path "/2dd81787-8b79-4c75-9e1c-f28de40b023f")
     (attr through_hole)
-    (tedit 5AE5139B)
     (fp_text
       reference
       "R5"
       (at 1.27 -2.37)
       (layer "F.SilkS")
       (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp a38aa6bc-0182-43b0-8b35-d3128fd7d52c))
+      (tstamp da15a0e5-3f02-4cfd-91c5-7a708e762ff0))
     (fp_text
       value
       "0R"
       (at 1.27 2.37)
       (layer "F.Fab")
       (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp d72c1421-dc4e-4cbc-90e5-fd2d2d598d9a))
+      (tstamp ed020631-bfc7-42d7-968a-e039a9335f5d))
     (fp_text
       user
       "${REFERENCE}"
       (at 1.27 -2.37)
       (layer "F.Fab")
       (effects (font (size 1 1) (thickness 0.15)))
-      (tstamp 3244add2-5f11-4c54-9579-ab6914378ed5))
+      (tstamp 04ae4df7-049d-4966-998f-71673dfaeaaa))
     (fp_line
       (start 1.37 0)
       (end 1.44 0)
-      (layer "F.SilkS")
       (stroke (width 0.12) (type solid))
-      (tstamp cf8bf4f7-7a4e-4f25-ba41-ffe3a544759b))
+      (layer "F.SilkS")
+      (tstamp f53bf13b-e882-434c-9faf-e9a1d1ee3844))
     (fp_circle
       (center 0 0)
       (end 1.37 0)
-      (layer "F.SilkS")
-      (fill none)
       (stroke (width 0.12) (type solid))
-      (tstamp 971bd421-3717-4ae5-ac2e-9a9c19b7f8d8))
-    (fp_line
-      (start 3.59 1.5)
-      (end 3.59 -1.5)
-      (layer "F.CrtYd")
-      (stroke (width 0.05) (type solid))
-      (tstamp 326efe26-7628-4c17-9770-a88c05aeaafc))
-    (fp_line
-      (start 3.59 -1.5)
-      (end -1.5 -1.5)
-      (layer "F.CrtYd")
-      (stroke (width 0.05) (type solid))
-      (tstamp 3bdb4fdb-59fb-414d-8358-e5cbe163141c))
+      (fill none)
+      (layer "F.SilkS")
+      (tstamp 9921aef2-830c-4c7c-8ad5-c9ee5461b08b))
     (fp_line
       (start -1.5 -1.5)
       (end -1.5 1.5)
-      (layer "F.CrtYd")
       (stroke (width 0.05) (type solid))
-      (tstamp c0b88ba4-f3ab-4a2a-ab07-ea4a0048b2f1))
+      (layer "F.CrtYd")
+      (tstamp 6d89f9b2-0926-4ee4-9961-6a6ed95be033))
     (fp_line
       (start -1.5 1.5)
       (end 3.59 1.5)
-      (layer "F.CrtYd")
       (stroke (width 0.05) (type solid))
-      (tstamp dd2a38fc-7f8b-48a8-9e0e-297d8f8854d7))
+      (layer "F.CrtYd")
+      (tstamp 8bf48fb9-b9b6-4323-b8bf-9e23b2ae8f7a))
+    (fp_line
+      (start 3.59 -1.5)
+      (end -1.5 -1.5)
+      (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
+      (tstamp 1eda9c1a-ce34-4d6f-9186-35cf8992c193))
+    (fp_line
+      (start 3.59 1.5)
+      (end 3.59 -1.5)
+      (stroke (width 0.05) (type solid))
+      (layer "F.CrtYd")
+      (tstamp 96da6a18-ff3f-4d8e-85c6-209a52c38f26))
     (fp_line
       (start 0 0)
       (end 2.54 0)
-      (layer "F.Fab")
       (stroke (width 0.1) (type solid))
-      (tstamp 842cceaf-9bec-4425-890a-d7c155934e32))
+      (layer "F.Fab")
+      (tstamp 44b05137-2c65-4485-93c6-2d494396a20b))
     (fp_circle
       (center 0 0)
       (end 1.25 0)
-      (layer "F.Fab")
-      (fill none)
       (stroke (width 0.1) (type solid))
-      (tstamp f583ab9d-a863-446f-802e-42b20515718f))
+      (fill none)
+      (layer "F.Fab")
+      (tstamp 05a98b54-749e-472b-98a8-e28e0c555721))
     (pad
       "1"
       thru_hole
@@ -11761,10 +11758,10 @@
       (at 0 0)
       (size 1.6 1.6)
       (drill 0.8)
-      (layers *.Cu *.Mask)
+      (layers "*.Cu" "*.Mask")
       (net 20 "/TOUCH")
       (pintype "passive")
-      (tstamp f5c30ff6-6d97-4771-b17a-6c348e357e77))
+      (tstamp d8a37a3b-d476-4800-9f80-e94ffdaef6e1))
     (pad
       "2"
       thru_hole
@@ -11772,10 +11769,10 @@
       (at 2.54 0)
       (size 1.6 1.6)
       (drill 0.8)
-      (layers *.Cu *.Mask)
+      (layers "*.Cu" "*.Mask")
       (net 35 "Net-(J2-Pin_1)")
       (pintype "passive")
-      (tstamp 1492ab9d-d659-4b94-a384-54aea0a6da57))
+      (tstamp ff8fd4ec-a9a1-49a3-afa3-f588a4d3a402))
     (model
       "${KICAD6_3DMODEL_DIR}/Resistor_THT.3dshapes/R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical.wrl"
       (offset (xyz 0 0 0))
@@ -12164,30 +12161,43 @@
     (net 4)
     (net_name "GND")
     (layer "B.Cu")
-    (tstamp eb9b0faa-d3e5-4cf0-ae61-e5f200f96023)
+    (tstamp 4b350522-cab3-4c3d-9ff7-c3bf393bf10d)
     (name "GND plane (bottom)")
     (hatch edge 0.5)
+    (priority 0)
     (connect_pads (clearance 0.5))
     (min_thickness 0.25)
     (filled_areas_thickness no)
     (fill yes (thermal_gap 0.5) (thermal_bridge_width 0.5))
-    (polygon (pts (xy 100 100) (xy 180 100) (xy 180 160) (xy 100 160))))
+    (polygon
+      (pts
+        (xy 100 100)
+        (xy 180 100)
+        (xy 180 160)
+        (xy 165.5 160)
+        (xy 165.5 147)
+        (xy 151.5 147)
+        (xy 151.5 160)
+        (xy 100 160))))
   (zone
-    (net 0)
-    (net_name "")
-    (layers "F.Cu" "B.Cu")
-    (tstamp 9eb04766-a870-41d3-9422-37b296f8302c)
-    (name "No ground near touch line")
+    (net 4)
+    (net_name "GND")
+    (layer "F.Cu")
+    (tstamp 63b753ff-279f-48ca-a347-eaf7b9ca6db9)
+    (name "GND plane (top)")
     (hatch edge 0.5)
-    (connect_pads (clearance 0))
+    (priority 0)
+    (connect_pads (clearance 0.5))
     (min_thickness 0.25)
     (filled_areas_thickness no)
-    (keepout
-      (tracks allowed)
-      (vias allowed)
-      (pads allowed)
-      (copperpour not_allowed)
-      (footprints allowed))
-    (fill (thermal_gap 0.5) (thermal_bridge_width 0.5))
+    (fill yes (thermal_gap 0.5) (thermal_bridge_width 0.5))
     (polygon
-      (pts (xy 151.5 147) (xy 165.5 147) (xy 165.5 160) (xy 151.5 160)))))
+      (pts
+        (xy 100 100)
+        (xy 180 100)
+        (xy 180 160)
+        (xy 165.5 160)
+        (xy 165.5 147)
+        (xy 151.5 147)
+        (xy 151.5 160)
+        (xy 100 160)))))

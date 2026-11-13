@@ -20,3 +20,8 @@ FeederController/fp-info-cache
 *-backups/
 *.kicad_prl
 *.lck
+
+# Freerouting exchange files
+FeederController/*.dsn
+FeederController/*.ses
+FeederController/freerouting*.json
