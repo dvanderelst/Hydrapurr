@@ -703,6 +703,14 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   to fetch. `lib/adafruit_httpserver/` removed (no longer used).
   Not yet tested: two clients at once, a fetch during a lick bout, a
   download interrupted half-way.
+- **2026-11-16** — Reset the board remotely with Ctrl-C over serial (works
+  now that WiFi use ends in `microcontroller.reset()`); CIRCUITPY then came
+  back unmounted: `udisksctl mount -b /dev/sdc1`. Deleted
+  `lib/adafruit_httpserver/` on the board; board now matches the repo.
+  Lesson: **writing to CIRCUITPY while recording stalls the board**
+  (internal flash writes block the CPU): max_gap 662 ms and 1466 ms in the
+  minutes of a delete and a small copy, back to 165 ms after. Copy files
+  to the board only when gaps don't matter.
   **USB dropped out** (board gone from `lsusb`, needed Reset) on the soft
   reboot (Ctrl-C, Ctrl-D) after the test, with the station still connected.
   So the USB-loss problem is not only the access point. To check: does
