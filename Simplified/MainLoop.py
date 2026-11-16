@@ -10,6 +10,14 @@ baseline. It is stored in the raw stream, shown on the TFT, and each contact
 is written to the event log (EventLog: boot, settings, contacts, baseline
 resets, water summaries, shutdown).
 
+The board joins the lab WiFi at boot (Network.py) and sends a heartbeat with
+a status line to healthchecks.io every heartbeat_interval_ms, when the wire
+has been quiet (each one stops recording ~3.5 s); /fail when something is
+wrong (not recording, SD errors, RTC, touch, card nearly full). A watchdog
+resets the board if the loop hangs. Once WiFi has been used, the loop ends
+with a hard reset instead of a soft reboot (a soft reboot dropped USB), and
+auto-reload is off: after copying files to the board, press Reset.
+
 Press D1 to pause recording and serve the SD card over the board's own WiFi
 network (DownloadMode.py); press D1 again to resume.
 
@@ -17,10 +25,13 @@ Bout detection and feeding (BoutDetection.py, LickSensor.py) are not used in
 this version; they stay in lib/ for later.
 """
 
+import os
 import time
 import traceback
 import board
 import digitalio
+import supervisor
+import microcontroller
 
 import Settings
 from components import TimeUtil
@@ -33,6 +44,7 @@ from RawRecorder import RawRecorder
 from EventLog import EventLog
 from StatusDisplay import StatusDisplay
 import DownloadMode
+from Network import Network
 
 GREEN, YELLOW, RED, WHITE = 0x00FF00, 0xFFFF00, 0xFF4040, 0xFFFFFF
 
@@ -104,6 +116,39 @@ def clock_line():
     return 'RTC: set time!', RED
 
 
+def start_watchdog():
+    if Settings.watchdog_timeout_s is None:
+        return
+    from watchdog import WatchDogMode
+    microcontroller.watchdog.timeout = Settings.watchdog_timeout_s
+    microcontroller.watchdog.mode = WatchDogMode.RESET
+    microcontroller.watchdog.feed()
+
+
+def feed_watchdog():
+    if Settings.watchdog_timeout_s is not None:
+        microcontroller.watchdog.feed()
+
+
+def stop_watchdog():
+    if Settings.watchdog_timeout_s is None:
+        return
+    try:
+        microcontroller.watchdog.deinit()
+    except Exception as e:
+        # Some ports can't stop it: then keep it fed instead.
+        warn(f'[Main Loop] could not stop the watchdog: {e!r}')
+
+
+def sd_free_mb():
+    """Free space on the SD card in MB, or None."""
+    try:
+        st = os.statvfs('/sd')
+        return st[0] * st[4] // (1024 * 1024)
+    except OSError:
+        return None
+
+
 def shutdown(recorder, events, screen, reason):
     """Close the data files, unmount the SD card, give the display back."""
     try:
@@ -160,6 +205,23 @@ def main_loop(level=INFO, sd_ok=True):
     for name, value in settings_items():
         events.log(t, 'settings', name, str(value))
     events.flush()
+
+    net = Network()
+    if net.enabled:
+        screen.set_line(4, 'joining WiFi...', YELLOW, now=True)
+        joined = net.join()
+        if joined:
+            screen.set_line(4, f'{net.ip()}', GREEN, now=True)
+            events.log(now_ms(), 'wifi', 'joined', net.ip(), net.rssi())
+        else:
+            screen.set_line(4, 'no WiFi', RED, now=True)
+            events.log(now_ms(), 'wifi', 'join_failed')
+        events.flush()
+    if net.used:
+        # A soft reboot after WiFi use dropped USB, and saving a file over
+        # USB would trigger one: no auto-reload, press Reset after a copy.
+        supervisor.runtime.autoreload = False
+        info('[Main Loop] WiFi used: auto-reload off, press Reset after copying files')
     if touch.baseline <= 0:
         screen.set_line(3, 'TOUCH BROKEN', RED, now=True)
         screen.set_line(4, 'need CP 10.3.1+', RED, now=True)
@@ -187,11 +249,25 @@ def main_loop(level=INFO, sd_ok=True):
     water_min, water_max = None, None
     next_water_event_ms = now_ms() + Settings.water_event_interval_ms
     stop_reason = 'unknown'
+    # Heartbeat: first one soon after boot (once the wire is quiet).
+    boot_ms = now_ms()
+    hb_due_ms = now_ms()
+    hb_last_ms = now_ms()
+    hb_rows = 0                  # recorder.rows_written at the last heartbeat
+    hb_errors = 0                # recorder.errors + events.errors at the last one
+    hb_contacts = 0              # contacts at the last heartbeat
+    hb_max_gap_ms = 0            # longest gap between samples since then
+    hb_last_took_ms = 0          # how long the previous heartbeat blocked
+    next_wifi_check_ms = 0
+    wifi_up = net.connected
+
+    start_watchdog()
 
     info('[Main Loop] Starting recording loop')
     try:
         while True:
             try:
+                feed_watchdog()
                 t = now_ms()
                 if button.pressed(t):
                     info('[Main Loop] D1 pressed: download mode, recording paused')
@@ -200,7 +276,9 @@ def main_loop(level=INFO, sd_ok=True):
                     flush()
                     if led is not None:
                         led.value = False
+                    stop_watchdog()      # a big file can take minutes
                     DownloadMode.run(screen, button, clock_line())
+                    start_watchdog()
                     # Restart timing so the pause is not counted as a gap.
                     t = now_ms()
                     next_sample_ms = t
@@ -220,6 +298,7 @@ def main_loop(level=INFO, sd_ok=True):
                         next_sample_ms = t + interval_ms
                     if last_sample_ms is not None:
                         max_gap_ms = max(max_gap_ms, t - last_sample_ms)
+                        hb_max_gap_ms = max(hb_max_gap_ms, t - last_sample_ms)
                     last_sample_ms = t
                     samples += 1
                     water_before = water_v
@@ -261,6 +340,71 @@ def main_loop(level=INFO, sd_ok=True):
 
                 events.update(t)
 
+                quiet = t - last_contact_ms >= Settings.heartbeat_quiet_ms
+
+                # WiFi upkeep, once a second: log a lost connection, re-join
+                # when the wire is quiet (a join blocks up to 10 s).
+                if net.enabled and t >= next_wifi_check_ms:
+                    next_wifi_check_ms = t + 1000
+                    up = net.connected
+                    if wifi_up and not up:
+                        warn('[Network] WiFi connection lost')
+                        events.log(t, 'wifi', 'lost')
+                    wifi_up = up
+                    if not up and quiet and net.join_due(t):
+                        last_sample_ms = None    # the join's gap is expected
+                        if net.join():
+                            wifi_up = True
+                            events.log(now_ms(), 'wifi', 'joined', net.ip(), net.rssi())
+                        else:
+                            events.log(now_ms(), 'wifi', 'join_failed')
+
+                # Heartbeat when due and the wire is quiet; after
+                # heartbeat_max_delay_ms it goes anyway (no false alarm).
+                if (wifi_up and net.host is not None and t >= hb_due_ms
+                        and (quiet or t - hb_due_ms >= Settings.heartbeat_max_delay_ms)):
+                    errors = recorder.errors + events.errors
+                    free_mb = sd_free_mb()
+                    problems = []
+                    if not recorder.enabled:
+                        problems.append('not_recording')
+                    if errors > hb_errors:
+                        problems.append('sd_errors')
+                    if not rtc_ok:
+                        problems.append('rtc')
+                    if touch.baseline <= 0:
+                        problems.append('touch')
+                    if free_mb is not None and free_mb < Settings.heartbeat_min_free_mb:
+                        problems.append('sd_low')
+                    span_s = max(1, (t - hb_last_ms) // 1000)
+                    rate = (recorder.rows_written - hb_rows) // span_s
+                    clock = clock_line()[0].replace(' ', 'T')
+                    reset = reasons[0].split('.')[-1]
+                    body = (f'problems={",".join(problems) or "none"} t={clock} '
+                            f'up={(t - boot_ms) // 1000}s rows={recorder.rows_written} '
+                            f'rate={rate}/s max_gap={hb_max_gap_ms}ms errors={errors} '
+                            f'contacts={contacts - hb_contacts} water={water_v:.3f}V '
+                            f'touch={touch.raw} base={touch.baseline:.0f} '
+                            f'sd_free={free_mb}MB rssi={net.rssi()} ip={net.ip()} '
+                            f'rtc={int(rtc_ok)} reset={reset} '
+                            f'last_hb={hb_last_took_ms}ms')
+                    ok, took, status = net.heartbeat(body, fail=bool(problems))
+                    if ok:
+                        info(f'[Heartbeat] sent in {took} ms: {body}')
+                        hb_due_ms = t + Settings.heartbeat_interval_ms
+                        hb_last_ms = t
+                        hb_rows = recorder.rows_written
+                        hb_errors = errors
+                        hb_contacts = contacts
+                        hb_max_gap_ms = 0
+                    else:
+                        warn(f'[Heartbeat] failed after {took} ms: {status}')
+                        events.log(now_ms(), 'heartbeat_failed', status, took)
+                        hb_due_ms = now_ms() + 60000     # try again in a minute
+                    hb_last_took_ms = took
+                    t = now_ms()
+                    last_sample_ms = None    # its own gap is reported as last_hb
+
                 # A full-screen redraw pauses sampling for ~150 ms, so the
                 # screen only updates when the wire has been quiet for
                 # display_quiet_ms: frozen while drinking, catches up after.
@@ -273,7 +417,12 @@ def main_loop(level=INFO, sd_ok=True):
                     screen.set_line(1, f'contacts {contacts}')
                     screen.set_line(2, f'water {water_v:.3f}V')
                     screen.set_line(3, f'touch {touch.raw}', GREEN if touch.contact else WHITE)
-                    screen.set_line(4, f'base {touch.baseline:.0f}')
+                    if not net.enabled:
+                        screen.set_line(4, f'base {touch.baseline:.0f}')
+                    elif wifi_up:
+                        screen.set_line(4, f'base {touch.baseline:.0f} WiFi')
+                    else:
+                        screen.set_line(4, f'base {touch.baseline:.0f} noWiFi', RED)
                     screen.refresh_all()
 
                 if t >= next_status_ms:
@@ -300,3 +449,11 @@ def main_loop(level=INFO, sd_ok=True):
         # open with the display in manual refresh made the following soft
         # reboot hard-fault.
         shutdown(recorder, events, screen, stop_reason)
+        if net.used:
+            # A soft reboot after WiFi use dropped USB (HANDOFF 2026-11-16):
+            # reset the whole chip instead. Ctrl-C / Thonny's stop therefore
+            # restarts the board rather than leaving it at the REPL.
+            print('WiFi was used: resetting the board instead of a soft reboot')
+            time.sleep(0.5)
+            microcontroller.reset()
+        stop_watchdog()

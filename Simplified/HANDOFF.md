@@ -49,6 +49,7 @@ Firmware (runs at boot via `code.py`):
 | `MainLoop.py` | Recording version. The loop sits in `try/finally`; `shutdown()` closes the data file and `system.log`, unmounts SD and releases the display however the loop ends (exception, Ctrl-C, auto-reload on file save). Every 10 ms (fixed grid): read touch (→ live contact 0/1 against the tracking baseline) and one Sharp reading, hand both to `RawRecorder`. Full-screen TFT redraw once a second, but only after 3 s without touch contact (a redraw pauses sampling ~150 ms, so the screen freezes while the cat drinks). Contact LED on D9. Settings snapshot in `system.log` at startup (`wifi_password` shown as `<set>`). Status line in `system.log` every minute: rows, errors, `rate` (samples/s), `max_gap` (longest time between samples), `slowest_write`, file, touch, contacts, water. |
 | `Settings.py` | In the root (moved from `lib/` 2026-10-28), the one file to edit. All parameters, BoardCode names where the meaning is the same. Recording: `raw_log_interval_ms = 10`, `raw_log_sync_ms = 5000` (flush interval = max data lost on power cut). Touch thresholds are placeholders (+10 % on, +5 % off); they only affect the live `contact` column and the display. Bout/deployment settings are kept in a marked "not used" block. Home WiFi credentials are the exception: `Settings.py` reads them with `os.getenv` from `settings.toml` (see below). |
 | `settings.toml` | Home WiFi credentials only (`WIFI_SSID`, `WIFI_PASSWORD`). Lives **only on the board** (CIRCUITPY root), edited there: no copy on the computer or in git (repo is public). `sync2board` has `--filter='P settings.toml'`, so it never deletes it. If CIRCUITPY is ever erased, re-create it (keys listed in `Settings.py`). CircuitPython only reads this exact name. |
+| `lib/Network.py` | (2026-11-16) Lab WiFi (station) + healthchecks.io heartbeat. `join()` at boot (blocks up to `wifi_connect_timeout_s`), re-join at most every `wifi_retry_ms`; `heartbeat(body, fail)` = one HTTPS POST to `HEALTHCHECK_URL` (or `/fail`), ~3.5-4 s. `used` = radio touched. No-op without `WIFI_SSID` or with `wifi_enabled = False`. |
 | `lib/TouchSensor.py` | `touchio` on D12 → 0/1. Baseline averaged at boot, then tracked (EMA, τ 30 s) only while untouched; hysteresis; contact > 5 s re-takes the baseline; big drops are followed at once. |
 | `lib/WaterSensor.py` | Sharp on A5 in volts (higher = more water). The recorder uses single reads (`read_volts`); the smoothed `update()` is for the bout version. |
 | `lib/DownloadMode.py` | **D1** button → recording pauses, the board starts its own WiFi access point (`HydraPurr` / `hydrapurr`, `Settings.download_ap_*`) and serves the SD card at `http://192.168.4.1/`: a file list with download links (`/raw/<date>/<hour>.csv`, top-level files). Whole card: `wget -r -np -nH http://192.168.4.1/`. Files are streamed in 4 KB chunks by our own route (`send_file`); the library's static file serving is off. TX power lowered to 8.5 dBm. D1 again, or 15 min without requests, → access point off, recording resumes. The screen shows network, password, address and the RTC time read on entry (also shown at startup in place of "RTC ok"; red `RTC: set time!` when `lost_power` is set). Uses `adafruit_httpserver` 4.8.2. |
@@ -663,6 +664,27 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   make `os.getenv` return None silently; the test then said nothing useful.
   `settings.toml` on the board: `HEALTHCHECK_URL` added by the user, extra
   quote removed.
+- **2026-11-16** — **WiFi recorder, step 1** (`lib/Network.py`, `MainLoop.py`,
+  `Settings.py`). Joins the WiFi at boot (screen shows the IP), event rows
+  `wifi joined/join_failed/lost`. Heartbeat every 15 min, only after 30 s
+  without contact (`heartbeat_quiet_ms`), sent anyway after 10 min delay;
+  first one right after boot. Body: `problems=… t up rows rate max_gap
+  errors contacts water touch base sd_free rssi ip rtc reset last_hb`.
+  `/fail` when problems: not_recording, sd_errors (new since last
+  heartbeat), rtc, touch, sd_low (< 1 GB). Failed heartbeat → event row
+  `heartbeat_failed`, retry in 1 min. Heartbeat and re-join gaps are left
+  out of `max_gap` (reported as `last_hb`). Watchdog 60 s (RESET), off in
+  D1 download mode. Once WiFi is used: auto-reload off, and the loop ends
+  with `microcontroller.reset()` instead of a soft reboot. Screen line 4:
+  `base … WiFi` / `noWiFi` (red).
+  Tested on the board: joins, heartbeat 3.8-4.1 s, status line arrives;
+  after the first minute 85 rows/s, max_gap ~165 ms (screen), slowest write
+  16-40 ms, touch steady with WiFi on (first minute: max_gap 305 ms,
+  slowest write 76 ms, not repeated). **Ctrl-C now resets the board and USB
+  comes back** by itself; recording and heartbeat resume. So the workflow
+  is: copy files, then Ctrl-C (or Reset). Not yet tested: the watchdog
+  firing on a hang, re-join after a WiFi loss, D1 download mode with the
+  station connected, a `/fail` heartbeat from a real problem.
   **USB dropped out** (board gone from `lsusb`, needed Reset) on the soft
   reboot (Ctrl-C, Ctrl-D) after the test, with the station still connected.
   So the USB-loss problem is not only the access point. To check: does

@@ -70,7 +70,7 @@ download_timeout_ms = 15 * 60 * 1000   # back to recording after 15 min idle
 download_tx_power_dbm = 8.5            # radio power in download mode (max ~20);
                                        # lower = smaller current spikes
 
-# --- Home WiFi (station mode, for the planned automatic upload) ----------------
+# --- Lab WiFi (station mode: heartbeat, later fetching files) -------------------
 # The credentials are NOT in this file: the repo is public. They go in
 # settings.toml in the board's root (CIRCUITPY drive) and only there: no copy
 # on the computer, sync2board never touches it. Edit it on the board, with
@@ -88,6 +88,26 @@ wifi_password = os.getenv("WIFI_PASSWORD")
 # settings.toml on the board:
 #   HEALTHCHECK_URL = "https://hc-ping.com/<uuid>"
 healthcheck_url = os.getenv("HEALTHCHECK_URL")
+
+# --- WiFi in the recorder (Network.py) ------------------------------------------
+wifi_enabled = True            # False = recorder never touches the radio
+wifi_connect_timeout_s = 10    # a join blocks this long at most (gap in data)
+wifi_retry_ms = 5 * 60 * 1000  # re-join a lost connection at most this often
+wifi_tx_power_dbm = 8.5        # enough in the lab (2026-11-16 tests)
+
+# --- Heartbeat --------------------------------------------------------------------
+# One heartbeat stops recording ~3.5 s, so it waits for a quiet wire; past
+# heartbeat_max_delay_ms it goes anyway, so a long session can't trigger a
+# false alarm. Set the healthchecks.io check to period 15 min, grace 15 min.
+heartbeat_interval_ms = 15 * 60 * 1000
+heartbeat_quiet_ms = 30000            # no contact for this long before sending
+heartbeat_max_delay_ms = 10 * 60 * 1000
+heartbeat_min_free_mb = 1024          # less free on the SD card = /fail (~2.5 days of raw)
+
+# --- Watchdog ---------------------------------------------------------------------
+# Resets the board when the loop stops feeding it (hang). Longer than the
+# longest blocking step: WiFi join (10 s), heartbeat (up to ~3 x 10 s timeouts).
+watchdog_timeout_s = 60               # None = no watchdog
 
 # --- Upload speed test (TestUpload.py; done 2026-11-16, run it from Thonny) -----
 # Sends to UploadSink/upload_sink.py on a computer on the home network. Its
