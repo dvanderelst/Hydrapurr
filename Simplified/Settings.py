@@ -82,6 +82,24 @@ download_tx_power_dbm = 8.5            # radio power in download mode (max ~20);
 wifi_ssid = os.getenv("WIFI_SSID")
 wifi_password = os.getenv("WIFI_PASSWORD")
 
+# --- Health check (healthchecks.io) --------------------------------------------
+# The board POSTs a short status line to this URL; healthchecks.io alerts when
+# it stops coming. Secret-ish (anyone with it can ping), so it lives in
+# settings.toml on the board:
+#   HEALTHCHECK_URL = "https://hc-ping.com/<uuid>"
+healthcheck_url = os.getenv("HEALTHCHECK_URL")
+
+# --- Upload speed test (TestUpload.py; done 2026-11-16, run it from Thonny) -----
+# Sends to UploadSink/upload_sink.py on a computer on the home network. Its
+# address depends on the network, so like the WiFi credentials it lives in
+# settings.toml on the board:
+#   UPLOAD_TEST_HOST = "192.168.1.23"
+upload_test_host = os.getenv("UPLOAD_TEST_HOST")
+upload_test_port = 5001
+upload_test_window_ms = 5000           # one result per window
+upload_test_chunk = 4096               # bytes per send(), as the real upload would
+upload_test_tx_powers = (8.5, 13.0, 20.0)  # dBm; D1 cycles through them
+
 # =============================================================================
 # Not used by the recording version (MainLoop.py). Kept for when bout
 # detection and feeding come back (LickSensor.py, BoutDetection.py).

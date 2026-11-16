@@ -64,6 +64,8 @@ Tools and tests (run by hand):
 | File | What it does |
 | --- | --- |
 | `TestDatalogger.py` | Adalogger test: I²C scan, RTC time / lost-power / switchover / battery / ticking, SD mount + write/read-back + free space + append timing. |
+| `TestHeartbeat.py` | (2026-11-16) Times one HTTPS heartbeat to healthchecks.io (DNS, TLS, send, reply, memory), one per minute; D1 sends a `/fail` ping. **Hold D2 while the board starts.** Needs `WIFI_*` and `HEALTHCHECK_URL` in `settings.toml`. End with Reset, not Ctrl-C. |
+| `TestUpload.py` | (2026-10-30, done 2026-11-16: ~400-550 KB/s, max send 7 ms) WiFi upload speed test; run from Thonny (D2 now starts `TestHeartbeat.py`). Joins home WiFi, sends 4 KB chunks over TCP nonstop to `UploadSink/upload_sink.py` (repo root, runs on a computer on the same network; prints the received rate per second). Treats `OSError(11)` (EAGAIN, send buffer full) as "try again", not as a broken connection. Screen per 5-s window: KB/s (green ≥ 50, yellow ≥ 10, red below), RSSI + channel, longest single send (should stay ≤ 8 ms for the real upload), TX power (D1 cycles 8.5 / 13 / 20 dBm), windows/errors. Needs `WIFI_SSID`, `WIFI_PASSWORD` and `UPLOAD_TEST_HOST` (the sink's IP) in the board's `settings.toml`. |
 | `SetTime.py` | Set the RTC (None = keep a field, Enter to set, printed directions). Also clears `lost_power` and turns on battery switchover. |
 | `TestTouch.py` | Multi-pin touch tester (A5, D5, D6, D9). Note: A5 is now the Sharp input. |
 | `test.py` | Single touch pin (D12) driving the red LED. Header comment is stale (describes the non-Reverse board). |
@@ -471,7 +473,6 @@ the pitch of the fuse bought). Q2/Q3 = PN2222A (2N2222), footprint pinout E-B-C;
 a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6RL) is still in
 `fp-lib-table` but no longer used.
 
-
 ## Log
 
 - **2026-10-19** — Started this handoff. Reviewed `Simplified/`, `BoardCode/`,
@@ -602,6 +603,71 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   Likely cause (user): no water in the device, so the float lies tilted at
   the bottom (further away, slanted reflecting surface). Re-check with water
   before reading anything into the Sharp noise.
+- **2026-10-30** — Upload speed test (Next steps 5, "to measure first"):
+  `TestUpload.py` on the board (hold D2 at boot) + `UploadSink/upload_sink.py`
+  on a computer. Sink tested locally; on the board only checked that it
+  loads and stops at the "settings.toml ... missing" screen. Not yet run
+  against a real network: `settings.toml` still has placeholder WiFi values
+  and no `UPLOAD_TEST_HOST`. Normal start (D2 not held) checked: recorder
+  runs as before.
+- **2026-11-16** — Upload test run on the lab WiFi (ch 6,
+  RSSI -43 dBm, board near the router, 8.5 dBm TX). First run failed: the
+  board reconnected several times a second, ~10 KB per connection. Cause:
+  CircuitPython sockets don't wait in `send()`; when the ~6 KB TCP send
+  buffer is full they raise `OSError(11)` (EAGAIN), which the test treated
+  as a broken connection. Fixed: EAGAIN = try again (counted as "buffer
+  full"), real errors back off 1 s. Result: **~400-550 KB/s, longest single
+  send 6-7 ms** (under the 8 ms budget). An hourly raw file (~16 MB) would
+  take ~35 s; the events file well under a second. For the real upload this
+  is good news: a non-blocking send that returns EAGAIN fits the "send a
+  bit in each loop pass" plan. Not yet checked: rate further from the
+  router, higher TX power, touch readings while transmitting.
+  Second run in another room of the lab (8.5 dBm, real location not
+  available): sink shows ~400-480 KB/s, one 1-s dip to ~80 KB/s. Lowest TX
+  power is enough; even the dip is far above the ~4.4 KB/s raw average.
+  Board screen there: max send 7 ms. **Upload speed test done.**
+- **2026-11-16** — Decided with the user: **pull, plus a heartbeat.** No
+  computer stays on in the lab, so push would have to go online (Dropbox
+  API: OAuth refresh tokens, HTTPS uploads); the user's reason for push was
+  seeing that the board still runs, and healthchecks.io does that better
+  (alerts when pings stop). Plan:
+  1. Board joins the lab WiFi at boot, reconnects on its own.
+  2. Heartbeat to healthchecks.io every 15 min with a status line (rows,
+     errors, rate, max_gap, contacts, water, SD free, RSSI, RTC ok, uptime,
+     IP); `/fail` when something is wrong (SD errors, not recording, RTC
+     lost power, touch 0). Watchdog resets the board if the loop hangs.
+  3. mDNS name `hydrapurr.local` (IP also in the heartbeat).
+  4. Own small HTTP server that sends 4 KB pieces between samples
+     (EAGAIN = retry next pass), so fetching never stops recording.
+  5. D1 download mode removed.
+  Accepted by the user: data only reachable from the lab network; the SD
+  card is the only copy until someone fetches it.
+  First step: `TestHeartbeat.py` (D2 at boot now runs this instead of
+  `TestUpload.py`), which times one HTTPS heartbeat (DNS, TLS handshake,
+  send, reply) and its memory use, since that is the one blocking step.
+  D1 sends a `/fail` ping to test the alert. Needs `HEALTHCHECK_URL` in
+  `settings.toml`; `MainLoop` masks it in the settings snapshot. Written,
+  compiles on the desktop, not yet run on the board.
+- **2026-11-16** — USB dropped a second time on a soft reboot (Ctrl-D),
+  this time with the WiFi station only *started* (`wifi.radio` touched by
+  a failed test run, status bar "Wi-Fi: No IP"), never connected. Board then
+  shows in `lsusb` as `239a:8124` "Device 000" with no `/dev/ttyACM0`;
+  only Reset brings it back. Rule for now: **once WiFi has been touched,
+  end with Reset, never Ctrl-D / auto-reload.** Consequence for the WiFi
+  recorder: `sync2board` triggers an auto-reload, so syncing while it runs
+  would drop USB mid-write (that is how CIRCUITPY was corrupted on
+  2026-10-20). Options to test: `supervisor.runtime.autoreload = False` in
+  the WiFi recorder plus `microcontroller.reset()` in `shutdown()`, or
+  `wifi.radio.stop_station()` / `enabled = False` before the reload.
+  Also: `settings.toml` values with a typo (here an extra `"` at the end)
+  make `os.getenv` return None silently; the test then said nothing useful.
+  `settings.toml` on the board: `HEALTHCHECK_URL` added by the user, extra
+  quote removed.
+  **USB dropped out** (board gone from `lsusb`, needed Reset) on the soft
+  reboot (Ctrl-C, Ctrl-D) after the test, with the station still connected.
+  So the USB-loss problem is not only the access point. To check: does
+  `wifi.radio.stop_station()` / disconnecting before the reload avoid it?
+  Until then, assume Ctrl-C/auto-reload with WiFi up can drop USB.
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay

@@ -49,7 +49,7 @@ def settings_items():
         value = getattr(Settings, name)
         if callable(value) or type(value).__name__ == 'module':
             continue
-        if name == 'wifi_password' and value:
+        if name in ('wifi_password', 'healthcheck_url') and value:
             value = '<set>'      # from settings.toml; keep it out of the log
         yield name, value
 
