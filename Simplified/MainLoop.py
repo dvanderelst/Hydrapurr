@@ -18,8 +18,10 @@ resets the board if the loop hangs. Once WiFi has been used, the loop ends
 with a hard reset instead of a soft reboot (a soft reboot dropped USB), and
 auto-reload is off: after copying files to the board, press Reset.
 
-Press D1 to pause recording and serve the SD card over the board's own WiFi
-network (DownloadMode.py); press D1 again to resume.
+While connected, the SD card is served at http://hydrapurr.local/
+(FileServer.py). The server works in small steps between samples, so
+downloads don't stop the recording. (The D1 download mode with the board's
+own network is gone, 2026-11-16.)
 
 Bout detection and feeding (BoutDetection.py, LickSensor.py) are not used in
 this version; they stay in lib/ for later.
@@ -43,7 +45,7 @@ from WaterSensor import WaterSensor
 from RawRecorder import RawRecorder
 from EventLog import EventLog
 from StatusDisplay import StatusDisplay
-import DownloadMode
+from FileServer import FileServer
 from Network import Network
 
 GREEN, YELLOW, RED, WHITE = 0x00FF00, 0xFFFF00, 0xFF4040, 0xFFFFFF
@@ -187,9 +189,8 @@ def main_loop(level=INFO, sd_ok=True):
     text, color = clock_line()
     screen.set_line(2, text, color, now=True)
     screen.set_line(3, 'baseline...', now=True)
-    screen.set_line(4, 'D1 = download', now=True)
+    screen.set_line(4, '', now=True)
 
-    button = DownloadMode.Button(board.D1)
     led = None
     if Settings.contact_led_pin is not None:
         led = digitalio.DigitalInOut(Settings.contact_led_pin)
@@ -217,6 +218,9 @@ def main_loop(level=INFO, sd_ok=True):
             screen.set_line(4, 'no WiFi', RED, now=True)
             events.log(now_ms(), 'wifi', 'join_failed')
         events.flush()
+    server = None
+    if net.connected and Settings.fileserver_enabled:
+        server = FileServer(net.pool, net.ip())
     if net.used:
         # A soft reboot after WiFi use dropped USB, and saving a file over
         # USB would trigger one: no auto-reload, press Reset after a copy.
@@ -269,27 +273,6 @@ def main_loop(level=INFO, sd_ok=True):
             try:
                 feed_watchdog()
                 t = now_ms()
-                if button.pressed(t):
-                    info('[Main Loop] D1 pressed: download mode, recording paused')
-                    recorder.close()
-                    events.close()
-                    flush()
-                    if led is not None:
-                        led.value = False
-                    stop_watchdog()      # a big file can take minutes
-                    DownloadMode.run(screen, button, clock_line())
-                    start_watchdog()
-                    # Restart timing so the pause is not counted as a gap.
-                    t = now_ms()
-                    next_sample_ms = t
-                    last_sample_ms = None
-                    next_display_ms = 0
-                    last_contact_ms = -Settings.display_quiet_ms
-                    # A contact or water summary spanning the pause is dropped.
-                    contact_start_ms = None
-                    water_sum, water_n, water_min, water_max = 0.0, 0, None, None
-                    next_water_event_ms = t + Settings.water_event_interval_ms
-                    continue
                 if t >= next_sample_ms:
                     # Fixed sampling grid, so the interval doesn't drift with loop
                     # jitter; skip ahead if the loop fell behind (e.g. a flush).
@@ -340,6 +323,11 @@ def main_loop(level=INFO, sd_ok=True):
 
                 events.update(t)
 
+                # File server: small steps until just before the next sample.
+                if server is not None:
+                    server.poll(t, next_sample_ms - Settings.fileserver_margin_ms)
+                    t = now_ms()
+
                 quiet = t - last_contact_ms >= Settings.heartbeat_quiet_ms
 
                 # WiFi upkeep, once a second: log a lost connection, re-join
@@ -350,19 +338,25 @@ def main_loop(level=INFO, sd_ok=True):
                     if wifi_up and not up:
                         warn('[Network] WiFi connection lost')
                         events.log(t, 'wifi', 'lost')
+                        if server is not None:
+                            server.stop()
+                            server = None
                     wifi_up = up
                     if not up and quiet and net.join_due(t):
                         last_sample_ms = None    # the join's gap is expected
                         if net.join():
                             wifi_up = True
                             events.log(now_ms(), 'wifi', 'joined', net.ip(), net.rssi())
+                            if Settings.fileserver_enabled:
+                                server = FileServer(net.pool, net.ip())
                         else:
                             events.log(now_ms(), 'wifi', 'join_failed')
 
                 # Heartbeat when due and the wire is quiet; after
                 # heartbeat_max_delay_ms it goes anyway (no false alarm).
                 if (wifi_up and net.host is not None and t >= hb_due_ms
-                        and (quiet or t - hb_due_ms >= Settings.heartbeat_max_delay_ms)):
+                        and ((quiet and not (server is not None and server.busy))
+                             or t - hb_due_ms >= Settings.heartbeat_max_delay_ms)):
                     errors = recorder.errors + events.errors
                     free_mb = sd_free_mb()
                     problems = []
@@ -387,7 +381,9 @@ def main_loop(level=INFO, sd_ok=True):
                             f'touch={touch.raw} base={touch.baseline:.0f} '
                             f'sd_free={free_mb}MB rssi={net.rssi()} ip={net.ip()} '
                             f'rtc={int(rtc_ok)} reset={reset} '
-                            f'last_hb={hb_last_took_ms}ms')
+                            f'last_hb={hb_last_took_ms}ms '
+                            f'served={server.requests if server else 0} '
+                            f'sent={server.bytes_sent // 1024 if server else 0}KB')
                     ok, took, status = net.heartbeat(body, fail=bool(problems))
                     if ok:
                         info(f'[Heartbeat] sent in {took} ms: {body}')
@@ -448,6 +444,8 @@ def main_loop(level=INFO, sd_ok=True):
         # auto-reload when a file is saved to the board. Leaving the SD file
         # open with the display in manual refresh made the following soft
         # reboot hard-fault.
+        if server is not None:
+            server.stop()
         shutdown(recorder, events, screen, stop_reason)
         if net.used:
             # A soft reboot after WiFi use dropped USB (HANDOFF 2026-11-16):

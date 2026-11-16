@@ -62,14 +62,6 @@ events_enabled = True
 events_sync_ms = 5000          # flush to the card this often
 water_event_interval_ms = 10000  # one water row (mean/min/max) per interval
 
-# --- Download mode (D1 button, see DownloadMode.py) ------------------------------
-# The board's own WiFi network, only on while in download mode.
-download_ap_ssid = "HydraPurr"
-download_ap_password = "hydrapurr"     # WPA2: at least 8 characters
-download_timeout_ms = 15 * 60 * 1000   # back to recording after 15 min idle
-download_tx_power_dbm = 8.5            # radio power in download mode (max ~20);
-                                       # lower = smaller current spikes
-
 # --- Lab WiFi (station mode: heartbeat, later fetching files) -------------------
 # The credentials are NOT in this file: the repo is public. They go in
 # settings.toml in the board's root (CIRCUITPY drive) and only there: no copy
@@ -94,6 +86,12 @@ wifi_enabled = True            # False = recorder never touches the radio
 wifi_connect_timeout_s = 10    # a join blocks this long at most (gap in data)
 wifi_retry_ms = 5 * 60 * 1000  # re-join a lost connection at most this often
 wifi_tx_power_dbm = 8.5        # enough in the lab (2026-11-16 tests)
+mdns_hostname = "hydrapurr"     # the board answers as hydrapurr.local
+
+# --- File server (FileServer.py): the SD card at http://hydrapurr.local/ --------
+fileserver_enabled = True
+fileserver_chunk = 2048        # bytes read from the card and sent per step
+fileserver_margin_ms = 2       # stop server work this long before a sample is due
 
 # --- Heartbeat --------------------------------------------------------------------
 # One heartbeat stops recording ~3.5 s, so it waits for a quiet wire; past

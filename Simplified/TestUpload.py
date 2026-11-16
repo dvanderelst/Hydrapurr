@@ -28,7 +28,7 @@ import wifi
 import socketpool
 import Settings
 from StatusDisplay import StatusDisplay
-from DownloadMode import Button
+from Button import Button
 
 GREEN, YELLOW, RED, WHITE = 0x00FF00, 0xFFFF00, 0xFF4040, 0xFFFFFF
 CONNECT_TIMEOUT_S = 10

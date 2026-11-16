@@ -39,7 +39,7 @@ import wifi
 import socketpool
 import Settings
 from StatusDisplay import StatusDisplay
-from DownloadMode import Button
+from Button import Button
 
 GREEN, YELLOW, RED, WHITE = 0x00FF00, 0xFFFF00, 0xFF4040, 0xFFFFFF
 TEST_INTERVAL_S = 60
@@ -95,7 +95,7 @@ class HeartbeatTest:
             self.screen.refresh_all()
             return False
         try:
-            wifi.radio.tx_power = Settings.download_tx_power_dbm
+            wifi.radio.tx_power = Settings.wifi_tx_power_dbm
         except Exception:
             pass
         print(f'joined {Settings.wifi_ssid}, ip {wifi.radio.ipv4_address}')

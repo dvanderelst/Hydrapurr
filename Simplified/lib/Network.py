@@ -6,6 +6,9 @@ settings.toml) and stays connected. A lost connection is re-joined, at most
 every wifi_retry_ms and only when the loop allows it (joining blocks up to
 wifi_connect_timeout_s, so the loop asks only when the wire is quiet).
 
+It also announces the board as <mdns_hostname>.local (mDNS), for the file
+server (FileServer.py).
+
 heartbeat() sends one HTTPS POST to HEALTHCHECK_URL (or <url>/fail) with a
 status line as body. Measured 2026-11-16: ~3.5 s, almost all of it the TLS
 handshake, ~5 KB memory. Recording stops for that long, so MainLoop only
@@ -49,6 +52,7 @@ class Network:
         self.used = False          # radio touched: avoid soft reboots
         self.pool = None
         self.context = None
+        self.mdns = None           # keeps the hydrapurr.local name alive
         self._next_join_ms = 0
         self.was_connected = False
         self.heartbeat_url = Settings.healthcheck_url
@@ -108,6 +112,15 @@ class Network:
         if self.pool is None:
             self.pool = socketpool.SocketPool(wifi.radio)
             self.context = ssl.create_default_context()
+        if self.mdns is None:
+            try:
+                import mdns
+                server = mdns.Server(wifi.radio)
+                server.hostname = Settings.mdns_hostname
+                server.advertise_service(service_type='_http', protocol='_tcp', port=80)
+                self.mdns = server
+            except Exception as e:
+                warn(f'[Network] mDNS name not set: {e!r}')
         info(f'[Network] joined {Settings.wifi_ssid}, ip {self.ip()}, rssi {self.rssi()}')
         return True
 
