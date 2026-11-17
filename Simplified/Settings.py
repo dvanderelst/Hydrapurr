@@ -88,10 +88,26 @@ wifi_retry_ms = 5 * 60 * 1000  # re-join a lost connection at most this often
 wifi_tx_power_dbm = 8.5        # enough in the lab (2026-11-16 tests)
 mdns_hostname = "hydrapurr"     # the board answers as hydrapurr.local
 
+# --- Clock (NTP) ----------------------------------------------------------------
+# The RTC is set from a time server at boot (right after the WiFi join, before
+# anything is logged) and every ntp_interval_ms. The board keeps UTC: no
+# summer/winter time steps in the data, and the hourly file names are UTC
+# hours. ProcessLickData's reader converts to lab time.
+ntp_server = "pool.ntp.org"
+ntp_timeout_s = 2
+ntp_interval_ms = 24 * 60 * 60 * 1000
+ntp_retry_ms = 10 * 60 * 1000         # after a failed sync
+
 # --- File server (FileServer.py): the SD card at http://hydrapurr.local/ --------
 fileserver_enabled = True
 fileserver_chunk = 2048        # bytes read from the card and sent per step
 fileserver_margin_ms = 2       # stop server work this long before a sample is due
+# Fast download: a link with ?pause=1 (the start page's "raw, fast") stops
+# sampling while that one download runs. Set False during real experiments:
+# then nobody can pause recording from the page.
+fileserver_allow_pause = True
+fileserver_pause_chunk = 4096          # bytes per step while paused
+fileserver_max_pause_ms = 20 * 60 * 1000   # recording restarts after this at the latest
 
 # --- Heartbeat --------------------------------------------------------------------
 # One heartbeat stops recording ~3.5 s, so it waits for a quiet wire; past

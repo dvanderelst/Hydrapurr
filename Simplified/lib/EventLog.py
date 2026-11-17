@@ -20,6 +20,11 @@ event (empty = not used):
     rebaseline  reason           touch_raw          old_baseline    new_baseline
     water       mean_v           min_v              max_v           samples
     shutdown    reason
+    wifi        joined/join_failed/lost   ip    rssi       (MainLoop, 2026-11-16)
+    heartbeat_failed  status      ms_taken                 (MainLoop, 2026-11-16)
+    clock       ntp / ntp_failed   step_ms   rtt_ms   server   (RTC set from NTP)
+    paused      download         path                       (fast download, FileServer)
+    resumed     reason           paused_ms                  (done / timeout / max_pause / ...)
 
 - boot is written once the sensors are set up; one settings row per setting
   follows it (same values as the snapshot in system.log).

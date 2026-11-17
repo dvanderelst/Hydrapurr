@@ -20,7 +20,9 @@ auto-reload is off: after copying files to the board, press Reset.
 
 While connected, the SD card is served at http://hydrapurr.local/
 (FileServer.py). The server works in small steps between samples, so
-downloads don't stop the recording. (The D1 download mode with the board's
+downloads don't stop the recording. A "fast" download (?pause=1, if
+fileserver_allow_pause) stops sampling while it runs: `paused`/`resumed`
+event rows mark the gap. (The D1 download mode with the board's
 own network is gone, 2026-11-16.)
 
 Bout detection and feeding (BoutDetection.py, LickSensor.py) are not used in
@@ -107,15 +109,33 @@ def check_rtc():
 
 
 def clock_line():
-    """RTC date/time for the screen as (text, color), read once (not a live
-    clock). 'YYYY-MM-DD HH:MM:SS' is 19 characters, exactly one line."""
+    """RTC date/time (UTC) for the screen as (text, color), read once (not a
+    live clock). 'MM-DD HH:MM:SS UTC' fits the 19-character line."""
     rtc = TimeUtil.rtc
     try:
         if rtc is not None and not rtc.rtc.lost_power:
-            return TimeUtil.rtc_timestamp('iso', with_ms=False), GREEN
+            return TimeUtil.rtc_timestamp('iso', with_ms=False)[5:] + ' UTC', GREEN
     except Exception:
         pass
     return 'RTC: set time!', RED
+
+
+def sync_clock(net):
+    """Set the RTC and the timebase from NTP (UTC). Returns (step_ms,
+    rtt_ms), or None when the time server did not answer."""
+    result = net.ntp_time()
+    if result is None:
+        return None
+    utc_ms, mono_ms, rtt_ms = result
+    try:
+        step_ms = TimeUtil.set_clock(utc_ms, mono_ms)
+    except Exception as e:
+        warn(f'[Clock] could not set the RTC: {e!r}')
+        return None
+    info(f'[Clock] set from NTP ({Settings.ntp_server}): '
+         f'{TimeUtil.rtc_timestamp("iso", with_ms=False)} UTC, '
+         f'step {step_ms} ms, round trip {rtt_ms} ms')
+    return step_ms, rtt_ms
 
 
 def start_watchdog():
@@ -200,24 +220,39 @@ def main_loop(level=INFO, sd_ok=True):
     touch = TouchSensor()
     water = WaterSensor()
     recorder = RawRecorder()
+
+    # WiFi and the clock before anything goes into the event log, so all
+    # rows of this boot carry the NTP time.
+    net = Network()
+    clock = None
+    if net.enabled:
+        screen.set_line(4, 'joining WiFi...', YELLOW, now=True)
+        if net.join():
+            screen.set_line(4, f'{net.ip()}', GREEN, now=True)
+            clock = sync_clock(net)
+            if clock is not None:
+                rtc_ok = True
+                text, color = clock_line()
+                screen.set_line(2, text, color, now=True)
+        else:
+            screen.set_line(4, 'no WiFi', RED, now=True)
+
     events = EventLog()
     t = now_ms()
     events.log(t, 'boot', reasons[0], reasons[1], int(rtc_ok), round(touch.baseline))
     for name, value in settings_items():
         events.log(t, 'settings', name, str(value))
+    if net.enabled:
+        if net.connected:
+            events.log(t, 'wifi', 'joined', net.ip(), net.rssi())
+        else:
+            events.log(t, 'wifi', 'join_failed')
+        if clock is not None:
+            events.log(t, 'clock', 'ntp', clock[0], clock[1], Settings.ntp_server)
+        elif net.connected:
+            events.log(t, 'clock', 'ntp_failed')
     events.flush()
 
-    net = Network()
-    if net.enabled:
-        screen.set_line(4, 'joining WiFi...', YELLOW, now=True)
-        joined = net.join()
-        if joined:
-            screen.set_line(4, f'{net.ip()}', GREEN, now=True)
-            events.log(now_ms(), 'wifi', 'joined', net.ip(), net.rssi())
-        else:
-            screen.set_line(4, 'no WiFi', RED, now=True)
-            events.log(now_ms(), 'wifi', 'join_failed')
-        events.flush()
     server = None
     if net.connected and Settings.fileserver_enabled:
         server = FileServer(net.pool, net.ip())
@@ -264,6 +299,12 @@ def main_loop(level=INFO, sd_ok=True):
     hb_last_took_ms = 0          # how long the previous heartbeat blocked
     next_wifi_check_ms = 0
     wifi_up = net.connected
+    last_ntp_ms = now_ms() if clock is not None else None
+    next_ntp_ms = now_ms() + (Settings.ntp_interval_ms if clock is not None
+                              else Settings.ntp_retry_ms)
+    paused = False               # a fast download has stopped sampling
+    pause_start_ms = 0
+    paused_total_ms = 0          # time paused since boot, for the heartbeat
 
     start_watchdog()
 
@@ -273,7 +314,40 @@ def main_loop(level=INFO, sd_ok=True):
             try:
                 feed_watchdog()
                 t = now_ms()
-                if t >= next_sample_ms:
+
+                # Fast download: stop sampling while it runs.
+                want_pause = server is not None and server.pausing
+                if want_pause and not paused:
+                    paused = True
+                    pause_start_ms = t
+                    if contact_start_ms is not None:
+                        # End an open contact here; its end is not seen.
+                        events.log(t, 'contact', t - contact_start_ms, contact_peak,
+                                   round(contact_baseline), contact_water_v)
+                        contact_start_ms = None
+                    previous_contact = 0
+                    events.log(t, 'paused', 'download', server.pause_what)
+                    recorder.flush()        # the download gets everything up to now
+                    events.flush()
+                    info(f'[Main Loop] recording paused for download {server.pause_what}')
+                    if led is not None:
+                        led.value = False
+                    screen.set_line(0, 'PAUSED: download', YELLOW, now=True)
+                    t = now_ms()
+                elif paused and not want_pause:
+                    paused = False
+                    took = t - pause_start_ms
+                    paused_total_ms += took
+                    why = server.pause_end if server is not None else 'wifi lost'
+                    events.log(t, 'resumed', why, took)
+                    info(f'[Main Loop] recording again after {took} ms paused ({why})')
+                    last_sample_ms = None   # the pause is not a recording gap
+                    next_sample_ms = t
+                    water_sum, water_n, water_min, water_max = 0.0, 0, None, None
+                    next_water_event_ms = t + Settings.water_event_interval_ms
+                    next_display_ms = 0
+
+                if not paused and t >= next_sample_ms:
                     # Fixed sampling grid, so the interval doesn't drift with loop
                     # jitter; skip ahead if the loop fell behind (e.g. a flush).
                     next_sample_ms += interval_ms
@@ -325,7 +399,10 @@ def main_loop(level=INFO, sd_ok=True):
 
                 # File server: small steps until just before the next sample.
                 if server is not None:
-                    server.poll(t, next_sample_ms - Settings.fileserver_margin_ms)
+                    if paused:
+                        server.poll(t, t + 50)    # only sending: no sample is due
+                    else:
+                        server.poll(t, next_sample_ms - Settings.fileserver_margin_ms)
                     t = now_ms()
 
                 quiet = t - last_contact_ms >= Settings.heartbeat_quiet_ms
@@ -342,6 +419,14 @@ def main_loop(level=INFO, sd_ok=True):
                             server.stop()
                             server = None
                     wifi_up = up
+                    if server is not None:
+                        state = ('<b>PAUSED</b> for a fast download' if paused
+                                 else 'Recording' if recorder.enabled
+                                 else '<b>NOT RECORDING</b>')
+                        server.status = (f'{state}. Up {(t - boot_ms) // 60000} min, '
+                                         f'{recorder.rows_written} rows, {contacts} contacts, '
+                                         f'water {water_v:.3f} V, touch {touch.raw} '
+                                         f'(baseline {touch.baseline:.0f}).')
                     if not up and quiet and net.join_due(t):
                         last_sample_ms = None    # the join's gap is expected
                         if net.join():
@@ -351,6 +436,24 @@ def main_loop(level=INFO, sd_ok=True):
                                 server = FileServer(net.pool, net.ip())
                         else:
                             events.log(now_ms(), 'wifi', 'join_failed')
+
+                # Clock: re-sync from NTP once a day (and retry after a
+                # failure) when the wire is quiet and nobody is downloading.
+                if (wifi_up and t >= next_ntp_ms and quiet
+                        and not (server is not None and server.busy)):
+                    clock = sync_clock(net)
+                    if clock is not None:
+                        recorder.retime()
+                        rtc_ok = True
+                        last_ntp_ms = now_ms()
+                        next_ntp_ms = t + Settings.ntp_interval_ms
+                        events.log(now_ms(), 'clock', 'ntp', clock[0], clock[1],
+                                   Settings.ntp_server)
+                    else:
+                        next_ntp_ms = t + Settings.ntp_retry_ms
+                        events.log(now_ms(), 'clock', 'ntp_failed')
+                    t = now_ms()
+                    last_sample_ms = None    # not a recording problem
 
                 # Heartbeat when due and the wire is quiet; after
                 # heartbeat_max_delay_ms it goes anyway (no false alarm).
@@ -372,9 +475,12 @@ def main_loop(level=INFO, sd_ok=True):
                         problems.append('sd_low')
                     span_s = max(1, (t - hb_last_ms) // 1000)
                     rate = (recorder.rows_written - hb_rows) // span_s
-                    clock = clock_line()[0].replace(' ', 'T')
+                    stamp = (TimeUtil.rtc_timestamp('iso', with_ms=False).replace(' ', 'T') + 'Z'
+                             if rtc_ok else 'unset')
+                    ntp_age = ('never' if last_ntp_ms is None
+                               else f'{(t - last_ntp_ms) // 1000}s')
                     reset = reasons[0].split('.')[-1]
-                    body = (f'problems={",".join(problems) or "none"} t={clock} '
+                    body = (f'problems={",".join(problems) or "none"} t={stamp} ntp_age={ntp_age} '
                             f'up={(t - boot_ms) // 1000}s rows={recorder.rows_written} '
                             f'rate={rate}/s max_gap={hb_max_gap_ms}ms errors={errors} '
                             f'contacts={contacts - hb_contacts} water={water_v:.3f}V '
@@ -383,7 +489,8 @@ def main_loop(level=INFO, sd_ok=True):
                             f'rtc={int(rtc_ok)} reset={reset} '
                             f'last_hb={hb_last_took_ms}ms '
                             f'served={server.requests if server else 0} '
-                            f'sent={server.bytes_sent // 1024 if server else 0}KB')
+                            f'sent={server.bytes_sent // 1024 if server else 0}KB '
+                            f'paused={paused_total_ms // 1000}s')
                     ok, took, status = net.heartbeat(body, fail=bool(problems))
                     if ok:
                         info(f'[Heartbeat] sent in {took} ms: {body}')
@@ -404,7 +511,8 @@ def main_loop(level=INFO, sd_ok=True):
                 # A full-screen redraw pauses sampling for ~150 ms, so the
                 # screen only updates when the wire has been quiet for
                 # display_quiet_ms: frozen while drinking, catches up after.
-                if t >= next_display_ms and t - last_contact_ms >= Settings.display_quiet_ms:
+                if (not paused and t >= next_display_ms
+                        and t - last_contact_ms >= Settings.display_quiet_ms):
                     next_display_ms = t + Settings.display_interval_ms
                     if recorder.enabled:
                         screen.set_line(0, f'REC {recorder.rows_written}', GREEN)

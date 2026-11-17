@@ -88,3 +88,24 @@ def timestamp_pair(fmt='iso', with_ms=True):
     """Return (rtc_str, mono_ms)."""
     mono_now = monotonic_ms()
     return _wall_time_from_mono(mono_now, fmt, with_ms), mono_now
+
+
+def set_clock(utc_ms, mono_ms):
+    """Set the RTC to utc_ms (integer ms since 1970, UTC) as measured at
+    monotonic time mono_ms, and re-anchor the timebase on it. Returns the
+    step in ms (new wall time - old wall time for the same moment), or None
+    when there was no timebase. Integers only (CircuitPython floats are too
+    coarse for an epoch). Setting the PCF8523 also clears lost_power and
+    turns on battery switchover. (Simplified build addition, 2026-11-16.)"""
+    global boot_epoch, boot_mono_ms, timebase_ready
+    old_ms = None
+    if timebase_ready and boot_epoch is not None:
+        old_ms = boot_epoch * 1000 + (mono_ms - boot_mono_ms)
+    whole_s = utc_ms // 1000
+    frac_ms = utc_ms % 1000
+    if rtc is not None:
+        rtc.rtc.datetime = _time.localtime(whole_s)
+    boot_epoch = whole_s
+    boot_mono_ms = mono_ms - frac_ms
+    timebase_ready = True
+    return None if old_ms is None else utc_ms - old_ms

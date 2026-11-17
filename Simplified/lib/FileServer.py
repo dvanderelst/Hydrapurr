@@ -4,10 +4,26 @@ FileServer.py - serve the SD card over the lab WiFi while recording goes on
     http://hydrapurr.local/          (or http://<ip>/, the IP is in every
                                       heartbeat and on the screen at boot)
 
-Every page is one folder of the card: /, /raw/, /raw/<date>/, /events/.
-Click a file to download it, or fetch everything from a laptop with
+Pages:
+    /                      start page for testers: what the board is doing,
+                           and per day one link for the raw data (all hours
+                           joined into one CSV) and one for the events file
+    /day/<date>/raw.csv    that day's hourly raw files, sent one after the
+                           other as a single file (nothing is stored twice)
+    /files/                the card's folders, one page each, every file's
+                           exact size as data-size="..." (for
+                           ProcessLickData/library/hydrapurr_fetch.py)
+    /raw/..., /events/...  the folders and files themselves
 
-    wget -r -np -nH -R "index.html*" http://hydrapurr.local/
+Days are the board's days, so UTC days (MainLoop keeps the RTC on UTC).
+
+Fast download (pause): any file link with ?pause=1 makes MainLoop stop
+sampling while that one download runs, so the board only sends (bigger
+pieces, no sample deadlines). Sampling resumes when the download ends, when
+the client stalls (CLIENT_TIMEOUT_MS) or after fileserver_max_pause_ms,
+whichever comes first. MainLoop logs `paused`/`resumed` event rows. Only
+offered when Settings.fileserver_allow_pause is True; otherwise ?pause=1 is
+ignored and the download runs alongside recording as usual.
 
 How it keeps recording going: the server never blocks. MainLoop calls
 poll(t, deadline) on every loop pass; it does small steps (accept a
@@ -52,10 +68,37 @@ def _human(size):
     return f"{size / (1024 * 1024):.1f} MB"
 
 
+def _is_dir(st):
+    return bool(st[0] & 0x4000)
+
+
+def _stat(path):
+    try:
+        return os.stat(path)
+    except OSError:
+        return None
+
+
+def _listdir(path):
+    try:
+        return sorted(n for n in os.listdir(path)
+                      if not n.startswith('.') and n != 'System Volume Information')
+    except OSError:
+        return []
+
+
 # Kept apart from any f-string: CircuitPython treats plain literals placed
 # next to an f-string as part of it, so the CSS braces became placeholders.
-PAGE_STYLE = ("<style>body{font-family:sans-serif;margin:16px}"
-              "td{padding:2px 12px 2px 0}</style>")
+PAGE_STYLE = ("<style>body{font-family:sans-serif;margin:16px;max-width:52em}"
+              "td,th{padding:3px 14px 3px 0;text-align:left}"
+              ".r{text-align:right}.note{color:#555;font-size:90%}"
+              ".st{padding:8px 12px;background:#eef6ee;border-radius:6px}</style>")
+
+
+def _head(title):
+    return (f"<!doctype html><html><head><meta charset='utf-8'>"
+            f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>{title}</title>").encode() + PAGE_STYLE.encode() + b"</head><body>"
 
 
 def _status_response(code, text):
@@ -63,6 +106,17 @@ def _status_response(code, text):
     head = (f"HTTP/1.1 {code} {text}\r\nContent-Type: text/plain\r\n"
             f"Content-Length: {len(body)}\r\nConnection: close\r\n\r\n").encode()
     return head + body
+
+
+def _file_head(name, size):
+    return (f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n"
+            f"Content-Length: {size}\r\n"
+            f'Content-Disposition: attachment; filename="{name}"\r\n'
+            f"Connection: close\r\n\r\n").encode()
+
+
+HTML_HEAD = (b"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n"
+             b"Cache-Control: no-store\r\nConnection: close\r\n\r\n")
 
 
 class FileServer:
@@ -74,6 +128,14 @@ class FileServer:
         self._next_accept_ms = 0
         self.requests = 0
         self.bytes_sent = 0
+        # Set by MainLoop about once a second: one line for the start page.
+        self.status = ''
+        # Pause: wanted by the current download (?pause=1); MainLoop asks
+        # `pausing` every pass. pause_end says why the last one ended.
+        self._pause = False
+        self._pause_since_ms = 0
+        self.pause_what = ''
+        self.pause_end = ''
         self.start()
 
     # --- listening socket ---------------------------------------------------
@@ -106,6 +168,26 @@ class FileServer:
     @property
     def busy(self):
         return self.client is not None
+
+    @property
+    def pausing(self):
+        """True while the current download asked for recording to pause."""
+        if not self._pause:
+            return False
+        if now_ms() - self._pause_since_ms > Settings.fileserver_max_pause_ms:
+            warn('[Server] pause longer than fileserver_max_pause_ms: recording again, '
+                 'download goes on alongside')
+            self._end_pause('max_pause')
+            return False
+        return True
+
+    def _end_pause(self, why):
+        if self._pause:
+            self._pause = False
+            self.pause_end = why
+
+    def _chunk(self):
+        return Settings.fileserver_pause_chunk if self._pause else Settings.fileserver_chunk
 
     # --- per-pass work ---------------------------------------------------------
 
@@ -170,12 +252,14 @@ class FileServer:
         if len(parts) < 2 or parts[0] != 'GET':
             self._respond(_status_response(405, 'Method Not Allowed'), line)
             return True
-        self._route(parts[1].split('?', 1)[0])
+        target = parts[1].split('?', 1)
+        query = target[1] if len(target) > 1 else ''
+        self._route(target[0], 'pause=1' in query.split('&'))
         return True
 
     def _respond(self, data, what, body=None):
         """Start sending data (bytes), then the pieces of body (iterator)."""
-        self.pending = data
+        self.pending = data or None
         self.pos = 0
         self.body = body if body is not None else iter(())
         self.what = what
@@ -188,6 +272,8 @@ class FileServer:
             except StopIteration:
                 self._close_client('done')
                 return False
+            if not self.pending:
+                self.pending = None    # an empty piece: a step that only did a stat
             return True        # reading a piece took time: check the deadline
         try:
             n = self.client.send(memoryview(self.pending)[self.pos:])
@@ -217,6 +303,7 @@ class FileServer:
         self.client = None
         self.body = None
         self.pending = None
+        self._end_pause(why)
         self.requests += 1
         self.bytes_sent += self.sent
         took = now_ms() - self.started_ms
@@ -225,42 +312,64 @@ class FileServer:
 
     # --- pages and files --------------------------------------------------------
 
-    def _route(self, path):
+    def _route(self, path, pause):
         if '..' in path or '//' in path:
             self._respond(_status_response(403, 'Forbidden'), f'GET {path} 403')
             return
+        if path == '/':
+            self._respond(HTML_HEAD, 'GET / (start page)', self._start_page())
+            return
+        if path in ('/files', '/files/'):
+            if path == '/files':
+                self._redirect('/files/')
+                return
+            self._respond(HTML_HEAD, 'GET /files/ (folder)', self._listing(SD_ROOT, '/'))
+            return
+        parts = path.split('/')            # ['', 'day', '<date>', 'raw.csv']
+        if len(parts) == 4 and parts[1] == 'day' and parts[3] == 'raw.csv':
+            day_dir = f"{SD_ROOT}/raw/{parts[2]}"
+            st = _stat(day_dir)
+            if st is None or not _is_dir(st):
+                self._respond(_status_response(404, 'Not Found'), f'GET {path} 404')
+                return
+            self._begin_pause(pause, path)
+            self._respond(b'', f'GET {path} (day)', self._day_raw(day_dir, parts[2]))
+            return
         full = SD_ROOT + path.rstrip('/')
-        try:
-            st = os.stat(full)
-        except OSError:
+        st = _stat(full)
+        if st is None:
             self._respond(_status_response(404, 'Not Found'), f'GET {path} 404')
             return
-        if st[0] & 0x4000:
+        if _is_dir(st):
             if not path.endswith('/'):
-                head = (f"HTTP/1.1 301 Moved Permanently\r\nLocation: {path}/\r\n"
-                        "Content-Length: 0\r\nConnection: close\r\n\r\n").encode()
-                self._respond(head, f'GET {path} 301')
+                self._redirect(path + '/')
                 return
-            head = (b"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n"
-                    b"Connection: close\r\n\r\n")
-            self._respond(head, f'GET {path} (folder)', self._listing(full, path))
+            self._respond(HTML_HEAD, f'GET {path} (folder)', self._listing(full, path))
             return
         size = st[6]
-        name = path.split('/')[-1]
-        head = (f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n"
-                f"Content-Length: {size}\r\n"
-                f'Content-Disposition: attachment; filename="{name}"\r\n'
-                f"Connection: close\r\n\r\n").encode()
-        self._respond(head, f'GET {path} ({_human(size)})', self._file(full, size))
+        self._begin_pause(pause, path)
+        self._respond(_file_head(path.split('/')[-1], size),
+                      f'GET {path} ({_human(size)})', self._file(full, size))
+
+    def _redirect(self, to):
+        head = (f"HTTP/1.1 301 Moved Permanently\r\nLocation: {to}\r\n"
+                "Content-Length: 0\r\nConnection: close\r\n\r\n").encode()
+        self._respond(head, f'GET -> {to} 301')
+
+    def _begin_pause(self, wanted, path):
+        if wanted and Settings.fileserver_allow_pause:
+            self._pause = True
+            self._pause_since_ms = now_ms()
+            self.pause_what = path
+            self.pause_end = ''
 
     def _file(self, full, size):
         """The file's first `size` bytes, one piece per next()."""
-        chunk = Settings.fileserver_chunk
         left = size
         f = open(full, 'rb')
         try:
             while left > 0:
-                data = f.read(min(chunk, left))
+                data = f.read(min(self._chunk(), left))
                 if not data:
                     break
                 left -= len(data)
@@ -268,34 +377,102 @@ class FileServer:
         finally:
             f.close()
 
-    def _listing(self, full, path):
-        """HTML page for one folder, one row per next() (each needs a stat)."""
-        title = 'HydraPurr data' + ('' if path == '/' else f' {path}')
-        yield (f"<!doctype html><html><head><meta charset='utf-8'>"
-               f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
-               f"<title>{title}</title>").encode() + PAGE_STYLE.encode()
-        yield f"</head><body><h1>{title}</h1>".encode()
-        if path == '/':
-            yield ("<p>Recording goes on while you download. Everything at once:<br>"
-                   "<code>wget -r -np -nH -R \"index.html*\" "
-                   f"http://{Settings.mdns_hostname}.local/</code></p>").encode()
+    def _day_raw(self, day_dir, day):
+        """Header, then every hourly file of the day in order. Sizes are
+        taken first (one stat per step) so the header can carry the total."""
+        files = []
+        total = 0
+        for name in _listdir(day_dir):
+            if not name.endswith('.csv'):
+                continue
+            st = _stat(day_dir + '/' + name)
+            if st is not None and not _is_dir(st):
+                files.append((day_dir + '/' + name, st[6]))
+                total += st[6]
+            yield b''
+        self.what = f'GET /day/{day}/raw.csv ({len(files)} hours, {_human(total)})'
+        yield _file_head(f'hydrapurr_raw_{day}_UTC.csv', total)
+        for full, size in files:
+            for piece in self._file(full, size):
+                yield piece
+
+    def _start_page(self):
+        """Start page: status, then one row per day (stats one per step)."""
+        yield _head('HydraPurr')
+        yield b"<h1>HydraPurr</h1>"
+        if self.status:
+            yield f"<p class='st'>{self.status}</p>".encode()
+        days = set(_listdir(SD_ROOT + '/raw'))
+        for name in _listdir(SD_ROOT + '/events'):
+            if name.endswith('.csv'):
+                days.add(name[:-4])
+        days = sorted(days, reverse=True)
+        allow = Settings.fileserver_allow_pause
+        yield b"<h2>Download one day</h2>"
+        yield (b"<p class='note'>Days and times are UTC (lab time in winter = UTC - 5 h). "
+               b"<b>events</b>: one row per contact, water summary (every 10 s), restart; "
+               b"opens in Excel. <b>raw</b>: every sample (100 per second), for analysis "
+               b"in Python; a full day is about 250 MB and too long for Excel.</p>")
+        if allow:
+            yield (b"<p class='note'>Recording goes on while you download. "
+                   b"<b>fast</b> pauses recording for that download only (about 3 times "
+                   b"faster; the data of those minutes is missing); recording restarts by "
+                   b"itself when the download ends or breaks off.</p>")
         else:
-            yield b"<p><a href='../'>up</a></p>"
-        yield b"<table>"
-        try:
-            names = sorted(os.listdir(full))
-        except OSError:
-            names = []
-        for name in names:
-            if name.startswith('.') or name == 'System Volume Information':
-                continue
-            try:
-                st = os.stat(full + '/' + name)
-            except OSError:
-                continue
-            if st[0] & 0x4000:
-                yield f'<tr><td><a href="{name}/">{name}/</a></td><td></td></tr>'.encode()
+            yield b"<p class='note'>Recording goes on while you download.</p>"
+        yield b"<table><tr><th>day (UTC)</th><th>events</th><th class='r'></th><th>raw</th><th class='r'></th>"
+        yield b"<th></th></tr>" if allow else b"</tr>"
+        for day in days:
+            ev = _stat(f"{SD_ROOT}/events/{day}.csv")
+            yield b''
+            raw_dir = f"{SD_ROOT}/raw/{day}"
+            raw_total, hours = 0, 0
+            for name in _listdir(raw_dir):
+                st = _stat(raw_dir + '/' + name)
+                if st is not None and not _is_dir(st):
+                    raw_total += st[6]
+                    hours += 1
+                yield b''
+            row = f"<tr><td>{day}</td>"
+            if ev is not None:
+                row += (f"<td><a href='/events/{day}.csv'>events</a></td>"
+                        f"<td class='r'>{_human(ev[6])}</td>")
             else:
-                yield (f'<tr><td><a href="{name}">{name}</a></td>'
-                       f'<td style="text-align:right">{_human(st[6])}</td></tr>').encode()
+                row += "<td></td><td></td>"
+            if hours:
+                row += (f"<td><a href='/day/{day}/raw.csv'>raw</a></td>"
+                        f"<td class='r'>{_human(raw_total)} ({hours} h)</td>")
+                if allow:
+                    row += f"<td><a href='/day/{day}/raw.csv?pause=1'>raw, fast</a></td>"
+            else:
+                row += "<td></td><td></td>" + ("<td></td>" if allow else "")
+            yield (row + "</tr>").encode()
+        yield b"</table>"
+        yield (b"<p><a href='/files/'>All files on the card</a> "
+               b"(hourly raw files, system log)</p></body></html>")
+
+    def _listing(self, full, path):
+        """HTML page for one folder, one row per next() (each needs a stat).
+        Links are absolute paths, so the /files/ alias of the root works."""
+        title = 'HydraPurr files' + ('' if path == '/' else f' {path}')
+        yield _head(title)
+        yield f"<h1>{title}</h1>".encode()
+        if path == '/':
+            yield b"<p><a href='/'>start page</a></p>"
+        else:
+            parent = path.rstrip('/').rsplit('/', 1)[0] + '/'
+            up = '/files/' if parent == '/' else parent
+            yield f"<p><a href='{up}'>up</a></p>".encode()
+        yield b"<table>"
+        for name in _listdir(full):
+            st = _stat(full + '/' + name)
+            if st is None:
+                continue
+            href = path + name
+            if _is_dir(st):
+                yield f'<tr><td><a href="{href}/">{name}/</a></td><td></td></tr>'.encode()
+            else:
+                yield (f'<tr><td><a href="{href}">{name}</a></td>'
+                       f'<td style="text-align:right" data-size="{st[6]}">'
+                       f'{_human(st[6])}</td></tr>').encode()
         yield b"</table></body></html>"

@@ -6,6 +6,9 @@ settings.toml) and stays connected. A lost connection is re-joined, at most
 every wifi_retry_ms and only when the loop allows it (joining blocks up to
 wifi_connect_timeout_s, so the loop asks only when the wire is quiet).
 
+ntp_time() asks a time server for UTC (MainLoop sets the RTC with it at
+boot and once a day).
+
 It also announces the board as <mdns_hostname>.local (mDNS), for the file
 server (FileServer.py).
 
@@ -123,6 +126,47 @@ class Network:
                 warn(f'[Network] mDNS name not set: {e!r}')
         info(f'[Network] joined {Settings.wifi_ssid}, ip {self.ip()}, rssi {self.rssi()}')
         return True
+
+    # --- clock (NTP) ----------------------------------------------------------
+
+    def ntp_time(self):
+        """Ask the NTP server for the time. Returns (utc_ms, mono_ms, rtt_ms):
+        utc_ms was the UTC time (ms since 1970) at monotonic time mono_ms.
+        None when it fails. Blocks up to ntp_timeout_s (one UDP round trip,
+        normally well under 0.2 s). Integers only: CircuitPython floats
+        can't hold an epoch to the millisecond."""
+        if not self.connected:
+            return None
+        sock = None
+        try:
+            addr = self.pool.getaddrinfo(Settings.ntp_server, 123)[0][-1]
+            sock = self.pool.socket(self.pool.AF_INET, self.pool.SOCK_DGRAM)
+            sock.settimeout(Settings.ntp_timeout_s)
+            packet = bytearray(48)
+            packet[0] = 0x1B                 # version 3, client mode
+            t_send = now_ms()
+            sock.sendto(packet, addr)
+            buf = bytearray(48)
+            n, _ = sock.recvfrom_into(buf)
+            t_recv = now_ms()
+            if n < 48:
+                return None
+            secs = int.from_bytes(buf[40:44], 'big')      # transmit timestamp
+            frac = int.from_bytes(buf[44:48], 'big')
+            if secs == 0:
+                return None
+            rtt = t_recv - t_send
+            utc_ms = (secs - 2208988800) * 1000 + (frac * 1000 >> 32) + rtt // 2
+            return utc_ms, t_recv, rtt
+        except Exception as e:
+            warn(f'[Network] NTP failed: {e!r}')
+            return None
+        finally:
+            if sock is not None:
+                try:
+                    sock.close()
+                except Exception:
+                    pass
 
     # --- heartbeat ------------------------------------------------------------
 

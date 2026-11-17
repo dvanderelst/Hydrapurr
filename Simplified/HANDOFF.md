@@ -52,7 +52,7 @@ Firmware (runs at boot via `code.py`):
 | `lib/Network.py` | (2026-11-16) Lab WiFi (station) + healthchecks.io heartbeat. `join()` at boot (blocks up to `wifi_connect_timeout_s`), re-join at most every `wifi_retry_ms`; `heartbeat(body, fail)` = one HTTPS POST to `HEALTHCHECK_URL` (or `/fail`), ~3.5-4 s. `used` = radio touched. No-op without `WIFI_SSID` or with `wifi_enabled = False`. |
 | `lib/TouchSensor.py` | `touchio` on D12 → 0/1. Baseline averaged at boot, then tracked (EMA, τ 30 s) only while untouched; hysteresis; contact > 5 s re-takes the baseline; big drops are followed at once. |
 | `lib/WaterSensor.py` | Sharp on A5 in volts (higher = more water). The recorder uses single reads (`read_volts`); the smoothed `update()` is for the bout version. |
-| `lib/FileServer.py` | (2026-11-16, replaces `DownloadMode.py`) Serves the SD card on the lab WiFi at `http://hydrapurr.local/` (mDNS, set in `Network.py`) while recording goes on. One page per folder (`/`, `/raw/`, `/raw/<date>/`, `/events/`), files as downloads with `Content-Length`. Never blocks: `MainLoop` calls `poll(t, deadline)` every pass with deadline = next sample − `fileserver_margin_ms`; it accepts, reads the request, reads a `fileserver_chunk` (2 KB) piece and sends it, only until the deadline; EAGAIN = next pass. One client at a time, 10 s idle timeout, `..` refused. A file still being written is served up to its size at request time. Whole card: `wget -r -np -nH -R "index.html*" http://hydrapurr.local/`. |
+| `lib/FileServer.py` | (2026-11-16, replaces `DownloadMode.py`) Serves the SD card on the lab WiFi at `http://hydrapurr.local/` (mDNS, set in `Network.py`) while recording goes on. `/` = start page for testers (status, per-day `events` and joined `raw` downloads, optional fast download that pauses recording, 2026-11-17). Folder pages under `/files/` (`/raw/`, `/raw/<date>/`, `/events/`), files as downloads with `Content-Length`. Never blocks: `MainLoop` calls `poll(t, deadline)` every pass with deadline = next sample − `fileserver_margin_ms`; it accepts, reads the request, reads a `fileserver_chunk` (2 KB) piece and sends it, only until the deadline; EAGAIN = next pass. One client at a time, 10 s idle timeout, `..` refused. A file still being written is served up to its size at request time. |
 | `lib/Button.py` | Edge-detecting button (was in `DownloadMode.py`); used by the test scripts. |
 | `lib/RawRecorder.py` | Writes `/sd/raw/<YYYY-MM-DD>/<HH>.csv` (new file each wall-clock hour), columns `epoch_ms, mono_ms, touch_raw, touch_baseline, contact, water_v`. `epoch_ms` = wall-clock ms (RTC at boot + time since boot), so rows stay correctly timed when a restart appends to the same file and `mono_ms` restarts near 0. Each file (and each re-open) also gets a line `# start <wall time> mono_ms <n>` as a human-readable anchor. File stays open; each row is written as it is taken, `flush()` every 5 s. ~44 B/row → ~16 MB/hour, ~380 MB/day. Hourly files avoid FAT32's 4 GB limit and the slowdown of re-opening big files to append. |
 | `lib/EventLog.py` | (2026-10-30) One row per event to `/sd/events/<YYYY-MM-DD>.csv`, columns `epoch_ms, mono_ms, event, f1..f4`. Events: `boot` (reset reason, safe-mode reason, rtc_ok, touch baseline), `settings` (one row per setting), `contact` (written when a contact ends: duration_ms, peak raw, baseline and water V from before it started; every contact, lick filtering is offline), `rebaseline` (`stuck`/`drop`, raw, old, new), `water` (mean/min/max V and sample count every `water_event_interval_ms` = 10 s), `shutdown` (reason, e.g. `KeyboardInterrupt()`). Field table in the module docstring. Rows written at once, flushed every `events_sync_ms` (5 s; a flush is ~10 ms, too long after every lick). Decided with the user: only log when something happens, so no status/heartbeat rows and no download on/off rows. |
@@ -711,11 +711,81 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   (internal flash writes block the CPU): max_gap 662 ms and 1466 ms in the
   minutes of a delete and a small copy, back to 165 ms after. Copy files
   to the board only when gaps don't matter.
+- **2026-11-16** — **Offline reader** (`ProcessLickData/`):
+  `library/hydrapurr_fetch.py` (mirrors the card over WiFi into
+  `data/simplified/`, only new/changed files; folder pages now carry
+  `data-size` with the exact byte count, `FileServer.py` updated on the
+  board), `library/hydrapurr_reader.py` (raw with `time` and `boot`
+  columns, drops 5 rows after each `# start` and broken lines; events with
+  named fields per type), `plot_hydrapurr_day.py` (touch + baseline with
+  contact ticks, water raw + 10-s summaries, boots and WiFi losses marked,
+  lines broken at recording gaps). Ran it on today: 14 files / 19.8 MB in
+  ~2 min, plot checked. `EventLog.py` docstring lists the `wifi` and
+  `heartbeat_failed` events.
+  **Board clock is ~1 h 2 min ahead** (RTC set in October during EDT, lab
+  is on EST since 2026-11-01, plus ~2 min drift). All timestamps so far
+  carry that offset. Fix options: run `SetTime.py`, or (better, WiFi is
+  there now) NTP sync at boot and daily, ideally keeping the RTC in UTC
+  so DST never shifts the data (reader converts to local time).
+  Seen in the plot: the 10-s water max jumps to 0.85-0.9 V for the first
+  seconds after every boot (the start-up artefact noted 2026-10-28), so
+  the water summaries right after a boot should be skipped too.
+- **2026-11-16** — **Clock from NTP, board keeps UTC.** `Network.ntp_time()`
+  (one SNTP UDP packet to `pool.ntp.org`, integers only: CircuitPython
+  floats can't hold an epoch to the ms), `TimeUtil.set_clock()` (sets the
+  PCF8523, which also clears lost_power and turns on switchover, and
+  re-anchors the timebase), `RawRecorder.retime()`. MainLoop: WiFi join
+  and NTP now come **before** the first event row, so a whole boot carries
+  NTP time; re-sync every 24 h when quiet and no download, retry every
+  10 min after a failure. Event `clock` (`ntp`, step_ms, rtt_ms, server /
+  `ntp_failed`); heartbeat has `t=…Z` and `ntp_age=`; a successful sync
+  clears the `rtc` problem. Screen clock line `MM-DD HH:MM:SS UTC`.
+  **Since then the card's file names are UTC days/hours.** `SetTime.py`
+  header says to enter UTC (only needed without WiFi).
+  First sync on the board: 21:46:01 UTC, round trip 37 ms, step
+  14 213 816 ms, i.e. the old clock was **1 h 03 min 06 s ahead** of lab
+  time (EST). Reader (`hydrapurr_reader.py`): `time` = lab time
+  (America/New_York); UTC rows converted (from `UTC_SINCE_MS` = board time
+  2026-11-16 20:00, between the last old row 17:49 and the first UTC row
+  21:46); old-clock rows from 2026-11-01 shifted back by that measured
+  offset; October rows as they are. A lab day spans two board days
+  (`board_days_for`); the plot and the fetch use both. Checked: today's
+  data is one monotonic timeline in lab time, the upload test gap sits at
+  14:42-15:01 (sink log 14:40-14:49).
+  Not yet seen: a daily re-sync (step should be a few hundred ms; a
+  backward step makes a few timestamps repeat, visible in the `clock` row).
   **USB dropped out** (board gone from `lsusb`, needed Reset) on the soft
   reboot (Ctrl-C, Ctrl-D) after the test, with the station still connected.
   So the USB-loss problem is not only the access point. To check: does
   `wifi.radio.stop_station()` / disconnecting before the reload avoid it?
   Until then, assume Ctrl-C/auto-reload with WiFi up can drop USB.
+- **2026-11-17** — Start page for testers on the board (no Python needed).
+  `http://hydrapurr.local/` now shows what the board is doing (set by
+  MainLoop once a second) and one row per (UTC) day: `events` (the day's
+  events CSV) and `raw` (`/day/<date>/raw.csv`: the hourly files sent one
+  after the other as one file, `hydrapurr_raw_<date>_UTC.csv`; nothing
+  stored twice, the reader reads it as is). The folder pages moved to
+  `/files/` with absolute links; the fetcher starts there (falls back to `/`
+  for an older board). **Fast download**: `?pause=1` on any file link
+  (`raw, fast` on the page) stops sampling while that one download runs;
+  4 KB pieces, poll deadline t+50 ms. Ends with the download, a broken
+  connection, the 10 s client timeout, or `fileserver_max_pause_ms` (20
+  min). An open contact is ended at the pause; events `paused` / `resumed`
+  (reason, paused_ms); heartbeat field `paused=` (s since boot); screen
+  `PAUSED: download`. `fileserver_allow_pause = False` hides the fast links
+  and ignores `?pause=1` (for real experiments).
+  Measured: day file 201 MB (17 h) at **123 KB/s normal (rate 81-84/s,
+  max_gap 165-171 ms: recording unaffected), 309 KB/s fast** (2.5x). A
+  full day: ~27 min normal, ~11 min fast. A fast download cut off by the
+  client: `resumed` with `error OSError(104,)`, recording back at once.
+  Events files are ~460 KB/day, not ~100: 360 `water` rows per hour.
+  Deploy lesson: send **one** Ctrl-C to reset the board. A second one
+  lands in the 0.5 s sleep before `microcontroller.reset()` and leaves the
+  board stopped at "Code done" (not recording); recover from the REPL with
+  `import microcontroller; microcontroller.reset()`.
+  RTC drift: the boot sync stepped the clock -4.8 s after ~19 h (~70 ppm,
+  PCF8523); the daily NTP sync keeps that under ~6 s.
+
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay

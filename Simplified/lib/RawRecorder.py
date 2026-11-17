@@ -127,6 +127,12 @@ class RawRecorder:
         if took > self.slowest_ms:
             self.slowest_ms = took
 
+    def retime(self):
+        """The clock was re-set (NTP): use the new offset from now on, and
+        check at the next row whether that changes the hourly file."""
+        self.epoch_offset_ms = epoch_offset_ms()
+        self._next_hour_check_ms = 0
+
     def take_slowest_ms(self):
         """Slowest single add() since the last call, then reset."""
         slowest, self.slowest_ms = self.slowest_ms, 0
