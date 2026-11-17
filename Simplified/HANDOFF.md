@@ -832,6 +832,25 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   choice). Reader: `status(events)`; `water()` still reads old files. Plot:
   status rows as dots.
 
+- **2026-11-17** — First touch test by hand, on the board. 9 quick finger
+  taps: 9 `contact` rows, 140-640 ms, peaks 39 000-65 535 (touchio's max)
+  on a baseline of ~25 750, i.e. +50-155 % against the +10 % threshold
+  (a tongue may give much less: thresholds still from cat data). Baseline
+  crept up ~50 counts over 4 s of tapping (harmless). A ~6 s hold:
+  `rebaseline stuck` at 5 s (contact row 5010 ms, baseline to 65 535), then
+  on release `rebaseline drop`, caught mid-fall at 28 313 while the wire
+  was back at ~25 760 within 0.35 s; at tau 30 s the baseline needed ~2 min
+  to come back, contact threshold 14-20 % above rest meanwhile. Fix:
+  `touch_drop_settle_ms` (500 ms) after a drop the baseline follows every
+  lower value at once. Replaying the recorded hold through the new code
+  gives the same stuck/drop events and a baseline of 25 725 after 0.5 s
+  (old: 28 273).
+  Checked on the board with a second hold: baseline 25 767 at 0.5 s after
+  release, 25 750 later. That release fell in steps and gave four `drop`
+  rows in 50 ms; a fall inside the settle window no longer logs a new
+  `drop` (replay of both holds: one stuck + one drop each, end baseline
+  ~25 750).
+
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay

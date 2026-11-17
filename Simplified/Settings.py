@@ -37,6 +37,8 @@ touch_baseline_samples = 50    # reads averaged for the baseline at boot
 touch_baseline_tau_ms = 30000  # time constant of the baseline tracker; it
                                # only updates while there is no contact, so it
                                # follows slow drift (water level, humidity)
+touch_drop_settle_ms = 500     # after a `drop` re-baseline, follow lower values
+                               # at once for this long (it is caught mid-fall)
 touch_stuck_ms = 5000          # contact longer than this is not a lick (paw
                                # resting, level step): re-take the baseline
 

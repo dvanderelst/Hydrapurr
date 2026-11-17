@@ -12,7 +12,11 @@ raw values into a 0/1 contact state for BoutDetection:
 - a contact that lasts longer than touch_stuck_ms is not a lick; the
   baseline is re-taken from the current level so a level step or a resting
   paw cannot hold the state at 1 forever. A large drop below the baseline
-  is followed at once, so it recovers when the paw is lifted.
+  is followed at once, so it recovers when the paw is lifted. The drop is
+  caught on the way down (2026-11-17: at 28 313 while the rest level was
+  ~25 760), so for touch_drop_settle_ms after it the baseline follows every
+  lower value at once; otherwise it took ~2 min at tau to come back, with
+  the threshold 14-20 % above rest instead of 10 %.
 """
 
 import time
@@ -32,6 +36,8 @@ class TouchSensor:
         self.off_fraction = Settings.touch_off_fraction
         self.tau_ms = Settings.touch_baseline_tau_ms
         self.stuck_ms = Settings.touch_stuck_ms
+        self.drop_settle_ms = Settings.touch_drop_settle_ms
+        self._settle_until_ms = None
 
         self.raw = 0
         self.contact = 0
@@ -80,11 +86,17 @@ class TouchSensor:
             if raw > self.on_level():
                 self.contact = 1
                 self.contact_since = t_ms
+            elif (self._settle_until_ms is not None and t_ms < self._settle_until_ms
+                  and raw < self.baseline):
+                # Still coming down after a drop: follow, but no new `drop`
+                # event (a release in steps gave four within 50 ms).
+                self.baseline = raw
             elif raw < self.baseline * (1 - self.on_fraction):
                 # Big drop (e.g. after a re-baseline during a long contact):
                 # follow it at once instead of over tau_ms.
                 self.rebaseline = ('drop', raw, self.baseline, raw)
                 self.baseline = raw
+                self._settle_until_ms = t_ms + self.drop_settle_ms
             elif self._last_ms is not None:
                 # Track slow drift only while untouched.
                 dt = t_ms - self._last_ms
