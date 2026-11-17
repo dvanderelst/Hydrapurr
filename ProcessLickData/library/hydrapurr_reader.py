@@ -55,7 +55,8 @@ EVENT_FIELDS = {
     "settings": ["name", "value"],
     "contact": ["duration_ms", "peak_touch_raw", "touch_baseline", "water_v"],
     "rebaseline": ["reason", "touch_raw", "old_baseline", "new_baseline"],
-    "water": ["mean_v", "min_v", "max_v", "samples"],
+    "water": ["mean_v", "min_v", "max_v", "samples"],        # until 2026-11-17
+    "status": ["water_v", "touch_baseline", "touch_raw", "contacts"],  # since then
     "shutdown": ["reason"],
     "wifi": ["state", "ip", "rssi"],
     "heartbeat_failed": ["status", "ms_taken"],
@@ -228,10 +229,17 @@ def contacts(events: pd.DataFrame) -> pd.DataFrame:
 
 
 def water(events: pd.DataFrame) -> pd.DataFrame:
-    """10-s water summaries (mean/min/max V), without those that cover
-    the first WATER_SETTLE_MS after a reset."""
+    """10-s water summaries (mean/min/max V; files until 2026-11-17, later
+    ones have status rows instead), without those that cover the first
+    WATER_SETTLE_MS after a reset."""
     df = event_table(events, "water")
     return df[df["mono_ms"] - WATER_EVENT_SPAN_MS >= WATER_SETTLE_MS].reset_index(drop=True)
+
+
+def status(events: pd.DataFrame) -> pd.DataFrame:
+    """Status rows (every 15 min since 2026-11-17): water_v (10-s mean),
+    touch_baseline, touch_raw, contacts since the previous status row."""
+    return event_table(events, "status")
 
 
 def settings_at_boots(events: pd.DataFrame) -> pd.DataFrame:

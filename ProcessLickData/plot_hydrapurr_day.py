@@ -10,7 +10,8 @@ plot_hydrapurr_day.py - fetch the Simplified HydraPurr's data and plot a day
 
 Panels (shared time axis):
     touch   raw touch value and the board's baseline; contacts shaded
-    water   Sharp float sensor: raw samples and the 10-s event summaries
+    water   Sharp float sensor: raw samples, the 15-min status rows (older
+            files: the 10-s event summaries)
 Restarts (boot events) are dashed vertical lines, WiFi losses dotted,
 recording paused for a fast download shaded grey.
 
@@ -29,7 +30,7 @@ import pandas as pd
 
 from library.hydrapurr_fetch import DEFAULT_DEST, DEFAULT_URL, fetch
 from library.hydrapurr_reader import (board_days_for, contacts, event_table, read_events,
-                                     read_raw, water)
+                                     read_raw, status, water)
 
 MAX_POINTS = 200_000           # above this, raw data is reduced to 1-s bins
 GAP = pd.Timedelta(seconds=2)  # no data for longer = not recording: break lines
@@ -86,6 +87,7 @@ def plot_day(folder: Path, day: str, hours: list[int] | None, use_raw: bool,
     raw = keep(raw)
     c = keep(contacts(ev), "end")
     w = keep(water(ev))
+    st = keep(status(ev))
     boots = keep(event_table(ev, "boot"))
     wifi = keep(event_table(ev, "wifi"))
     pauses = keep(event_table(ev, "resumed"))
@@ -115,6 +117,9 @@ def plot_day(folder: Path, day: str, hours: list[int] | None, use_raw: bool,
         ax_w.fill_between(w["time"], w["min_v"], w["max_v"], color="#205030",
                           alpha=0.2, step="mid", label="10-s min/max")
         ax_w.plot(w["time"], w["mean_v"], color="#205030", lw=1.2, label="10-s mean")
+    if len(st):
+        ax_w.plot(st["time"], st["water_v"], "o", color="#205030", ms=4,
+                  label="status (every 15 min)")
     for ax in (ax_t, ax_w):
         for t in boots["time"] if len(boots) else []:
             ax.axvline(t, color="black", ls="--", lw=0.8)

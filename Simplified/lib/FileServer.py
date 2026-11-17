@@ -434,7 +434,7 @@ class FileServer:
         allow = Settings.fileserver_allow_pause
         yield b"<h2>Download one day</h2>"
         yield (b"<p class='note'>Days and times are UTC (lab time in winter = UTC - 5 h). "
-               b"<b>events</b>: one row per contact, water summary (every 10 s), restart; "
+               b"<b>events</b>: one row per contact, a status row every 15 min (water, touch), restarts; "
                b"opens in Excel. <b>raw</b>: every sample (100 per second), for analysis "
                b"in Python; a full day is about 250 MB and too long for Excel.</p>")
         if allow:

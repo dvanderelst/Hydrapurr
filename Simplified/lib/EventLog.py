@@ -3,8 +3,9 @@ EventLog.py - one row per significant event, next to the raw stream
 
 The raw stream (RawRecorder) holds every sample; this file holds only what
 happened, and is the file meant for analysis (and later for upload). Rows are
-only written when there is something to log, except `water`, which is a
-summary over a fixed interval.
+only written when there is something to log, plus a `status` row every
+status_event_interval_ms (15 min) that shows the water level between drinks
+and that the board was running.
 
 One file per day of wall-clock time:
     /sd/events/2026-10-30.csv
@@ -18,7 +19,8 @@ event (empty = not used):
     settings    name             value
     contact     duration_ms      peak_touch_raw     touch_baseline  water_v
     rebaseline  reason           touch_raw          old_baseline    new_baseline
-    water       mean_v           min_v              max_v           samples
+    status      water_v          touch_baseline     touch_raw       contacts   (since 2026-11-17)
+    water       mean_v           min_v              max_v           samples    (until 2026-11-17, every 10 s)
     shutdown    reason
     wifi        joined/join_failed/lost   ip    rssi       (MainLoop, 2026-11-16)
     heartbeat_failed  status      ms_taken                 (MainLoop, 2026-11-16)
@@ -35,7 +37,11 @@ event (empty = not used):
 - rebaseline: the touch baseline was reset at once instead of tracked.
   reason `stuck` = contact held longer than touch_stuck_ms (a contact row
   with that duration follows); `drop` = raw fell far below the baseline.
-- water summarises the single Sharp reads over water_event_interval_ms.
+- status: water_v is the mean of the Sharp reads over the
+  status_water_window_ms (10 s) before the row; touch_raw the value at that
+  moment; contacts the contact onsets since the previous status row. The
+  first one comes status_event_first_ms (60 s) after the loop starts.
+- water (old files): mean/min/max of the Sharp reads over 10 s.
 - shutdown is the reason the loop ended: an exception, or e.g.
   KeyboardInterrupt (Ctrl-C) / ReloadException (auto-reload on file save).
 

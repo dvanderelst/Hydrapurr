@@ -57,10 +57,15 @@ raw_log_sync_ms = 5000         # flush to the card this often; a power cut
 
 # --- Event log -------------------------------------------------------------------
 # One row per event to /sd/events/<date>.csv (see EventLog.py): boot,
-# settings, every touch contact, baseline resets, water summaries, shutdown.
+# settings, every touch contact, baseline resets, a status row every
+# status_event_interval_ms, shutdown. Rows only when something happens: the
+# raw files hold every sample.
 events_enabled = True
 events_sync_ms = 5000          # flush to the card this often
-water_event_interval_ms = 10000  # one water row (mean/min/max) per interval
+status_event_interval_ms = 15 * 60 * 1000  # status row: water, touch, contacts
+status_event_first_ms = 60000    # first one this long after the loop starts
+                                 # (after the post-reset water spikes)
+status_water_window_ms = 10000   # its water value = mean over this long before it
 
 # --- Lab WiFi (station mode: heartbeat, later fetching files) -------------------
 # The credentials are NOT in this file: the repo is public. They go in

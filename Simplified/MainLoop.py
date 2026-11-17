@@ -286,9 +286,9 @@ def main_loop(level=INFO, sd_ok=True):
     contact_peak = 0
     contact_baseline = 0
     contact_water_v = 0.0
-    water_sum, water_n = 0.0, 0  # water summary for the event log
-    water_min, water_max = None, None
-    next_water_event_ms = now_ms() + Settings.water_event_interval_ms
+    water_sum, water_n = 0.0, 0  # water mean for the next status row
+    next_status_event_ms = now_ms() + Settings.status_event_first_ms
+    status_contacts = 0          # contacts at the last status row
     stop_reason = 'unknown'
     # Heartbeat: first one soon after boot (once the wire is quiet).
     boot_ms = now_ms()
@@ -345,8 +345,7 @@ def main_loop(level=INFO, sd_ok=True):
                     info(f'[Main Loop] recording again after {took} ms paused ({why})')
                     last_sample_ms = None   # the pause is not a recording gap
                     next_sample_ms = t
-                    water_sum, water_n, water_min, water_max = 0.0, 0, None, None
-                    next_water_event_ms = t + Settings.water_event_interval_ms
+                    water_sum, water_n = 0.0, 0
                     next_display_ms = 0
 
                 if not paused and t >= next_sample_ms:
@@ -388,14 +387,16 @@ def main_loop(level=INFO, sd_ok=True):
                     previous_contact = contact
                     recorder.add(t, touch, water_v)
 
-                    water_sum += water_v
-                    water_n += 1
-                    water_min = water_v if water_min is None else min(water_min, water_v)
-                    water_max = water_v if water_max is None else max(water_max, water_v)
-                    if t >= next_water_event_ms:
-                        next_water_event_ms = t + Settings.water_event_interval_ms
-                        events.log(t, 'water', water_sum / water_n, water_min, water_max, water_n)
-                        water_sum, water_n, water_min, water_max = 0.0, 0, None, None
+                    # Status row: water averaged over the window just before it.
+                    if t >= next_status_event_ms - Settings.status_water_window_ms:
+                        water_sum += water_v
+                        water_n += 1
+                    if t >= next_status_event_ms:
+                        next_status_event_ms = t + Settings.status_event_interval_ms
+                        events.log(t, 'status', water_sum / water_n if water_n else water_v,
+                                   round(touch.baseline), touch.raw, contacts - status_contacts)
+                        status_contacts = contacts
+                        water_sum, water_n = 0.0, 0
 
                 events.update(t)
 
