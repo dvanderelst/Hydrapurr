@@ -229,6 +229,7 @@ def main_loop(level=INFO, sd_ok=True):
         screen.set_line(4, 'joining WiFi...', YELLOW, now=True)
         if net.join():
             screen.set_line(4, f'{net.ip()}', GREEN, now=True)
+            screen.set_wifi(True, now=True)
             clock = sync_clock(net)
             if clock is not None:
                 rtc_ok = True
@@ -236,6 +237,7 @@ def main_loop(level=INFO, sd_ok=True):
                 screen.set_line(2, text, color, now=True)
         else:
             screen.set_line(4, 'no WiFi', RED, now=True)
+            screen.set_wifi(False, now=True)
 
     events = EventLog()
     t = now_ms()
@@ -521,12 +523,8 @@ def main_loop(level=INFO, sd_ok=True):
                     screen.set_line(1, f'contacts {contacts}')
                     screen.set_line(2, f'water {water_v:.3f}V')
                     screen.set_line(3, f'touch {touch.raw}', GREEN if touch.contact else WHITE)
-                    if not net.enabled:
-                        screen.set_line(4, f'base {touch.baseline:.0f}')
-                    elif wifi_up:
-                        screen.set_line(4, f'base {touch.baseline:.0f} WiFi')
-                    else:
-                        screen.set_line(4, f'base {touch.baseline:.0f} noWiFi', RED)
+                    screen.set_line(4, f'base {touch.baseline:.0f}')
+                    screen.set_wifi(wifi_up if net.enabled else None)
                     screen.refresh_all()
 
                 if t >= next_status_ms:

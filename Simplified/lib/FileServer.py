@@ -49,6 +49,11 @@ SD_ROOT = "/sd"
 EAGAIN = 11
 ACCEPT_EVERY_MS = 50           # how often an idle server looks for a client
 CLIENT_TIMEOUT_MS = 10000      # a client that does nothing this long is dropped
+# Browsers open spare connections in advance and send nothing on them. With
+# one client at a time, such a connection held up the real request until the
+# timeout (an 11 KB file took 9.9 s, 2026-11-17). A connection that has sent
+# nothing yet is dropped for a waiting one, or after REQUEST_TIMEOUT_MS.
+REQUEST_TIMEOUT_MS = 2000
 MAX_REQUEST = 2048
 
 
@@ -195,27 +200,21 @@ class FileServer:
         """Do server work until deadline (ms). Never blocks."""
         if self.listener is None:
             return
-        if self.client is None:
-            if t < self._next_accept_ms:
-                return
+        idle = self.client is not None and self.body is None and not self.request
+        if (self.client is None or idle) and t >= self._next_accept_ms:
             self._next_accept_ms = t + ACCEPT_EVERY_MS
             try:
                 sock, addr = self.listener.accept()
             except OSError as e:
                 if _errno(e) != EAGAIN:
                     warn(f'[Server] accept failed: {e!r}')
-                return
-            sock.setblocking(False)
-            self.client = sock
-            self.peer = addr[0] if addr else '?'
-            self.request = b''
-            self.body = None
-            self.pending = None
-            self.pos = 0
-            self.sent = 0
-            self.started_ms = t
-            self.last_ms = t
-            self.what = ''
+                sock = None
+            if sock is not None:
+                if idle:
+                    self._drop_idle()          # a spare connection: take the new one
+                self._take(sock, addr, t)
+        if self.client is None:
+            return
         while self.client is not None and now_ms() < deadline:
             try:
                 if self.body is None:
@@ -227,8 +226,33 @@ class FileServer:
                 return
             if not progressed:
                 break
-        if self.client is not None and now_ms() - self.last_ms > CLIENT_TIMEOUT_MS:
-            self._close_client('timeout')
+        if self.client is not None:
+            if self.body is None and not self.request:
+                if now_ms() - self.started_ms > REQUEST_TIMEOUT_MS:
+                    self._drop_idle()
+            elif now_ms() - self.last_ms > CLIENT_TIMEOUT_MS:
+                self._close_client('timeout')
+
+    def _take(self, sock, addr, t):
+        sock.setblocking(False)
+        self.client = sock
+        self.peer = addr[0] if addr else '?'
+        self.request = b''
+        self.body = None
+        self.pending = None
+        self.pos = 0
+        self.sent = 0
+        self.started_ms = t
+        self.last_ms = t
+        self.what = ''
+
+    def _drop_idle(self):
+        """Close a connection that never sent a request (not logged)."""
+        try:
+            self.client.close()
+        except Exception:
+            pass
+        self.client = None
 
     def _read_request(self):
         buf = bytearray(512)

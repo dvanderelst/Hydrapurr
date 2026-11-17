@@ -811,6 +811,18 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   shift is downward, so no false contacts. Keep in mind when setting the
   thresholds from real licks.
 
+- **2026-11-17** — WiFi icon on the screen (top right, `StatusDisplay.set_wifi`):
+  green arcs = connected, grey arcs + red slash = not, hidden with WiFi
+  off; the bottom line is `base ...` only. Part of the once-a-second full
+  redraw, no extra cost (rate 83/s, max_gap 165 ms as before). The
+  disconnected look is not seen on the board yet.
+  Server fix: a browser download of an 11 KB events file took 9.9 s. Chrome
+  opens spare connections that send nothing, and with one client at a time
+  the real request waited for the 10 s client timeout. Now a connection
+  that has sent nothing is dropped as soon as another one is waiting, or
+  after 2 s (`REQUEST_TIMEOUT_MS`). On the board: request behind an open
+  idle connection served in 0.48 s.
+
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay
