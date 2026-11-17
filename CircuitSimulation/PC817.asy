@@ -1,0 +1,31 @@
+Version 4
+SymbolType BLOCK
+LINE Normal 0 0 96 0
+LINE Normal 96 0 96 64
+LINE Normal 96 64 0 64
+LINE Normal 0 64 0 0
+LINE Normal 24 16 40 24
+LINE Normal 24 32 40 24
+LINE Normal 20 12 20 36
+LINE Normal 16 20 24 12
+LINE Normal 16 28 24 20
+LINE Normal 56 12 56 52
+LINE Normal 56 24 76 12
+LINE Normal 56 40 76 52
+WINDOW 0 48 -8 Bottom 2
+WINDOW 3 48 72 Top 2
+SYMATTR Value PC817
+SYMATTR Prefix X
+SYMATTR Description Optocoupler (LED anode/cathode in, transistor C/E out)
+PIN 0 16 LEFT 8
+PINATTR PinName A
+PINATTR SpiceOrder 1
+PIN 0 48 LEFT 8
+PINATTR PinName K
+PINATTR SpiceOrder 2
+PIN 96 16 RIGHT 8
+PINATTR PinName C
+PINATTR SpiceOrder 3
+PIN 96 48 RIGHT 8
+PINATTR PinName E
+PINATTR SpiceOrder 4

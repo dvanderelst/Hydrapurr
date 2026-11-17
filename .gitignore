@@ -33,3 +33,10 @@ FeederController/*.ses
 FeederController/freerouting*.json
 FeederController/*.rpt
 FeederController/fab/
+
+# Circuit simulation: outputs, old drafts, local files (sources are tracked)
+CircuitSimulation/*.raw
+CircuitSimulation/*.log
+CircuitSimulation/OLD/
+CircuitSimulation/.claude/
+CircuitSimulation/.windows-serial

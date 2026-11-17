@@ -1,0 +1,47 @@
+* HydraPurr lick sensor - ngspice deck (supply / Cbar cross-barrier study)
+* Derived from MyLickSensor.asc. Mains antenna source = 0 to isolate supply path.
+* Plate-only touch (RCat held open at 1G, no real lick in this window).
+.inc lick_models.inc
+
+IMains   gbat floor SINE(0 0 60)
+VBattery N007 gbat 9
+COPT     gbat floor 0.1p
+R6       floor N004 10Meg
+R2       N004 gbat 10Meg
+Q1       vbat N004 N006 0 Q2N2222
+R3       N006 gbat 47K
+D1       N007 vbat Dprot
+D2       N003 N005 DLED
+R10      vbat N002 300
+Q2       N005 N006 gbat 0 Q2N2222
+XU1      N002 N003 detection 0 PC817
+V1       N001 0 3
+R1       N001 detection 1K
+RCat     vbat floor 1G
+C1       0 detection 0.1u
+V2       0 main_ground SINE(0 170 60)
+C2       main_ground gbat {Cbar}
+Rleak    main_ground gbat 1G
+Rpaw     floor catbody 1Meg
+ccat     catbody 0 100p
+
+.param Cbar=3p
+.options gmin=1e-13
+
+.control
+echo "Cbar(pF)   Vdet_min   Vdet_max   trip(<2V)?"
+foreach cb 1p 2p 3p 4p 5p 6p 8p 10p 12p 14p 16p 18p 20p
+  alterparam Cbar = $cb
+  reset
+  tran 0.2m 0.95
+  meas tran vmn MIN v(detection) from=0.4 to=0.95 > /dev/null
+  meas tran vmx MAX v(detection) from=0.4 to=0.95 > /dev/null
+  if vmn < 2
+    set verdict = "YES"
+  else
+    set verdict = "no"
+  end
+  echo "$cb    $&vmn    $&vmx    $verdict"
+end
+.endc
+.end
