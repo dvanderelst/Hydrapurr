@@ -793,6 +793,24 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   to the card, one `paused`/`resumed` pair each. The day plot shades
   paused spans grey.
 
+- **2026-11-17** — Water spikes after a reset, looked at in the raw data of
+  13 boots (2026-11-16/17): single Sharp samples jump from ~0.60 V up to
+  ~0.9 V, 5-10 per second, mean barely moved. Last spike ~23-25 s after the
+  loop starts (~45 s of mono_ms) after boot 7 and today's restart (which
+  followed 70 s stopped at "Code done"); none at all after the quick
+  Ctrl-C resets 8-11. Not the radio: no spikes during downloads. Not the
+  Sharp powering up either (it runs on USB 5 V through a reset). Cause
+  unknown. The reader now sets water_v to NaN while mono_ms < 50 s
+  (`WATER_SETTLE_MS`, also contact water_v) and drops water summaries
+  covering that time; touch data is kept. Spikes left: three power-on boots
+  of 2026-11-16 afternoon, 1.5-6 min in (board being moved; left in).
+  Seen in the same plot: **touch raw drops ~150 counts (0.6 %) while the
+  board sends files** (normal download 11:28-11:30 lab time, fetches
+  ~11:38-11:40, and the WiFi traffic in the first minutes after boot). The
+  baseline follows; the contact threshold is +10 % (~2 570 counts) and the
+  shift is downward, so no false contacts. Keep in mind when setting the
+  thresholds from real licks.
+
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay

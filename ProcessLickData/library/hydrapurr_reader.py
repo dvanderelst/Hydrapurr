@@ -39,6 +39,15 @@ RAW_COLUMNS = ["epoch_ms", "mono_ms", "touch_raw", "touch_baseline", "contact", 
 # The first rows after a (re)start can be off (water read 0.49 V instead of
 # ~0.9 V right after boot, HANDOFF.md 2026-10-28): drop this many.
 SKIP_AFTER_START = 5
+# After some resets the Sharp reading has single-sample spikes (0.6 -> up to
+# ~0.9 V, 5-10 per second) for up to ~25 s after the loop starts, i.e. up to
+# ~45 s of mono_ms (the loop starts 10-18 s after the reset). Measured on the
+# 2026-11-16/17 boots; cause unknown (not the WiFi radio: none during
+# downloads). Water values before this mono_ms are set to NaN (raw water_v,
+# contact water_v); water summaries whose 10-s window starts before it are
+# dropped. Touch data is kept. Set to 0 to see the raw values.
+WATER_SETTLE_MS = 50_000
+WATER_EVENT_SPAN_MS = 10_000   # Settings.water_event_interval_ms
 
 # Meaning of f1..f4 per event (EventLog.py docstring).
 EVENT_FIELDS = {
@@ -162,6 +171,7 @@ def _finish_raw(frames: list[pd.DataFrame]) -> pd.DataFrame:
     df["time"] = _to_time(df["epoch_ms"])
     # A restart shows as mono_ms jumping back.
     df["boot"] = (df["mono_ms"].diff() < 0).cumsum()
+    df.loc[df["mono_ms"] < WATER_SETTLE_MS, "water_v"] = float("nan")
     return df
 
 
@@ -210,14 +220,18 @@ def contacts(events: pd.DataFrame) -> pd.DataFrame:
     """Contacts with start, end and duration. The row's time is the end of
     the contact; start = end - duration_ms."""
     df = event_table(events, "contact")
+    if "water_v" in df:
+        df.loc[df["mono_ms"] - df["duration_ms"] < WATER_SETTLE_MS, "water_v"] = float("nan")
     df["end"] = df["time"]
     df["start"] = df["end"] - pd.to_timedelta(df["duration_ms"], unit="ms")
     return df[["start", "end", "duration_ms", "peak_touch_raw", "touch_baseline", "water_v"]]
 
 
 def water(events: pd.DataFrame) -> pd.DataFrame:
-    """10-s water summaries (mean/min/max V)."""
-    return event_table(events, "water")
+    """10-s water summaries (mean/min/max V), without those that cover
+    the first WATER_SETTLE_MS after a reset."""
+    df = event_table(events, "water")
+    return df[df["mono_ms"] - WATER_EVENT_SPAN_MS >= WATER_SETTLE_MS].reset_index(drop=True)
 
 
 def settings_at_boots(events: pd.DataFrame) -> pd.DataFrame:

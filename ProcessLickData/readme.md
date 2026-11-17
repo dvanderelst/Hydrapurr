@@ -30,3 +30,8 @@ Times: the `time` column is lab time (America/New_York). Since
 card's file names are UTC days/hours and a lab day spans two board days;
 older rows were on a hand-set clock and are corrected where the offset is
 known (see `library/hydrapurr_reader.py` and `Simplified/HANDOFF.md`).
+
+Water after a reset: the Sharp reading can spike for up to ~45 s after a
+reset, so the reader sets water values to NaN for the first 50 s of each
+boot (`WATER_SETTLE_MS`, 0 = keep them) and drops the water summaries of
+that time. Touch data is kept.
