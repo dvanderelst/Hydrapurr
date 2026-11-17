@@ -6,9 +6,11 @@ looks down at its flat top. Output voltage rises as the float comes closer,
 so a higher value means more water. Values stay in volts (no calibration to
 millilitres yet), like the water column in BoardCode's licks.dat.
 
-The sensor produces a new reading every ~16.5 ms, so it is sampled on a
-timer (water_sample_ms) instead of every loop iteration, and smoothed with a
-moving average. One ADC read takes ~1.3 ms on the ESP32-S3.
+The recorder (MainLoop) takes one read_volts() per sample and stores it as
+is. update()/level are for the bout version: the sensor produces a new
+reading every ~16.5 ms, so there it is sampled on a timer (water_sample_ms)
+and smoothed with a moving average. One ADC read takes ~1.3 ms on the
+ESP32-S3.
 """
 
 import time

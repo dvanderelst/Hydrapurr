@@ -3,7 +3,7 @@ Button.py - edge-detecting push button (D0/D1/D2 on the Reverse TFT)
 
 D1 on the Reverse TFT reads differently from D0 (D0 is pulled up, D1/D2
 pulled down), so "pressed" means "different from the level at startup".
-Used by the test scripts (TestUpload, TestHeartbeat).
+Used by TestHeartbeat.py (D1 sends a /fail ping).
 """
 
 import time

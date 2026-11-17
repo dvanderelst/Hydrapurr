@@ -3,25 +3,18 @@
 #
 # Names match BoardCode/lib/Settings.py wherever the meaning is the same, so
 # the copied modules (BoutDetection, MyStore, MySystemLog) work unchanged.
+# Every setting is written to the event log at each boot (`settings` rows).
 
 import os
 import board
 
 # --- Files on the SD card -----------------------------------------------------
 system_log_filename = "system.log"
-lick_data_filename = "licks.dat"      # not written by the recording version
 system_log_max_lines = 2000
-data_log_max_lines = 2000
-
-# --- Cat ----------------------------------------------------------------------
-# No RFID in this build yet: every lick belongs to this cat.
-single_cat_name = 'Handsome'
 
 # --- Pins ---------------------------------------------------------------------
 touch_pin = board.D12          # wire into the water (touchio)
 water_pin = board.A5           # Sharp GP2Y0A51SK0F output (ADC1, WiFi-safe)
-feeder_pin = None              # relay not fitted yet; e.g. board.D6 later.
-                               # None = deployments are logged, nothing switches.
 contact_led_pin = board.D9     # LED (+ side on the pin, resistor to GND), lit
                                # while the wire sees contact; for video checks.
                                # None = no LED.
@@ -43,11 +36,9 @@ touch_stuck_ms = 5000          # contact longer than this is not a lick (paw
                                # resting, level step): re-take the baseline
 
 # --- Water level (Sharp IR sensor above the float) -----------------------------
-# Higher voltage = float closer to the sensor = higher water.
-# The recording version stores single reads; the two settings below are only
-# used by WaterSensor.update(), i.e. by the bout-detection version.
-water_sample_ms = 20           # the Sharp updates every ~16.5 ms
-water_smooth_samples = 10      # moving average over this many samples (~200 ms)
+# Higher voltage = float closer to the sensor = higher water. The recorder
+# stores single reads (WaterSensor.read_volts()); the smoothing settings are
+# in the "not used" block below.
 
 # --- Raw data recording --------------------------------------------------------
 # Every sample goes to /sd/raw/<date>/<hour>.csv (see RawRecorder.py).
@@ -69,7 +60,7 @@ status_event_first_ms = 60000    # first one this long after the loop starts
                                  # (after the post-reset water spikes)
 status_water_window_ms = 10000   # its water value = mean over this long before it
 
-# --- Lab WiFi (station mode: heartbeat, later fetching files) -------------------
+# --- Lab WiFi (station mode: heartbeat, clock, file server) --------------------
 # The credentials are NOT in this file: the repo is public. They go in
 # settings.toml in the board's root (CIRCUITPY drive) and only there: no copy
 # on the computer, sync2board never touches it. Edit it on the board, with
@@ -130,17 +121,6 @@ heartbeat_min_free_mb = 1024          # less free on the SD card = /fail (~2.5 d
 # longest blocking step: WiFi join (10 s), heartbeat (up to ~3 x 10 s timeouts).
 watchdog_timeout_s = 60               # None = no watchdog
 
-# --- Upload speed test (TestUpload.py; done 2026-11-16, run it from Thonny) -----
-# Sends to UploadSink/upload_sink.py on a computer on the home network. Its
-# address depends on the network, so like the WiFi credentials it lives in
-# settings.toml on the board:
-#   UPLOAD_TEST_HOST = "192.168.1.23"
-upload_test_host = os.getenv("UPLOAD_TEST_HOST")
-upload_test_port = 5001
-upload_test_window_ms = 5000           # one result per window
-upload_test_chunk = 4096               # bytes per send(), as the real upload would
-upload_test_tx_powers = (8.5, 13.0, 20.0)  # dBm; D1 cycles through them
-
 # =============================================================================
 # Not used by the recording version (MainLoop.py). Kept for when bout
 # detection and feeding come back (LickSensor.py, BoutDetection.py).
@@ -156,10 +136,16 @@ min_water_extent_per_bout = 0.0  # disabled until the float is characterised;
                                  # bout summaries still log the extent so it
                                  # can be tuned from data
 
-# --- Deployment ----------------------------------------------------------------
-deployment_bout_count = 1
-wait_for_bout_close = False    # see BoardCode/lib/Settings.py for the meaning
-deployment_duration_ms = 2000
+# --- Files of the bout version (LickSensor / MyStore) ---------------------------
+lick_data_filename = "licks.dat"
+data_log_max_lines = 2000
+
+# --- Smoothed water level (WaterSensor.update()) --------------------------------
+water_sample_ms = 20           # the Sharp updates every ~16.5 ms
+water_smooth_samples = 10      # moving average over this many samples (~200 ms)
+
+# (Feeder and deployment settings come back with the feeder; see
+# BoardCode/lib/Settings.py for the old ones.)
 
 # =============================================================================
 

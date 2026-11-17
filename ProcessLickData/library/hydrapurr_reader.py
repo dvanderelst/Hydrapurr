@@ -47,7 +47,7 @@ SKIP_AFTER_START = 5
 # contact water_v); water summaries whose 10-s window starts before it are
 # dropped. Touch data is kept. Set to 0 to see the raw values.
 WATER_SETTLE_MS = 50_000
-WATER_EVENT_SPAN_MS = 10_000   # Settings.water_event_interval_ms
+WATER_EVENT_SPAN_MS = 10_000   # window of the old 10-s water rows
 
 # Meaning of f1..f4 per event (EventLog.py docstring).
 EVENT_FIELDS = {
@@ -162,16 +162,20 @@ def read_raw(folder: str | Path, day: str | list[str] | None = None,
 
 
 def _finish_raw(frames: list[pd.DataFrame]) -> pd.DataFrame:
+    """Join files (in recording order), number the boots, sort by time."""
     frames = [f for f in frames if len(f)]
     if not frames:
         return pd.DataFrame(columns=RAW_COLUMNS + ["time", "boot"])
     df = pd.concat(frames, ignore_index=True)
-    df = df.sort_values("epoch_ms", kind="stable").reset_index(drop=True)
     df[["epoch_ms", "mono_ms", "touch_raw", "contact"]] = (
         df[["epoch_ms", "mono_ms", "touch_raw", "contact"]].astype("int64"))
-    df["time"] = _to_time(df["epoch_ms"])
-    # A restart shows as mono_ms jumping back.
+    # A restart shows as mono_ms jumping back. Counted in recording order
+    # (files by name, rows as written), before sorting by time: after a
+    # backward clock step (NTP) the time order interleaves a few rows, which
+    # would count as extra boots.
     df["boot"] = (df["mono_ms"].diff() < 0).cumsum()
+    df = df.sort_values("epoch_ms", kind="stable").reset_index(drop=True)
+    df["time"] = _to_time(df["epoch_ms"])
     df.loc[df["mono_ms"] < WATER_SETTLE_MS, "water_v"] = float("nan")
     return df
 

@@ -3,7 +3,8 @@ TouchSensor.py - lick contact from a single wire in the water (touchio)
 
 The wire, the water and the bowl form one electrode. A tongue in the water
 adds the cat's body to it, and touchio's raw_value jumps up. This class turns
-raw values into a 0/1 contact state for BoutDetection:
+raw values into a 0/1 contact state (recorded in the raw stream and the
+event log by MainLoop; BoutDetection uses it in the bout version):
 
 - baseline: averaged at boot, then tracked slowly (exponential moving
   average) while there is no contact, so it follows drift from water level,

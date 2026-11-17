@@ -161,7 +161,10 @@ class _SDSink:
                 self._line_count = 0
             if self.keep_open:
                 self._fh.write(line + "\n")
-                if self.autosync:
+                # Simplified build: autosync off in the recorder (a sync per
+                # line stalls sampling); warnings and errors still go to the
+                # card at once, the rest with MainLoop's periodic flush().
+                if self.autosync or ",WARN," in line or ",ERROR," in line:
                     try:
                         self._fh.flush()
                         import os
@@ -180,9 +183,25 @@ class _SDSink:
                         except: pass
             if self._max_lines is not None:
                 self._line_count += 1
+            self._failing = False
         except Exception as e:
-            try: print("[MySystemLog] SD write failed:", repr(e))
-            except: pass
+            # FatFs keeps an error on the file object: after one failed write
+            # (2026-11-17, during start-up) every later write failed too.
+            # Re-open the file and try this line once more; say so once.
+            if not getattr(self, "_failing", False):
+                try: print("[MySystemLog] SD write failed:", repr(e), "- re-opening system.log")
+                except: pass
+            self._failing = True
+            if self.keep_open:
+                try:
+                    try: self._fh.close()
+                    except: pass
+                    self._fh = open(self.path, "a")
+                    self._fh.write(line + "\n")
+                    self._failing = False
+                    print("[MySystemLog] system.log re-opened")
+                except Exception:
+                    pass
 
     def flush(self):
         if self.keep_open and self._fh:

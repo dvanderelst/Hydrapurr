@@ -37,7 +37,9 @@ several go per pass when there is time.
 
 A file still being written (this hour's raw file, today's events file) is
 served up to its size when the request came in: the rest arrives on the
-next fetch.
+next fetch. `before_file` (MainLoop: flush the recorder and the event log)
+runs before that size is taken, so the download holds everything up to the
+request instead of up to the last periodic flush (raw_log_sync_ms).
 """
 
 import os
@@ -125,9 +127,10 @@ HTML_HEAD = (b"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n"
 
 
 class FileServer:
-    def __init__(self, pool, ip):
+    def __init__(self, pool, ip, before_file=None):
         self.pool = pool
         self.ip = ip
+        self.before_file = before_file
         self.listener = None
         self.client = None
         self._next_accept_ms = 0
@@ -337,7 +340,7 @@ class FileServer:
     # --- pages and files --------------------------------------------------------
 
     def _route(self, path, pause):
-        if '..' in path or '//' in path:
+        if not path.startswith('/') or '..' in path or '//' in path:
             self._respond(_status_response(403, 'Forbidden'), f'GET {path} 403')
             return
         if path == '/':
@@ -357,9 +360,12 @@ class FileServer:
                 self._respond(_status_response(404, 'Not Found'), f'GET {path} 404')
                 return
             self._begin_pause(pause, path)
+            self._flush_data()
             self._respond(b'', f'GET {path} (day)', self._day_raw(day_dir, parts[2]))
             return
         full = SD_ROOT + path.rstrip('/')
+        if not path.endswith('/'):
+            self._flush_data()          # a file: its size should include the latest rows
         st = _stat(full)
         if st is None:
             self._respond(_status_response(404, 'Not Found'), f'GET {path} 404')
@@ -374,6 +380,13 @@ class FileServer:
         self._begin_pause(pause, path)
         self._respond(_file_head(path.split('/')[-1], size),
                       f'GET {path} ({_human(size)})', self._file(full, size))
+
+    def _flush_data(self):
+        if self.before_file is not None:
+            try:
+                self.before_file()
+            except Exception as e:
+                warn(f'[Server] flush before a file failed: {e!r}')
 
     def _redirect(self, to):
         head = (f"HTTP/1.1 301 Moved Permanently\r\nLocation: {to}\r\n"
@@ -417,8 +430,9 @@ class FileServer:
         self.what = f'GET /day/{day}/raw.csv ({len(files)} hours, {_human(total)})'
         yield _file_head(f'hydrapurr_raw_{day}_UTC.csv', total)
         for full, size in files:
-            for piece in self._file(full, size):
-                yield piece
+            # yield from: closing this generator (client gone) also closes
+            # the inner one and with it the open file.
+            yield from self._file(full, size)
 
     def _start_page(self):
         """Start page: status, then one row per day (stats one per step)."""

@@ -5,11 +5,9 @@
 #   TestDatalogger.py - Adalogger FeatherWing: I2C scan, PCF8523 RTC, SD card
 #   SetTime.py        - set the RTC
 #   TestTouch.py      - capacitive touch readings on several pins
-#   test.py           - single touch pin driving the red LED
 #
 # Hold D2 while the board starts to run the heartbeat test
 # (TestHeartbeat.py) instead of the monitor; it works on a battery.
-# (TestUpload.py, the upload speed test, is done; run it from Thonny.)
 #
 # To run another test at boot instead, replace the lines below with e.g.
 #   import TestDatalogger

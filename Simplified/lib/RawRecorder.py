@@ -4,7 +4,8 @@ RawRecorder.py - continuous raw sensor stream to the SD card
 One row per sample (MainLoop samples every raw_log_interval_ms):
     epoch_ms, mono_ms, touch_raw, touch_baseline, contact, water_v
 
-epoch_ms is wall-clock time (ms since 1970-01-01, RTC local time), computed
+epoch_ms is wall-clock time (ms since 1970-01-01, UTC since 2026-11-16: the
+RTC is set from NTP; before that hand-set local time), computed
 as RTC-at-boot + time since boot. It holds no more information than mono_ms
 plus the anchor below, but it stays correct when a restart appends to the
 same file and mono_ms starts again from ~0.
@@ -26,6 +27,9 @@ Writing, chosen from timings measured on this board and card:
 - The file stays open: re-opening a file to append gets slower as it grows
   (FAT walks the cluster chain). Hourly files stay ~16 MB at 100 rows/s, far
   below FAT32's 4 GB limit.
+- After a write error (card full or pulled, bad sector) the file is closed
+  and re-opened at most every REOPEN_MS; rows in between are dropped and
+  counted, with one warning per outage instead of one per row.
 """
 
 import os
@@ -37,7 +41,8 @@ from components.MySystemLog import info, warn
 
 HEADER = "epoch_ms,mono_ms,touch_raw,touch_baseline,contact,water_v"
 ROOT = "/sd/raw"
-HOUR_CHECK_MS = 1000           # how often to check for a new wall-clock hour
+HOUR_MS = 3600 * 1000
+REOPEN_MS = 1000               # after an error, try to re-open this often
 
 
 def _mkdir(path):
@@ -73,7 +78,10 @@ class RawRecorder:
         self.errors = 0
         self.slowest_ms = 0        # slowest write/flush/rollover since last read
         self._next_sync_ms = 0
-        self._next_hour_check_ms = 0
+        self._next_hour_ms = 0     # mono ms of the next wall-clock hour
+        self._retry_ms = 0         # after an error: no re-open before this
+        self.failing = False       # in an outage (warned once)
+        self.dropped = 0           # rows lost to SD errors since boot
         if self.enabled:
             _mkdir(ROOT)
             info(f'[Raw] recording to {ROOT}/<date>/<hour>.csv')
@@ -85,6 +93,7 @@ class RawRecorder:
         t = time.localtime(wall_seconds(t_ms))
         key = (t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour)
         if key == self.hour_key and self.file is not None:
+            self._set_next_hour(t_ms)    # e.g. after retime(): same hour
             return
         self.close()
         self.epoch_offset_ms = epoch_offset_ms()
@@ -102,16 +111,25 @@ class RawRecorder:
         if new_file:
             self.file.write(HEADER + "\n")
         self.hour_key = key
+        self._set_next_hour(t_ms)
         info(f'[Raw] writing {self.path}')
+
+    def _set_next_hour(self, t_ms):
+        """Mono ms of the next wall-clock hour (ints: epoch ms don't fit a
+        CircuitPython float)."""
+        wall_ms = t_ms + self.epoch_offset_ms
+        self._next_hour_ms = (wall_ms // HOUR_MS + 1) * HOUR_MS - self.epoch_offset_ms
 
     def add(self, t_ms, touch, water_v):
         """Write one row."""
         if not self.enabled:
             return
+        if self.file is None and t_ms < self._retry_ms:
+            self.dropped += 1
+            return
         start = time.monotonic_ns()
         try:
-            if self.file is None or t_ms >= self._next_hour_check_ms:
-                self._next_hour_check_ms = t_ms + HOUR_CHECK_MS
+            if self.file is None or t_ms >= self._next_hour_ms:
                 self._open_for(t_ms)
             self.file.write(f"{t_ms + self.epoch_offset_ms},{t_ms},{touch.raw},{touch.baseline:.0f},"
                             f"{touch.contact},{water_v:.4f}\n")
@@ -119,10 +137,17 @@ class RawRecorder:
             if t_ms >= self._next_sync_ms:
                 self._next_sync_ms = t_ms + self.sync_ms
                 self.file.flush()
-        except OSError as e:
+            if self.failing:
+                self.failing = False
+                info(f'[Raw] writing again; {self.dropped} rows lost so far')
+        except Exception as e:      # OSError from the card, or a bad clock
             self.errors += 1
-            warn(f'[Raw] write failed: {e!r}')
+            self.dropped += 1
+            if not self.failing:
+                warn(f'[Raw] write failed: {e!r}; retrying every {REOPEN_MS} ms')
+                self.failing = True
             self.close()
+            self._retry_ms = t_ms + REOPEN_MS
         took = (time.monotonic_ns() - start) // 1_000_000
         if took > self.slowest_ms:
             self.slowest_ms = took
@@ -131,7 +156,7 @@ class RawRecorder:
         """The clock was re-set (NTP): use the new offset from now on, and
         check at the next row whether that changes the hourly file."""
         self.epoch_offset_ms = epoch_offset_ms()
-        self._next_hour_check_ms = 0
+        self._next_hour_ms = 0     # next row re-checks the hour with the new offset
 
     def take_slowest_ms(self):
         """Slowest single add() since the last call, then reset."""

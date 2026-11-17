@@ -103,9 +103,14 @@ def set_clock(utc_ms, mono_ms):
         old_ms = boot_epoch * 1000 + (mono_ms - boot_mono_ms)
     whole_s = utc_ms // 1000
     frac_ms = utc_ms % 1000
-    if rtc is not None:
-        rtc.rtc.datetime = _time.localtime(whole_s)
+    # Timebase first: if writing the RTC chip fails (I2C), this boot's
+    # timestamps are still right.
     boot_epoch = whole_s
     boot_mono_ms = mono_ms - frac_ms
     timebase_ready = True
+    if rtc is not None:
+        try:
+            rtc.rtc.datetime = _time.localtime(whole_s)
+        except Exception as e:
+            print(f"[TimeUtil] could not write the RTC: {e!r}")
     return None if old_ms is None else utc_ms - old_ms

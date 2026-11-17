@@ -89,6 +89,8 @@ class EventLog:
         self.errors = 0
         self._dirty = False
         self._next_sync_ms = 0
+        self._retry_ms = 0          # after an error: no re-open before this
+        self.failing = False
         if self.enabled:
             _mkdir(ROOT)
             info(f'[Events] logging to {ROOT}/<date>.csv')
@@ -118,15 +120,24 @@ class EventLog:
         """Write one event row (up to four fields)."""
         if not self.enabled:
             return
+        if self.file is None and t_ms < self._retry_ms:
+            self.errors += 1            # row lost: the card failed just now
+            return
         try:
             self._open_for(t_ms)
             cells = [_field(f) for f in fields] + [''] * (4 - len(fields))
             self.file.write(f"{t_ms + epoch_offset_ms()},{t_ms},{event},{','.join(cells)}\n")
             self._dirty = True
-        except OSError as e:
+            if self.failing:
+                self.failing = False
+                info('[Events] writing again')
+        except Exception as e:          # OSError from the card, or a bad clock
             self.errors += 1
-            warn(f'[Events] write failed: {e!r}')
+            if not self.failing:
+                warn(f'[Events] write failed: {e!r}; retrying every second')
+                self.failing = True
             self.close()
+            self._retry_ms = t_ms + 1000
 
     def update(self, t_ms):
         """Call every loop pass: flushes pending rows every events_sync_ms."""

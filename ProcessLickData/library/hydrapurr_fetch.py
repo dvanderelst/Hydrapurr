@@ -57,13 +57,15 @@ def _rows(page: str) -> list[tuple[str, int | None]]:
 
 def _finished(path: str) -> bool:
     """True for a file the board no longer writes: an hourly raw file of an
-    earlier hour, an events file of an earlier day (board clock = local)."""
+    earlier hour, an events file of an earlier day (board clock = UTC)."""
+    now = time.gmtime()
     m = re.fullmatch(r"/raw/(\d{4}-\d{2}-\d{2})/(\d{2})\.csv", path)
     if m:
-        return (m.group(1), m.group(2)) < (time.strftime("%Y-%m-%d"), time.strftime("%H"))
+        return (m.group(1), m.group(2)) < (time.strftime("%Y-%m-%d", now),
+                                           time.strftime("%H", now))
     m = re.fullmatch(r"/events/(\d{4}-\d{2}-\d{2})\.csv", path)
     if m:
-        return m.group(1) < time.strftime("%Y-%m-%d")
+        return m.group(1) < time.strftime("%Y-%m-%d", now)
     return False
 
 

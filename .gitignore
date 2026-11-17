@@ -2,8 +2,14 @@
 *.sync_trash*
 *__pycache__**
 *.Trash*
-*old*
-*.html*
+# Old copies and archives (was `*old*`, which also hid e.g. threshold.py or
+# placeholder.txt; `*.html*` hid every HTML file)
+old/
+*_old*
+*old.zip
+Archive.zip
+# Generated analysis pages
+ProcessLickData/*.html
 *System Volume Information*
 BluetoothDownloader/builds/
 ProcessLickData/data/

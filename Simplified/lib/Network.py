@@ -100,14 +100,15 @@ class Network:
         import ssl
         self.used = True
         self._next_join_ms = now_ms() + Settings.wifi_retry_ms
-        if wifi.radio.connected:
-            return True
-        try:
-            wifi.radio.connect(Settings.wifi_ssid, Settings.wifi_password,
-                               timeout=Settings.wifi_connect_timeout_s)
-        except Exception as e:
-            warn(f'[Network] WiFi join failed: {e!r}')
-            return False
+        # Already connected (e.g. a soft reboot after a crash): still set up
+        # the socket pool and mDNS below, or nothing network-side works.
+        if not wifi.radio.connected:
+            try:
+                wifi.radio.connect(Settings.wifi_ssid, Settings.wifi_password,
+                                   timeout=Settings.wifi_connect_timeout_s)
+            except Exception as e:
+                warn(f'[Network] WiFi join failed: {e!r}')
+                return False
         try:
             wifi.radio.tx_power = Settings.wifi_tx_power_dbm
         except Exception as e:
@@ -151,9 +152,16 @@ class Network:
             t_recv = now_ms()
             if n < 48:
                 return None
+            # A server reply (mode 4), synchronised (leap indicator not 3),
+            # from a real clock source (stratum 1-15): else don't trust it.
+            leap, mode, stratum = buf[0] >> 6, buf[0] & 7, buf[1]
+            if mode != 4 or leap == 3 or not 1 <= stratum <= 15:
+                warn(f'[Network] NTP reply not usable (leap {leap}, mode {mode}, '
+                     f'stratum {stratum})')
+                return None
             secs = int.from_bytes(buf[40:44], 'big')      # transmit timestamp
             frac = int.from_bytes(buf[44:48], 'big')
-            if secs == 0:
+            if secs < 3_970_000_000:                      # before Oct 2025: nonsense
                 return None
             rtt = t_recv - t_send
             utc_ms = (secs - 2208988800) * 1000 + (frac * 1000 >> 32) + rtt // 2
