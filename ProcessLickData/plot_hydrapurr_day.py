@@ -6,11 +6,13 @@ plot_hydrapurr_day.py - fetch the Simplified HydraPurr's data and plot a day
     python plot_hydrapurr_day.py --day 2026-11-16 --hours 15 16
     python plot_hydrapurr_day.py --no-fetch          # plot what is here
     python plot_hydrapurr_day.py --no-raw            # events only (fast)
+    python plot_hydrapurr_day.py --pause             # faster fetch, recording pauses
 
 Panels (shared time axis):
     touch   raw touch value and the board's baseline; contacts shaded
     water   Sharp float sensor: raw samples and the 10-s event summaries
-Restarts (boot events) are dashed vertical lines, WiFi losses dotted.
+Restarts (boot events) are dashed vertical lines, WiFi losses dotted,
+recording paused for a fast download shaded grey.
 
 The PNG goes to data/simplified/plots/<day>[_<hours>].png. Data comes from
 data/simplified/ (see library/hydrapurr_fetch.py).
@@ -86,6 +88,7 @@ def plot_day(folder: Path, day: str, hours: list[int] | None, use_raw: bool,
     w = keep(water(ev))
     boots = keep(event_table(ev, "boot"))
     wifi = keep(event_table(ev, "wifi"))
+    pauses = keep(event_table(ev, "resumed"))
 
     fig, (ax_t, ax_w) = plt.subplots(2, 1, sharex=True, figsize=(14, 7),
                                      gridspec_kw={"height_ratios": [3, 2]})
@@ -118,6 +121,9 @@ def plot_day(folder: Path, day: str, hours: list[int] | None, use_raw: bool,
         if len(wifi):
             for t in wifi[wifi["state"] == "lost"]["time"]:
                 ax.axvline(t, color="#c08000", ls=":", lw=1)
+        for end, ms in zip(pauses["time"], pauses["paused_ms"]) if len(pauses) else []:
+            ax.axvspan(end - pd.Timedelta(milliseconds=float(ms)), end,
+                       color="#808080", alpha=0.25, lw=0)
     ax_t.set_ylabel("touch raw")
     ax_w.set_ylabel("water (V, higher = fuller)")
     ax_w.set_xlabel("lab time")
@@ -146,11 +152,14 @@ def main():
     p.add_argument("--url", default=DEFAULT_URL)
     p.add_argument("--no-fetch", action="store_true", help="plot what is already here")
     p.add_argument("--no-raw", action="store_true", help="events only: no raw fetch or plot")
+    p.add_argument("--pause", action="store_true",
+                   help="board stops recording while each raw file is sent (faster)")
     p.add_argument("--show", action="store_true", help="also open a window")
     a = p.parse_args()
     folder = Path(a.folder)
     if not a.no_fetch:
-        fetch(folder, a.url, include_raw=not a.no_raw, raw_days=board_days_for(a.day))
+        fetch(folder, a.url, include_raw=not a.no_raw, raw_days=board_days_for(a.day),
+              pause=a.pause)
     plot_day(folder, a.day, a.hours or None, use_raw=not a.no_raw, show=a.show)
 
 

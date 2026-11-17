@@ -13,6 +13,8 @@ download, ~2.5x faster). Read such a day file with
     python plot_hydrapurr_day.py --day 2026-11-16 --hours 15 16
     python plot_hydrapurr_day.py --no-raw         # events only (fast)
     python -m library.hydrapurr_fetch --no-raw    # fetch only, no plot
+    python -m library.hydrapurr_fetch --pause     # faster (~310 KB/s): the board
+                                                  # stops recording per raw file
 
 - `library/hydrapurr_fetch.py` mirrors the card into `data/simplified/`
   (gitignored), fetching only new or changed files (~150 KB/s; a full

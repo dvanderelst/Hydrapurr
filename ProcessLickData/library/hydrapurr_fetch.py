@@ -8,15 +8,21 @@ pages carry the exact size as data-size="..."). Finished hourly raw files
 never change, so after the first run only the current hour's raw file,
 today's events file and the logs are fetched again.
 
-The board keeps recording while it serves (~150 KB/s, so a full hourly raw
-file takes ~2 min). Use include_raw=False to fetch only events and logs.
+The board keeps recording while it serves (~125-150 KB/s, so a full hourly
+raw file takes ~1-2 min). Use include_raw=False to fetch only events and
+logs. pause=True asks the board to stop recording while each raw file is
+sent (~310 KB/s, 2.5x faster; a `paused`/`resumed` event pair per file, and
+the data of those minutes is missing). Events files and logs are always
+fetched alongside recording. A board with fileserver_allow_pause = False
+ignores the request and serves at the normal speed.
 
     from library.hydrapurr_fetch import fetch
     fetch()                                  # -> data/simplified/
     fetch(include_raw=False)                 # events + logs only
+    fetch(pause=True)                        # faster, recording pauses
 
 Command line (from ProcessLickData/):
-    python -m library.hydrapurr_fetch [--no-raw] [--days 2026-11-16]
+    python -m library.hydrapurr_fetch [--no-raw] [--pause] [--days 2026-11-16]
                                       [--url http://<board ip>/]
 """
 
@@ -94,10 +100,11 @@ def list_remote(url: str = DEFAULT_URL, path: str = "/files/") -> list[tuple[str
 
 def fetch(dest: str | Path = DEFAULT_DEST, url: str = DEFAULT_URL,
           include_raw: bool = True, raw_days: list[str] | None = None,
-          verbose: bool = True) -> list[Path]:
+          pause: bool = False, verbose: bool = True) -> list[Path]:
     """Download new or changed files into dest. Returns the paths fetched.
     raw_days limits the raw files to those days ('YYYY-MM-DD'); events and
-    logs are always fetched."""
+    logs are always fetched. pause: the board stops recording while each
+    raw file is sent (faster)."""
     dest = Path(dest)
     fetched = []
     files = list_remote(url)
@@ -118,12 +125,13 @@ def fetch(dest: str | Path = DEFAULT_DEST, url: str = DEFAULT_URL,
     if verbose:
         total = sum(s or 0 for _, s, _ in todo)
         print(f"{len(files)} files on the board, {len(todo)} to fetch "
-              f"({total / 1e6:.1f} MB)")
+              f"({total / 1e6:.1f} MB)" + (", recording paused per raw file" if pause else ""))
     for path, size, local in todo:
         local.parent.mkdir(parents=True, exist_ok=True)
         tmp = local.with_name(local.name + ".part")
         t0 = time.monotonic()
-        data = _get(url.rstrip("/") + path)
+        query = "?pause=1" if pause and path.startswith("/raw/") else ""
+        data = _get(url.rstrip("/") + path + query)
         tmp.write_bytes(data)
         tmp.replace(local)
         fetched.append(local)
@@ -139,8 +147,11 @@ def main():
     parser.add_argument("--dest", default=str(DEFAULT_DEST))
     parser.add_argument("--no-raw", action="store_true", help="events and logs only")
     parser.add_argument("--days", nargs="*", help="raw files of these days only (YYYY-MM-DD)")
+    parser.add_argument("--pause", action="store_true",
+                        help="board stops recording while each raw file is sent (faster)")
     args = parser.parse_args()
-    fetch(args.dest, args.url, include_raw=not args.no_raw, raw_days=args.days)
+    fetch(args.dest, args.url, include_raw=not args.no_raw, raw_days=args.days,
+          pause=args.pause)
 
 
 if __name__ == "__main__":

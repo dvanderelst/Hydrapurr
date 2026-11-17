@@ -786,6 +786,13 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   RTC drift: the boot sync stepped the clock -4.8 s after ~19 h (~70 ppm,
   PCF8523); the daily NTP sync keeps that under ~6 s.
 
+- **2026-11-17** — Fetcher `--pause` (also on `plot_hydrapurr_day.py`):
+  each raw file is requested with `?pause=1`, so recording pauses per file
+  and runs again in between (events files and logs never pause). Tested:
+  two 4 MB hourly files in 13.4 s and 12.7 s (~300 KB/s), byte-identical
+  to the card, one `paused`/`resumed` pair each. The day plot shades
+  paused spans grey.
+
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay
