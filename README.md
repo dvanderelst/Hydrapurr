@@ -3,25 +3,55 @@
 > **Running the current test device?** See the tester guide:
 > [`Simplified/README.md`](Simplified/README.md) (set-up, the screen, getting the data).
 
-A CircuitPython-based device that monitors cat drinking behaviour at a shared water fountain and automatically dispenses food when a cat has completed enough drinking bouts. Each cat is identified by an RFID tag; bouts are detected from a contact sensor on the fountain; food is dispensed via a relay-controlled feeder.
+A CircuitPython-based device that monitors cat drinking behaviour at a water bowl. The goal: detect licks and drinking bouts, and automatically dispense food when a cat has completed enough bouts.
+
+There are two hardware generations in this repo:
+
+| | **v2 — current** (`Simplified/`) | **v1 — first prototype** (`BoardCode/`) |
+| --- | --- | --- |
+| board | Adafruit Feather ESP32-S3 Reverse TFT + Adalogger FeatherWing (SD, RTC) | Adafruit RP2040 Feather |
+| lick sensor | bare wire in the water, capacitive (`touchio`) | transistor/optocoupler contact circuit on an ADC |
+| water level | float in a chimney + Sharp IR distance sensor | ADC |
+| what it does | **records** touch and water 100×/s to SD; licks and bouts found offline | detects licks and bouts live, feeds via relay |
+| cat ID / feeder | not yet (feeder driver on the planned carrier PCB) | WL-134 RFID, relay feeder |
+| data out | WiFi: web page with downloads, health-check heartbeat | Bluetooth |
+| in use | Oct 2026 – | Dec 2025 – May 2026 |
+
+The sections from *Runtime flow* down describe **v1** (`BoardCode`). The bout logic will come back to v2 (`Simplified/lib/BoutDetection.py` is the same code), but v2 does not run it yet.
 
 ## Project layout
 
 ```
 HydraPurr/
-├── BoardCode/            CircuitPython firmware that runs on the device.
+├── Simplified/           v2 firmware (current): recorder. README.md = tester guide,
+│                         HANDOFF.md = development notes and log.
+├── FeederController/     v2 carrier PCB (KiCad): stack, feeder driver, connectors.
+├── BoardCode/            v1 firmware (RP2040, live bout detection + feeding).
 │   └── lib/              Auto-loaded by CircuitPython (top of sys.path).
-├── ProcessLickData/      Offline analysis of licks.dat / system.log.
-├── BluetoothDownloader/  Prototype BT-based data downloader.
-├── HardwareDocs/         WL-134 RFID reader docs (PDFs) + board netlist.
-├── BoardPycharm/         PyCharm project config for working on BoardCode.
-├── todo.md               Open / deferred / done items.
+├── ProcessLickData/      Offline analysis: v2 reader/fetcher/plots, v1 licks.dat analysis.
+├── CircuitSimulation/    LTspice/ngspice study of the v1 transistor lick circuit.
+├── BluetoothDownloader/  v1 prototype BT-based data downloader.
+├── HardwareDocs/         WL-134 RFID reader docs (PDFs) + v1 board netlist.
+├── sync2board            Push Simplified/ or BoardCode/ to a connected board.
+├── todo.md               Open / deferred / done items (mostly v1).
 └── README.md             This file.
 ```
 
 `BoardCode` and `ProcessLickData` are deliberately separate PyCharm projects to avoid refactoring tooling crossing between board firmware and offline code (different runtimes, different dependencies).
 
 ## Hardware
+
+### v2 (current, `Simplified/`)
+
+Adafruit Feather ESP32-S3 Reverse TFT (built-in screen, WiFi) on an Adalogger FeatherWing (microSD, PCF8523 RTC), CircuitPython 10.3.1. Details, pin map and the reasoning behind each choice: [`Simplified/HANDOFF.md`](Simplified/HANDOFF.md).
+
+- **Touch sensor:** a wire in the water on `D12`, read with `touchio`. A tongue (or finger) in the water raises the reading well above a slowly tracking baseline. Touching the outside of the 3D-printed resin bowl registers too, but much weaker.
+- **Water level:** a float in a chimney connected to the bowl; a Sharp GP2Y0A51SK0F IR distance sensor above it on `A5` (0.62 V empty to 1.16 V full in the current bowl).
+- **Contact LED** on `D9` (lit while touched; for video checks).
+- **WiFi:** joins the first configured network in range; serves the SD card at `http://hydrapurr.local/`, sets its clock from NTP, and sends a heartbeat to healthchecks.io every 15 min.
+- **Planned:** a carrier PCB (`FeederController/`) with a 12 V boost and MOSFET driver for a feeder; RFID later, if at all.
+
+### v1 (first prototype, `BoardCode/`)
 
 The device is built around an Adafruit RP2040 Feather running CircuitPython. Key peripherals (see `HardwareDocs/` for full schematic and reader Q&A):
 
@@ -31,9 +61,9 @@ The device is built around an Adafruit RP2040 Feather running CircuitPython. Key
 - **Feeder relay** on `board.D6` via an NPN transistor — `feeder_on()` energises the relay for `deployment_duration_ms`.
 - **OLED, BT module, NeoPixel, RTC, SD card** — wrapped behind component classes in `BoardCode/lib/components/`.
 
-## Runtime flow — licks, bouts, deployment
+## Runtime flow — licks, bouts, deployment (v1)
 
-How the device interprets contact-sensor samples and decides when to feed.
+How the v1 device (`BoardCode`) interprets contact-sensor samples and decides when to feed. v2 only records for now; see the note at the top.
 
 ### Definitions
 
@@ -196,7 +226,9 @@ Only the `process_sample` path emits a bout-closure marker row in `licks.dat`. T
 
 ## Data format
 
-### `licks.dat`
+**v2** writes hourly raw files (`raw/<date>/<hour>.csv`, every sample) and a daily events file (`events/<date>.csv`, one row per contact, status every 15 min, restarts). Columns: `Simplified/lib/RawRecorder.py` and `Simplified/lib/EventLog.py`; reading them: `ProcessLickData/library/hydrapurr_reader.py` and [`ProcessLickData/readme.md`](ProcessLickData/readme.md). The rest of this section is **v1**.
+
+### `licks.dat` (v1)
 
 CSV with columns (header auto-prepended by `MyStore`):
 
@@ -212,7 +244,7 @@ The device rotates `licks.dat` after `data_log_max_lines` lines, so a single rec
 
 ### `system.log`
 
-Comma-separated diagnostic log:
+Comma-separated diagnostic log (same format in v1 and v2; the component labels differ):
 
 - `time` — wall-clock timestamp.
 - `mono_ms` — monotonic time in ms since boot.
@@ -228,9 +260,9 @@ Comma-separated diagnostic log:
 
 - **`BoardCode`** runs on an Adafruit RP2040 Feather under CircuitPython and assumes the surrounding hardware (RFID reader, ADCs, OLED, relay, SD, BT module) is wired per the netlist in `HardwareDocs/`. You can't run it directly on a desktop without that hardware.
 - **Syncing code to the board.** Two options:
-  - `./sync2board` — repo-local script at the top of this folder. `rsync` from `BoardCode/` to the mounted CIRCUITPY drive (`/media/$USER/CIRCUITPY` by default; pass a path to override). Mirrors with `--delete`, excludes Python caches and editor metadata, runs `sync` afterwards.
+  - `./sync2board Simplified` (or `BoardCode`) — repo-local script at the top of this folder. `rsync` from the chosen folder to the mounted CIRCUITPY drive (`/media/$USER/CIRCUITPY` by default; `-d` for another path, `-n` dry run). Mirrors with `--delete` but never touches the board's `settings.toml`; excludes Python caches and editor metadata, runs `sync` afterwards. On v2, once WiFi has been used, the board does not auto-reload: press Reset (or send Ctrl-C) after syncing.
   - The standalone `DeviceSync` script at `/home/dieter/Dropbox/PythonRepos/DeviceSync` — bidirectional and supports more devices/projects.
-- **`ProcessLickData`** is desktop Python — use the `.venv` inside that folder. Entry point: `run_my_viz.py`.
+- **`ProcessLickData`** is desktop Python — use the `.venv` inside that folder. Entry points: `plot_hydrapurr_day.py` (v2) and `run_my_viz.py` (v1). Data lives in `ProcessLickData/data/v1_rp2040_transistor/` and `data/v2_esp32s3_touch/` (not in git).
 - **CircuitPython `lib/` convention.** CircuitPython auto-adds `/` and `/lib` to `sys.path` on boot, so any `.py` file or package directory directly under `lib/` is importable as a top-level module (`import adafruit_pcf8523`, `from components import MyADC`). Do **not** add `lib/__init__.py` — that turns `lib` into a package and breaks the standard CircuitPython import style. To get the same behaviour in PyCharm during desktop development, mark `lib/` as a Sources Root (Right-click → *Mark Directory as → Sources Root*).
 - The lick-processing logic is kept in sync between board and offline code: real-time detection lives in `BoardCode/lib/BoutDetection.py`; offline analysis of the resulting `licks.dat` lives in `ProcessLickData/analysis/BoutAnalyzer.py`. Both honour the same `Settings.py` parameters.
 
