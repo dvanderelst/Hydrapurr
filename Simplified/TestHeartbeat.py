@@ -86,11 +86,15 @@ class HeartbeatTest:
             return True
         self.show(0, 'joining WiFi...', YELLOW)
         self.screen.refresh_all()
-        try:
-            wifi.radio.connect(Settings.wifi_ssid, Settings.wifi_password,
-                               timeout=CONNECT_TIMEOUT_S)
-        except Exception as e:
-            print(f'WiFi join failed: {e!r}')
+        joined = None
+        for ssid, password in Settings.wifi_networks:   # first that works
+            try:
+                wifi.radio.connect(ssid, password, timeout=CONNECT_TIMEOUT_S)
+                joined = ssid
+                break
+            except Exception as e:
+                print(f'WiFi join {ssid} failed: {e!r}')
+        if joined is None:
             self.show(0, 'WiFi join failed', RED)
             self.screen.refresh_all()
             return False
@@ -98,7 +102,7 @@ class HeartbeatTest:
             wifi.radio.tx_power = Settings.wifi_tx_power_dbm
         except Exception:
             pass
-        print(f'joined {Settings.wifi_ssid}, ip {wifi.radio.ipv4_address}')
+        print(f'joined {joined}, ip {wifi.radio.ipv4_address}')
         return True
 
     def status_line(self, kind):
@@ -189,7 +193,7 @@ class HeartbeatTest:
         return ok, times, status
 
     def run(self):
-        if not Settings.wifi_ssid or not Settings.healthcheck_url:
+        if not Settings.wifi_networks or not Settings.healthcheck_url:
             for i, text in enumerate(('settings.toml:', 'WIFI_SSID,', 'WIFI_PASSWORD,',
                                       'HEALTHCHECK_URL', 'missing')):
                 self.show(i, text, RED)

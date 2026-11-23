@@ -64,13 +64,30 @@ status_water_window_ms = 10000   # its water value = mean over this long before 
 # The credentials are NOT in this file: the repo is public. They go in
 # settings.toml in the board's root (CIRCUITPY drive) and only there: no copy
 # on the computer, sync2board never touches it. Edit it on the board, with
-# these two lines:
-#   WIFI_SSID = "network name"
+# two lines per network, up to 5 networks (numbered 2-5 after the first):
+#   WIFI_SSID = "lab network"
 #   WIFI_PASSWORD = "password"
-# Don't use CircuitPython's own CIRCUITPY_WIFI_* names there: with those the
-# board joins WiFi by itself at every boot (see HANDOFF.md). None = not set.
-wifi_ssid = os.getenv("WIFI_SSID")
-wifi_password = os.getenv("WIFI_PASSWORD")
+#   WIFI_SSID_2 = "other network"     (WIFI_SSID2 works too)
+#   WIFI_PASSWORD_2 = "password"
+# At each join the board scans and tries the visible ones in this order (first
+# = preferred). Don't use CircuitPython's own CIRCUITPY_WIFI_* names there:
+# with those the board joins WiFi by itself at every boot (see HANDOFF.md).
+WIFI_MAX_NETWORKS = 5
+
+
+def _wifi_networks():
+    nets = []
+    for i in range(1, WIFI_MAX_NETWORKS + 1):
+        # WIFI_SSID_2 or WIFI_SSID2 (both spellings accepted)
+        for suffix in ([''] if i == 1 else [f'_{i}', f'{i}']):
+            ssid = os.getenv('WIFI_SSID' + suffix)
+            if ssid:
+                nets.append((ssid, os.getenv('WIFI_PASSWORD' + suffix) or ''))
+                break
+    return nets
+
+
+wifi_networks = _wifi_networks()   # [(ssid, password), ...], may be empty
 
 # --- Health check (healthchecks.io) --------------------------------------------
 # The board POSTs a short status line to this URL; healthchecks.io alerts when
@@ -115,6 +132,10 @@ heartbeat_interval_ms = 15 * 60 * 1000
 heartbeat_quiet_ms = 30000            # no contact for this long before sending
 heartbeat_max_delay_ms = 10 * 60 * 1000
 heartbeat_min_free_mb = 1024          # less free on the SD card = /fail (~2.5 days of raw)
+heartbeat_min_rate = 50               # rows/s since the last heartbeat (paused time not
+                                      # counted) below this = /fail `low_rate`; normal ~84
+heartbeat_alert_resets = ('WATCHDOG', 'BROWNOUT', 'PANIC')  # these reset reasons
+                                      # = /fail on the first heartbeat after the boot
 
 # --- Watchdog ---------------------------------------------------------------------
 # Resets the board when the loop stops feeding it (hang). Longer than the

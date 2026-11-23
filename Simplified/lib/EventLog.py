@@ -22,7 +22,7 @@ event (empty = not used):
     status      water_v          touch_baseline     touch_raw       contacts   (since 2026-11-17)
     water       mean_v           min_v              max_v           samples    (until 2026-11-17, every 10 s)
     shutdown    reason
-    wifi        joined/join_failed/lost   ip    rssi       (MainLoop, 2026-11-16)
+    wifi        joined/join_failed/lost   ip    rssi   ssid (MainLoop, 2026-11-16; ssid since 2026-11-23)
     heartbeat_failed  status      ms_taken                 (MainLoop, 2026-11-16)
     clock       ntp / ntp_failed   step_ms   rtt_ms   server   (RTC set from NTP)
     paused      download         path                       (fast download, FileServer)

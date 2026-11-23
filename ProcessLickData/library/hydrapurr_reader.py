@@ -58,7 +58,7 @@ EVENT_FIELDS = {
     "water": ["mean_v", "min_v", "max_v", "samples"],        # until 2026-11-17
     "status": ["water_v", "touch_baseline", "touch_raw", "contacts"],  # since then
     "shutdown": ["reason"],
-    "wifi": ["state", "ip", "rssi"],
+    "wifi": ["state", "ip", "rssi", "ssid"],
     "heartbeat_failed": ["status", "ms_taken"],
     "clock": ["state", "step_ms", "rtt_ms", "server"],
     "paused": ["why", "path"],

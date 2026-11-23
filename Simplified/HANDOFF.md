@@ -52,7 +52,7 @@ Firmware (runs at boot via `code.py`):
 | `code.py` | Mounts SD, runs `MainLoop.main_loop()`; **holding D2 at boot** runs `TestHeartbeat.run()` instead. Other test scripts are run by hand from Thonny. |
 | `MainLoop.py` | Recording version. The loop sits in `try/finally`; `shutdown()` closes the data file and `system.log`, unmounts SD and releases the display however the loop ends (exception, Ctrl-C, auto-reload on file save). Every 10 ms (fixed grid): read touch (→ live contact 0/1 against the tracking baseline) and one Sharp reading, hand both to `RawRecorder`. Full-screen TFT redraw once a second, but only after 3 s without touch contact (a redraw pauses sampling ~150 ms, so the screen freezes while the cat drinks). Contact LED on D9. Settings snapshot in `system.log` at startup (`wifi_password` shown as `<set>`). Status line in `system.log` every minute: rows, errors, `rate` (samples/s), `max_gap` (longest time between samples), `slowest_write`, file, touch, contacts, water. (2026-11-17) Also: WiFi join + NTP clock (UTC) at boot and daily, heartbeat every 15 min when quiet, file server polled between samples (fast-download pause), 15-min `status` event row, watchdog (60 s, fed before every blocking step), WiFi icon. Any end of the loop after WiFi use, and any unexpected error (WiFi or not; also a failed start-up), ends in `microcontroller.reset()` after 10 s, so the board records again instead of sitting at the REPL; Ctrl-C without WiFi still stops at the REPL. Split: `start_up()` returns the parts; rarely run code (`heartbeat_body`, `draw_screen`, `server_status`) in functions; the per-sample work stays inline (locals). system.log: no sync per line (warnings/errors still synced at once), no RAM copy. |
 | `Settings.py` | In the root (moved from `lib/` 2026-10-28), the one file to edit. All parameters, BoardCode names where the meaning is the same. Recording: `raw_log_interval_ms = 10`, `raw_log_sync_ms = 5000` (flush interval = max data lost on power cut). Touch thresholds are placeholders (+10 % on, +5 % off); they only affect the live `contact` column and the display. Bout/deployment settings are kept in a marked "not used" block. Home WiFi credentials are the exception: `Settings.py` reads them with `os.getenv` from `settings.toml` (see below). |
-| `settings.toml` | On the board only (CIRCUITPY root), edited there: lab WiFi credentials (`WIFI_SSID`, `WIFI_PASSWORD`) and `HEALTHCHECK_URL`. No copy on the computer or in git (repo is public); never print it. `sync2board` has `--filter='P settings.toml'`, so it never deletes it. Not CircuitPython's `CIRCUITPY_WIFI_*` names (the board would join by itself). |
+| `settings.toml` | On the board only (CIRCUITPY root), edited there: WiFi credentials (`WIFI_SSID`, `WIFI_PASSWORD`, more networks as `WIFI_SSID_2` ... `_5`, 2026-11-23) and `HEALTHCHECK_URL`. No copy on the computer or in git (repo is public); never print it. `sync2board` has `--filter='P settings.toml'`, so it never deletes it. Not CircuitPython's `CIRCUITPY_WIFI_*` names (the board would join by itself). |
 | `lib/Network.py` | (2026-11-16) Lab WiFi (station) + healthchecks.io heartbeat. `join()` at boot (blocks up to `wifi_connect_timeout_s`), re-join at most every `wifi_retry_ms`; `heartbeat(body, fail)` = one HTTPS POST to `HEALTHCHECK_URL` (or `/fail`), ~3.5-4 s. `used` = radio touched. No-op without `WIFI_SSID` or with `wifi_enabled = False`. Also `ntp_time()` (UDP, ints only; rejects replies that are not mode 4, unsynchronised or outside stratum 1-15) and the mDNS name `hydrapurr.local`. `join()` sets up the socket pool and mDNS also when the radio is already connected. |
 | `lib/TouchSensor.py` | `touchio` on D12 → 0/1. Baseline averaged at boot, then tracked (EMA, τ 30 s) only while untouched; hysteresis; contact > 5 s re-takes the baseline; big drops are followed at once. |
 | `lib/WaterSensor.py` | Sharp on A5 in volts (higher = more water). The recorder uses single reads (`read_volts`); the smoothed `update()` is for the bout version. |
@@ -279,7 +279,8 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
    files; use it to find licks and set the touch thresholds, and check that
    baseline tracking holds over hours.
 3. Characterise the float: Sharp voltage over the full water range and while
-   a cat drinks; set `min_water_extent_per_bout`.
+   a cat drinks; set `min_water_extent_per_bout`. (2026-11-23: range done,
+   0.62 V empty to 1.16 V full, see Log; with a cat still to do.)
 4. **Done 2026-10-30 (`lib/EventLog.py`), not yet run on the board.**
    Check on the board: rows appear, `contact` durations match the raw
    stream, no extra sampling gaps. Original plan: events file next to the
@@ -881,6 +882,66 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   handle for good. MySystemLog now re-opens the file after a failed write.
   Checked on the board: heartbeat ok, 84 rows/s, max_gap 159-170 ms, fast
   download 359 KB/s, `GET _mount.log` -> 403.
+
+- **2026-11-23** — **First test with water in the bowl** (the bowl had been
+  empty until now: all earlier touch values were the wire in air). Fill in
+  50 ml steps, values from the start page (settled, ~10 s after each pour):
+
+  | water | water_v | step |
+  | --- | --- | --- |
+  | empty | 0.623 | |
+  | wire just covered | 0.772 | |
+  | +50 ml | 0.853 | +0.081 |
+  | +100 ml | 0.927 | +0.074 |
+  | +150 ml | 1.024 | +0.097 |
+  | +200 ml (about full) | 1.157 | +0.133 |
+
+  Rises at every step, steps grow toward the top (1/d response); full is
+  well below the ~2.5 V peak at 2 cm, so the float stays far enough from
+  the Sharp (roughly 4-6 cm, not measured). Noise ±5 mV, so one reading
+  resolves a few ml. Touch: wire into water 25 650 -> 34 700 (+35 %),
+  counted as one contact, `rebaseline stuck` after 5 s; then the baseline
+  rises with the level (37 500 full) and the tracker follows, no false
+  contacts from the pours (a pour peaked at +7 %). Finger taps on the
+  water: 16 taps = 16 `contact` rows, 90-690 ms, all 65 535 (touchio's max)
+  on a baseline of ~37 800; a ~6 s hold gives one `stuck` and one `drop`,
+  baseline back to 37 909 within seconds. Water stays at 1.15-1.16 V during
+  taps. Next: the device goes to a colleague for a test with a cat; carrier
+  PCB on hold until then.
+- **2026-11-23** — Fast download made explicit, two new heartbeat problems.
+  Start page: red box "fast stops the recording ... Don't use it while a
+  cat may drink", link renamed "raw, fast (stops recording)" with a browser
+  confirm giving the expected minutes (size / 300 KB/s; a full day ~18 min,
+  measured speed gives ~15). Status line and screen during a pause:
+  "NOT RECORDING: paused ..." / red `NOT REC: download` (was yellow
+  `PAUSED: download`). Heartbeat `rate` is now rows per second of recording
+  time (fast-download pauses not counted, also a pause still running).
+  New problems (/fail): `low_rate` when that rate < `heartbeat_min_rate`
+  (50/s; normal ~84), judged only over >= 60 s; `reset_watchdog` /
+  `reset_brownout` / `reset_panic` (`heartbeat_alert_resets`) on the first
+  heartbeat after such a boot, so healthchecks.io goes down once and back
+  up at the next heartbeat. A pause itself still never alerts (capped at
+  20 min, heartbeats continue). Tested on the board with interval 2 min
+  and threshold 90: healthchecks.io showed `problems=low_rate` (82/s) and
+  went Down; `reset=SOFTWARE` (Ctrl-C reset) correctly not flagged. Not
+  tested: a real watchdog/brownout reset (CircuitPython should report
+  `ResetReason.WATCHDOG` for the ESP32's watchdog). Deploying note: after
+  WiFi use auto-reload is off, so `sync2board` needs a Ctrl-C (or Reset)
+  afterwards; `printf '\x03' > /dev/ttyACM0` works.
+
+- **2026-11-23** — Several WiFi networks. `settings.toml` may list up to 5:
+  `WIFI_SSID` / `WIFI_PASSWORD`, then `WIFI_SSID_2` / `WIFI_PASSWORD_2` ...
+  `_5` (`WIFI_SSID2` without the underscore works too: the user wrote it
+  that way first and the board saw only network 1). `Settings.wifi_networks`
+  = [(ssid, password)], list order = preference. `Network.join()` scans
+  (~2-3 s, only when more than one is listed) and tries the visible ones in
+  order, up to `wifi_connect_timeout_s` each, feeding the watchdog before
+  each try; a failed scan tries all. The `wifi` event row has the SSID as
+  4th field; the settings snapshot lists the SSIDs, never the passwords.
+  `TestHeartbeat.py` tries the list in order (no scan). Checked on the
+  board: two networks listed, only the second (lab) in range -> joined
+  it, no attempt on the first. Not yet seen: a join on the second
+  network after the first refuses (desktop stub test only).
 
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.

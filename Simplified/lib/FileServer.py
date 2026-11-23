@@ -50,6 +50,7 @@ from components.MySystemLog import info, warn
 SD_ROOT = "/sd"
 EAGAIN = 11
 ACCEPT_EVERY_MS = 50           # how often an idle server looks for a client
+FAST_BYTES_PER_S = 300 * 1024  # paused download speed, a bit under the measured ~360 KB/s
 CLIENT_TIMEOUT_MS = 10000      # a client that does nothing this long is dropped
 # Browsers open spare connections in advance and send nothing on them. With
 # one client at a time, such a connection held up the real request until the
@@ -99,7 +100,8 @@ def _listdir(path):
 PAGE_STYLE = ("<style>body{font-family:sans-serif;margin:16px;max-width:52em}"
               "td,th{padding:3px 14px 3px 0;text-align:left}"
               ".r{text-align:right}.note{color:#555;font-size:90%}"
-              ".st{padding:8px 12px;background:#eef6ee;border-radius:6px}</style>")
+              ".st{padding:8px 12px;background:#eef6ee;border-radius:6px}"
+              ".warn{padding:6px 12px;background:#fdecea;border-left:4px solid #c62828;font-size:90%}</style>")
 
 
 def _head(title):
@@ -450,12 +452,16 @@ class FileServer:
         yield (b"<p class='note'>Days and times are UTC (lab time in winter = UTC - 5 h). "
                b"<b>events</b>: one row per contact, a status row every 15 min (water, touch), restarts; "
                b"opens in Excel. <b>raw</b>: every sample (100 per second), for analysis "
-               b"in Python; a full day is about 250 MB and too long for Excel.</p>")
+               b"in Python; a full day is about 300 MB and too long for Excel.</p>")
         if allow:
-            yield (b"<p class='note'>Recording goes on while you download. "
-                   b"<b>fast</b> pauses recording for that download only (about 3 times "
-                   b"faster; the data of those minutes is missing); recording restarts by "
-                   b"itself when the download ends or breaks off.</p>")
+            yield (b"<p class='note'>Recording goes on while you download "
+                   b"(a full day of raw takes about 35 min).</p>"
+                   b"<p class='warn'><b>fast stops the recording</b> until that download "
+                   b"ends: about 3 times faster, but nothing (licks, water) is recorded "
+                   b"meanwhile. The board's screen shows NOT REC in red; recording restarts "
+                   b"by itself when the download ends or breaks off (after "
+                   + str(Settings.fileserver_max_pause_ms // 60000).encode() +
+                   b" min at the latest). Don't use it while a cat may drink.</p>")
         else:
             yield b"<p class='note'>Recording goes on while you download.</p>"
         yield b"<table><tr><th>day (UTC)</th><th>events</th><th class='r'></th><th>raw</th><th class='r'></th>"
@@ -481,7 +487,10 @@ class FileServer:
                 row += (f"<td><a href='/day/{day}/raw.csv'>raw</a></td>"
                         f"<td class='r'>{_human(raw_total)} ({hours} h)</td>")
                 if allow:
-                    row += f"<td><a href='/day/{day}/raw.csv?pause=1'>raw, fast</a></td>"
+                    mins = raw_total // (FAST_BYTES_PER_S * 60) + 1
+                    row += (f"<td><a href='/day/{day}/raw.csv?pause=1' onclick=\"return "
+                            f"confirm('This STOPS RECORDING for about {mins} min, until the "
+                            f"download ends. Continue?')\">raw, fast (stops recording)</a></td>")
             else:
                 row += "<td></td><td></td>" + ("<td></td>" if allow else "")
             yield (row + "</tr>").encode()

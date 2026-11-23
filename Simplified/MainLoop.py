@@ -74,8 +74,10 @@ def settings_items():
         value = getattr(Settings, name)
         if callable(value) or type(value).__name__ == 'module':
             continue
-        if name in ('wifi_password', 'healthcheck_url') and value:
+        if name == 'healthcheck_url' and value:
             value = '<set>'      # from settings.toml; keep it out of the log
+        elif name == 'wifi_networks':
+            value = ' | '.join(ssid for ssid, _ in value) or None   # no passwords
         yield name, value
 
 
@@ -308,7 +310,7 @@ def start_up(sd_ok):
 
 def log_wifi(events, t, net):
     if net.connected:
-        events.log(t, 'wifi', 'joined', net.ip(), net.rssi())
+        events.log(t, 'wifi', 'joined', net.ip(), net.rssi(), net.ssid)
     else:
         events.log(t, 'wifi', 'join_failed')
 
@@ -327,9 +329,14 @@ def log_contact(events, t, start_ms, peak, baseline, water_v):
 
 # --- rarely run parts of the loop ------------------------------------------------
 
-def heartbeat_body(t, s, recorder, events, touch, net, server, water_v, contacts):
+RATE_CHECK_MIN_MS = 60000      # low_rate only judged over this much recording time
+
+
+def heartbeat_body(t, s, recorder, events, touch, net, server, water_v, contacts,
+                   paused_ms):
     """Status line for the heartbeat and the list of problems (/fail when
-    not empty). s holds the heartbeat bookkeeping (HeartbeatState)."""
+    not empty). s holds the heartbeat bookkeeping (HeartbeatState);
+    paused_ms = time paused for fast downloads since the last heartbeat."""
     errors = recorder.errors + events.errors
     free_mb = sd_free_mb()
     problems = []
@@ -343,8 +350,14 @@ def heartbeat_body(t, s, recorder, events, touch, net, server, water_v, contacts
         problems.append('touch')
     if free_mb is not None and free_mb < Settings.heartbeat_min_free_mb:
         problems.append('sd_low')
-    span_s = max(1, (t - s.last_ms) // 1000)
-    rate = (recorder.rows_written - s.rows) // span_s
+    # Rows per second of recording time: a fast-download pause is not counted.
+    rec_ms = t - s.last_ms - paused_ms
+    rate = (recorder.rows_written - s.rows) * 1000 // max(1, rec_ms)
+    if (recorder.enabled and rec_ms >= RATE_CHECK_MIN_MS
+            and rate < Settings.heartbeat_min_rate):
+        problems.append('low_rate')
+    if not s.reset_reported and s.reset in Settings.heartbeat_alert_resets:
+        problems.append('reset_' + s.reset.lower())
     stamp = utc_stamp().replace(' ', 'T') + 'Z' if s.rtc_ok else 'unset'
     ntp_age = 'never' if s.last_ntp_ms is None else f'{(t - s.last_ntp_ms) // 1000}s'
     body = (f'problems={",".join(problems) or "none"} t={stamp} ntp_age={ntp_age} '
@@ -373,7 +386,9 @@ class HeartbeatState:
         self.contacts = 0            # contacts at the last one
         self.max_gap_ms = 0          # longest gap between samples since then
         self.last_took_ms = 0        # how long the previous one blocked
-        self.paused_total_ms = 0     # time paused since boot
+        self.paused_total_ms = 0     # time paused since boot (ended pauses)
+        self.paused_at_last = 0      # paused time since boot at the last one
+        self.reset_reported = False  # the boot's reset reason went out
         self.rtc_ok = rtc_ok
         self.last_ntp_ms = last_ntp_ms
         self.reset = reasons[0].split('.')[-1]
@@ -395,7 +410,7 @@ def draw_screen(screen, recorder, touch, contacts, water_v, wifi):
 
 def server_status(paused, recorder, t, boot_ms, contacts, water_v, touch):
     """One line for the start page."""
-    state = ('<b>PAUSED</b> for a fast download' if paused
+    state = ('<b>NOT RECORDING</b>: paused for a fast download' if paused
              else 'Recording' if recorder.enabled else '<b>NOT RECORDING</b>')
     return (f'{state}. Up {(t - boot_ms) // 60000} min, '
             f'{recorder.rows_written} rows, {contacts} contacts, '
@@ -477,7 +492,7 @@ def main_loop(level=INFO, sd_ok=True):
                     info(f'[Main Loop] recording paused for download {server.pause_what}')
                     if led is not None:
                         led.value = False
-                    screen.set_line(0, 'PAUSED: download', YELLOW, now=True)
+                    screen.set_line(0, 'NOT REC: download', RED, now=True)
                     t = now_ms()
                 elif paused and not want_pause:
                     paused = False
@@ -576,7 +591,7 @@ def main_loop(level=INFO, sd_ok=True):
                     if not up and quiet and net.join_due(t):
                         feed_watchdog()
                         last_sample_ms = None    # the join's gap is expected
-                        wifi_up = net.join()
+                        wifi_up = net.join(feed_watchdog)
                         log_wifi(events, now_ms(), net)
                         if wifi_up and Settings.fileserver_enabled:
                             server = FileServer(net.pool, net.ip(), flusher(recorder, events))
@@ -604,8 +619,10 @@ def main_loop(level=INFO, sd_ok=True):
                         and ((quiet and not busy)
                              or t - hb.due_ms >= Settings.heartbeat_max_delay_ms)):
                     feed_watchdog()
+                    paused_now = hb.paused_total_ms + (t - pause_start_ms if paused else 0)
                     body, problems, errors = heartbeat_body(t, hb, recorder, events, touch,
-                                                            net, server, water_v, contacts)
+                                                            net, server, water_v, contacts,
+                                                            paused_now - hb.paused_at_last)
                     ok, took, status = net.heartbeat(body, fail=bool(problems))
                     if ok:
                         info(f'[Heartbeat] sent in {took} ms: {body}')
@@ -615,6 +632,8 @@ def main_loop(level=INFO, sd_ok=True):
                         hb.errors = errors
                         hb.contacts = contacts
                         hb.max_gap_ms = 0
+                        hb.paused_at_last = paused_now
+                        hb.reset_reported = True
                     else:
                         warn(f'[Heartbeat] failed after {took} ms: {status}')
                         events.log(now_ms(), 'heartbeat_failed', status, took)

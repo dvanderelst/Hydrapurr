@@ -2,7 +2,10 @@
 Network.py - lab WiFi (station mode) and the healthchecks.io heartbeat
 
 The recorder joins the WiFi at boot (WIFI_SSID / WIFI_PASSWORD in
-settings.toml) and stays connected. A lost connection is re-joined, at most
+settings.toml, plus WIFI_SSID_2 ... _5 for more networks: Settings.wifi_networks)
+and stays connected. A join scans first and tries the listed networks that are
+in range, in the listed order (one attempt, up to wifi_connect_timeout_s, per
+visible network; one not in range costs nothing). A lost connection is re-joined, at most
 every wifi_retry_ms and only when the loop allows it (joining blocks up to
 wifi_connect_timeout_s, so the loop asks only when the wire is quiet).
 
@@ -51,7 +54,8 @@ def split_url(url):
 
 class Network:
     def __init__(self):
-        self.enabled = bool(Settings.wifi_enabled and Settings.wifi_ssid)
+        self.enabled = bool(Settings.wifi_enabled and Settings.wifi_networks)
+        self.ssid = None           # network joined last
         self.used = False          # radio touched: avoid soft reboots
         self.pool = None
         self.context = None
@@ -90,9 +94,10 @@ class Network:
         """True when not connected and a (blocking) join may be tried."""
         return self.enabled and not self.connected and t_ms >= self._next_join_ms
 
-    def join(self):
-        """Join the WiFi. Blocks up to wifi_connect_timeout_s. Returns True
-        when connected."""
+    def join(self, feed=None):
+        """Join the WiFi. Blocks ~2 s (scan) plus up to wifi_connect_timeout_s
+        per network tried; feed() (the watchdog) is called before each try.
+        Returns True when connected."""
         if not self.enabled:
             return False
         import wifi
@@ -103,12 +108,11 @@ class Network:
         # Already connected (e.g. a soft reboot after a crash): still set up
         # the socket pool and mDNS below, or nothing network-side works.
         if not wifi.radio.connected:
-            try:
-                wifi.radio.connect(Settings.wifi_ssid, Settings.wifi_password,
-                                   timeout=Settings.wifi_connect_timeout_s)
-            except Exception as e:
-                warn(f'[Network] WiFi join failed: {e!r}')
+            if not self._connect(wifi, feed):
                 return False
+        else:
+            ap = wifi.radio.ap_info
+            self.ssid = ap.ssid if ap is not None else self.ssid
         try:
             wifi.radio.tx_power = Settings.wifi_tx_power_dbm
         except Exception as e:
@@ -125,8 +129,48 @@ class Network:
                 self.mdns = server
             except Exception as e:
                 warn(f'[Network] mDNS name not set: {e!r}')
-        info(f'[Network] joined {Settings.wifi_ssid}, ip {self.ip()}, rssi {self.rssi()}')
+        info(f'[Network] joined {self.ssid}, ip {self.ip()}, rssi {self.rssi()}')
         return True
+
+    def visible_ssids(self, wifi):
+        """SSIDs in range (one scan, ~2 s). None when the scan fails."""
+        try:
+            seen = set()
+            for net in wifi.radio.start_scanning_networks():
+                seen.add(net.ssid)
+            return seen
+        except Exception as e:
+            warn(f'[Network] WiFi scan failed: {e!r}')
+            return None
+        finally:
+            try:
+                wifi.radio.stop_scanning_networks()
+            except Exception:
+                pass
+
+    def _connect(self, wifi, feed):
+        """Try the listed networks that are in range, in the listed order.
+        A failed scan: try them all (the scan is only a shortcut)."""
+        nets = Settings.wifi_networks
+        seen = self.visible_ssids(wifi) if len(nets) > 1 else None
+        if seen is not None:
+            tried = [n for n in nets if n[0] in seen]
+            if not tried:
+                warn(f'[Network] none of the {len(nets)} WiFi networks in range')
+                return False
+        else:
+            tried = nets
+        for ssid, password in tried:
+            if feed is not None:
+                feed()
+            try:
+                wifi.radio.connect(ssid, password,
+                                   timeout=Settings.wifi_connect_timeout_s)
+                self.ssid = ssid
+                return True
+            except Exception as e:
+                warn(f'[Network] WiFi join {ssid} failed: {e!r}')
+        return False
 
     # --- clock (NTP) ----------------------------------------------------------
 
