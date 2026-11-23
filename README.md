@@ -1,47 +1,28 @@
 # HydraPurr
 
-> **Running the current test device?** See the tester guide:
+> **Running the test device?** See the tester guide:
 > [`Simplified/README.md`](Simplified/README.md) (set-up, the screen, getting the data).
 
-A CircuitPython-based device that monitors cat drinking behaviour at a water bowl. The goal: detect licks and drinking bouts, and automatically dispense food when a cat has completed enough bouts.
+A CircuitPython device that monitors cat drinking at a water bowl. It records every touch on a wire in the water and the water level, 100 times a second, so licks and drinking bouts can be found from the data. The longer-term goal is to dispense food once a cat has completed enough drinking bouts.
 
-There are two hardware generations in this repo:
-
-| | **v2 — current** (`Simplified/`) | **v1 — first prototype** (`BoardCode/`) |
-| --- | --- | --- |
-| board | Adafruit Feather ESP32-S3 Reverse TFT + Adalogger FeatherWing (SD, RTC) | Adafruit RP2040 Feather |
-| lick sensor | bare wire in the water, capacitive (`touchio`) | transistor/optocoupler contact circuit on an ADC |
-| water level | float in a chimney + Sharp IR distance sensor | ADC |
-| what it does | **records** touch and water 100×/s to SD; licks and bouts found offline | detects licks and bouts live, feeds via relay |
-| cat ID / feeder | not yet (feeder driver on the planned carrier PCB) | WL-134 RFID, relay feeder |
-| data out | WiFi: web page with downloads, health-check heartbeat | Bluetooth |
-| in use | Oct 2026 – | Dec 2025 – May 2026 |
-
-The sections from *Runtime flow* down describe **v1** (`BoardCode`). The bout logic will come back to v2 (`Simplified/lib/BoutDetection.py` is the same code), but v2 does not run it yet.
+(An earlier prototype, on an RP2040 board with a transistor lick circuit, RFID and live bout detection, is documented in [`BoardCode/README.md`](BoardCode/README.md).)
 
 ## Project layout
 
 ```
 HydraPurr/
-├── Simplified/           v2 firmware (current): recorder. README.md = tester guide,
+├── Simplified/           Firmware of the device. README.md = tester guide,
 │                         HANDOFF.md = development notes and log.
-├── FeederController/     v2 carrier PCB (KiCad): stack, feeder driver, connectors.
-├── BoardCode/            v1 firmware (RP2040, live bout detection + feeding).
-│   └── lib/              Auto-loaded by CircuitPython (top of sys.path).
-├── ProcessLickData/      Offline analysis: v2 reader/fetcher/plots, v1 licks.dat analysis.
-├── CircuitSimulation/    LTspice/ngspice study of the v1 transistor lick circuit.
-├── BluetoothDownloader/  v1 prototype BT-based data downloader.
-├── HardwareDocs/         WL-134 RFID reader docs (PDFs) + v1 board netlist.
-├── sync2board            Push Simplified/ or BoardCode/ to a connected board.
-├── todo.md               Open / deferred / done items (mostly v1).
+├── ProcessLickData/      Offline: fetch data from the board, read it, plot a day.
+├── FeederController/     Carrier PCB (KiCad): board stack, feeder driver, connectors.
+├── sync2board            Push the firmware to a connected board.
+├── BoardCode/            Earlier prototype (see its README).
+├── CircuitSimulation/    Study of the earlier prototype's lick circuit.
+├── BluetoothDownloader/, HardwareDocs/, todo.md   Earlier prototype.
 └── README.md             This file.
 ```
 
-`BoardCode` and `ProcessLickData` are deliberately separate PyCharm projects to avoid refactoring tooling crossing between board firmware and offline code (different runtimes, different dependencies).
-
 ## Hardware
-
-### v2 (current, `Simplified/`)
 
 Adafruit Feather ESP32-S3 Reverse TFT (built-in screen, WiFi) on an Adalogger FeatherWing (microSD, PCF8523 RTC), CircuitPython 10.3.1. Details, pin map and the reasoning behind each choice: [`Simplified/HANDOFF.md`](Simplified/HANDOFF.md).
 
@@ -49,236 +30,19 @@ Adafruit Feather ESP32-S3 Reverse TFT (built-in screen, WiFi) on an Adalogger Fe
 - **Water level:** a float in a chimney connected to the bowl; a Sharp GP2Y0A51SK0F IR distance sensor above it on `A5` (0.62 V empty to 1.16 V full in the current bowl).
 - **Contact LED** on `D9` (lit while touched; for video checks).
 - **WiFi:** joins the first configured network in range; serves the SD card at `http://hydrapurr.local/`, sets its clock from NTP, and sends a heartbeat to healthchecks.io every 15 min.
-- **Planned:** a carrier PCB (`FeederController/`) with a 12 V boost and MOSFET driver for a feeder; RFID later, if at all.
+- **Planned:** a carrier PCB (`FeederController/`) with a 12 V boost and MOSFET driver for a feeder; bout detection and feeding back on the board (the code is in `Simplified/lib/BoutDetection.py`).
 
-### v1 (first prototype, `BoardCode/`)
+## Data
 
-The device is built around an Adafruit RP2040 Feather running CircuitPython. Key peripherals (see `HardwareDocs/` for full schematic and reader Q&A):
-
-- **WL-134 RFID reader** on UART (`board.D9` rx). Reads pet implant tags at 134.2 kHz. The reader has a "one shot per reset" model (no time-based dedup in firmware), so we pulse its RST pin at ~3 Hz and immediately after each successful read to keep it scanning. Polarity is inverted in hardware: the Pico drives `board.D11` HIGH through a transistor that pulls the reader's RST line to GND, so software writing `True` means "assert reset". This also resolves the 5 V vs 3.3 V mismatch noted in the Q&A doc.
-- **Contact sensor** read via ADC channel 1 — a voltage signal where contact pulls the reading below `lick_threshold` (2.0 V).
-- **Water-level sensor** read via ADC channel 0 — used to confirm real drinking via voltage swing during a bout.
-- **Feeder relay** on `board.D6` via an NPN transistor — `feeder_on()` energises the relay for `deployment_duration_ms`.
-- **OLED, BT module, NeoPixel, RTC, SD card** — wrapped behind component classes in `BoardCode/lib/components/`.
-
-## Runtime flow — licks, bouts, deployment (v1)
-
-How the v1 device (`BoardCode`) interprets contact-sensor samples and decides when to feed. v2 only records for now; see the note at the top.
-
-### Definitions
-
-- **Lick**: a debounced contact event whose duration falls inside `[min_lick_ms, max_lick_ms]` (default 50–150 ms). Anything shorter or longer is discarded as noise.
-- **Bout**: a run of valid licks where consecutive licks are separated by less than `max_bout_gap_ms` (default 10 s — roughly one visit to the bowl). A bout *counts* only if it contains at least `min_licks_per_bout` licks (default 3) and (optionally) the water-level swing during the bout exceeds `min_water_extent_per_bout` (default 0.013 V).
-- **Deployment**: triggering the feeder relay for `deployment_duration_ms` (default 2 s). Fires when an *attributable* cat's `bout_count` reaches `deployment_bout_count` (default 5), then resets that cat's counts.
-
-### Key parameters
-
-| Parameter                       | Default          | Defined in           |
-| ------------------------------- | ---------------- | -------------------- |
-| `min_lick_ms` / `max_lick_ms`   | 50 / 150 ms      | `Settings.py`        |
-| `min_licks_per_bout`            | 3                | `Settings.py`        |
-| `max_bout_gap_ms`               | 10000 (10 s)     | `Settings.py`        |
-| `min_water_extent_per_bout`     | 0.013 V          | `Settings.py`        |
-| `cat_timeout_ms`                | 2000 ms          | `Settings.py`        |
-| `deployment_bout_count`         | 5                | `Settings.py`        |
-| `wait_for_bout_close`           | `True`           | `Settings.py`        |
-| `deployment_duration_ms`        | 2000 ms          | `Settings.py`        |
-| `debounce_ms`                   | 5 ms             | `Settings.py`        |
-| RFID refresh                    | 3 Hz (~333 ms)   | `Settings.py`        |
-| `rfid_enabled`                  | `True`           | `Settings.py`        |
-| `single_cat_name`               | `'henk'`         | `Settings.py`        |
-
-### Single-cat mode
-
-When `rfid_enabled = False`, the device skips RFID hardware init and pins the active cat to `single_cat_name` for the entire session. All licks attribute to that one cat, the cat-switch trigger never fires, and the active-cat trigger handles all deployments. Use this mode for single-cat households or while validating the rest of the pipeline before trusting the RFID layer. The cat-attribution diagrams below still describe the multi-cat path; in single-cat mode the `set_active_cat` call is made once at startup and never again.
-
-### Logic walkthrough
-
-#### How are licks detected?
-
-The contact sensor is read via ADC: voltage below `lick_threshold` (2.0 V) means the cat is touching the sensor. Each main-loop iteration, `LickSensor.update` reads the ADC, converts to a binary state (1 = contact, 0 = no contact), and feeds it to the active cat's `BoutTracker.process_sample`.
-
-The tracker debounces the input over `debounce_ms` (5 ms) so brief electrical noise can't fake a transition. On a clean falling edge (1 → 0) the tracker measures the contact duration:
-
-- Below `min_lick_ms` (50 ms): too brief — discarded as noise.
-- Above `max_lick_ms` (150 ms): too long — likely the cat resting on the sensor or a stuck signal, discarded.
-- Between the two: counted as a valid lick. `lick_count` increments and the lick (with current water level) is appended to the current bout. A row is written to `licks.dat`.
-
-#### How are bouts counted?
-
-A bout is a sequence of valid licks where consecutive licks are separated by less than `max_bout_gap_ms` (10 s — corresponds to one visit to the bowl). The state machine in `BoutTracker`:
-
-- The first rising edge (0 → 1) of a drinking session sets `current_bout_start_ms`. The tracker is now "in a bout".
-- Each subsequent valid lick adds to the running list. `lick_count` is the running count within the current bout.
-- A bout closes when state stays at 0 for ≥ `max_bout_gap_ms`. At close, the bout is *kept* (and `bout_count` increments) only if both:
-  - `lick_count ≥ min_licks_per_bout` (default 3), and
-  - water swing during the bout (`water_extent` = max − min) > `min_water_extent_per_bout` (default 0.013 V) — confirms real drinking caused water-level fluctuation, not just a paw resting on the sensor.
-
-There are four paths that can finalise a bout (see *Bout-closure paths* below). All four honour the same eligibility check.
-
-#### When does deployment happen?
-
-Deployment fires the feeder relay (`HydraPurr.feeder_on()`) for `deployment_duration_ms` (2 s), then resets the cat's lick and bout counters. This is the food reward.
-
-Each iteration evaluates two trigger conditions in order:
-
-1. **Cat-switch trigger** — runs only on iterations where the active cat just changed. If the *departing* cat is known and their `bout_count ≥ deployment_bout_count` (default 5), deployment fires for them. This catches the case where `set_active_cat` just finalised their bout via `end_bout` and pushed them over threshold.
-2. **Active-cat trigger** — runs every iteration. If the *current* cat is known and their `bout_count ≥ deployment_bout_count`, deployment fires for them. This catches the case where the gap-close inside `process_sample` (or `close_if_stale` inside `set_active_cat` when the cat returned) just pushed the current cat over threshold.
-
-Both triggers require a *known* cat. The `unknown` tracker accumulates misattributed counts during RFID dropouts but is never feeder-eligible — feeding for `unknown` would be unfair across cats and would let licks during RFID outages indirectly trigger rewards.
-
-Deployment is blocking — the main loop sleeps for `deployment_duration_ms` while food dispenses, so no licks or RFID reads happen during that window. Intentional.
-
-#### Wait-for-bout-close vs. no-wait deploy
-
-`wait_for_bout_close` (default `True`) controls *when* within a drinking session the feeder fires:
-
-- **`True` (default)** — `bout_count` only increments when a bout closes (gap-timeout, cat switch, or stale-on-return). The active-cat trigger therefore fires after the N-th bout closes — typically `max_bout_gap_ms` of silence after the last lick — and the full water-extent gate has already been evaluated over the completed bout.
-- **`False` (no-wait)** — on each new valid lick, if the cat has already completed N-1 bouts AND the current in-progress bout has reached `min_licks_per_bout` AND the running `water_extent` clears `min_water_extent_per_bout`, the bout is force-closed (`BoutTracker.try_finalize_in_progress`) and `bout_count` bumps to N. The active-cat trigger then fires on the same iteration. Trades reward latency for the loss of the gap-close confirmation — useful when faster feedback matters more than precise bout boundaries.
-
-The cat-switch trigger is unaffected by this flag: `set_active_cat → end_bout` already closes mid-bout on departure, so cat-switch deployment timing is identical in both modes.
-
-### Per-iteration flow (MainLoop)
-
-```mermaid
-flowchart TD
-    Start([Main loop tick]) --> Poll[Poll RFID with stickiness<br/>cat_timeout_ms = 2000 ms]
-    Poll --> CatChanged{New cat differs from<br/>previous active?}
-    CatChanged -->|No| ReadLick
-    CatChanged -->|Yes| SetActive[set_active_cat<br/>may finalise departing<br/>cat's bout via end_bout]
-    SetActive --> SwitchDeploy{Cat-switch trigger:<br/>departing cat is known<br/>AND its bout_count ≥ 5?}
-    SwitchDeploy -->|Yes| Feed1[Fire feeder for DEPARTING cat<br/>reset that cat's counts]
-    SwitchDeploy -->|No| ReadLick
-    Feed1 --> ReadLick[Read lick ADC]
-    ReadLick --> Process[update → process_sample<br/>routed to CURRENT cat's tracker]
-    Process --> EarlyDeploy{wait_for_bout_close = False<br/>AND lick_added<br/>AND current cat known<br/>AND bout_count == N-1?}
-    EarlyDeploy -->|Yes| TryFinalize[try_finalize_in_progress<br/>finalises if water_extent gate passes<br/>bumps bout_count to N]
-    TryFinalize --> ActiveDeploy
-    EarlyDeploy -->|No| ActiveDeploy{Active-cat trigger:<br/>current cat is known<br/>AND its bout_count ≥ 5?}
-    ActiveDeploy -->|Yes| Feed2[Fire feeder for CURRENT cat<br/>reset that cat's counts]
-    ActiveDeploy -->|No| Screen[Update screen if changed]
-    Feed2 --> Screen
-    Screen --> Start
-```
-
-The cat-switch trigger evaluates only the *departing* cat (`switched_from`); the active-cat trigger evaluates only the *current* cat. Both gate against `unknown`. The two never fire for the same cat in the same iteration.
-
-The RFID layer (`TagReader.poll_active`) returns the *last seen* cat within `cat_timeout_ms`. If no tag has been read for that long, it returns `None` and the cat resolves to `"unknown"`.
-
-### Detection (BoutTracker.process_sample)
-
-Each tracker is per-cat. Samples are routed only to the active cat's tracker; other trackers freeze until activated.
-
-```mermaid
-flowchart TD
-    Start([process_sample<br/>binary_state, ts, water]) --> Debounce[Debounce<br/>→ previous, current, duration]
-    Debounce --> Falling{Falling edge?<br/>1 → 0}
-    Falling -->|Yes| EndLick[last_lick_end_ms = ts]
-    EndLick --> Validate{Duration in<br/>50..150 ms?}
-    Validate -->|Yes| Lick[lick_count++<br/>track lick + water]
-    Validate -->|No| Rising
-    Lick --> Rising
-    Falling -->|No| Rising{Rising edge?<br/>0 → 1}
-    Rising -->|Yes| StartBout[current_bout_start_ms = ts<br/>if not already set]
-    Rising -->|No| GapCheck
-    StartBout --> GapCheck{Bout in progress AND<br/>state = 0 AND<br/>gap since last activity ≥<br/>max_bout_gap_ms?}
-    GapCheck -->|Yes| Finalize{lick_count ≥<br/>min_licks_per_bout?}
-    Finalize -->|Yes| FinalizeBout[Finalise bout<br/>bout_count++]
-    Finalize -->|No| ResetTrack
-    FinalizeBout --> ResetTrack[Reset bout tracking<br/>lick_count = 0]
-    GapCheck -->|No| End
-    ResetTrack --> End([Return])
-```
-
-### Attribution (BoutManager.set_active_cat)
-
-Runs every time the RFID-detected cat changes.
-
-```mermaid
-flowchart TD
-    Start([set_active_cat<br/>new_cat]) --> Same{new_cat ==<br/>active_cat?}
-    Same -->|Yes| Noop([No-op])
-    Same -->|No| ToKnown{new_cat ≠ 'unknown'<br/>AND previous tracker exists?}
-    ToKnown -->|Yes| EndPrev[end_bout on previous tracker<br/>finalises if eligible]
-    ToKnown -->|No| Resume
-    EndPrev --> Resume{New tracker has stale<br/>in-progress bout?<br/>gap ≥ max_bout_gap_ms}
-    Resume -->|Yes| CloseStale[close_if_stale<br/>finalises using last_lick_end_ms<br/>as end time, not now]
-    Resume -->|No| Activate
-    CloseStale --> Activate([active_cat = new_cat])
-```
-
-Three rules from this:
-
-1. Switching **A → unknown** does **not** end A's bout. The dropout is treated as a transient RFID loss; A's state is preserved for resumption.
-2. Switching **A → B** (both known) ends A's bout normally.
-3. Switching **anything → known** runs `close_if_stale` on the new active cat's tracker — so a returning cat's pre-absence bout gets closed with a duration based on actual drinking, not on the absence.
-
-### Bout-closure paths
-
-| Path                         | Triggered when                                                                                            | End-time used         |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------- |
-| `process_sample`             | Active cat is silent for ≥ `max_bout_gap_ms`                                                              | Current sample time   |
-| `end_bout`                   | `set_active_cat` from any cat to a *known* cat                                                            | Switch time           |
-| `close_if_stale`             | `set_active_cat` into a tracker with a stale ongoing bout                                                 | `last_lick_end_ms`    |
-| `try_finalize_in_progress`   | No-wait deploy mode: in-progress bout reaches `min_licks_per_bout` while `bout_count == N-1`              | Current sample time   |
-
-Only the `process_sample` path emits a bout-closure marker row in `licks.dat`. The other three paths finalise silently — the offline analyzer reconstructs bouts from `lick == 1` resets, so this is fine.
-
-## Data format
-
-**v2** writes hourly raw files (`raw/<date>/<hour>.csv`, every sample) and a daily events file (`events/<date>.csv`, one row per contact, status every 15 min, restarts). Columns: `Simplified/lib/RawRecorder.py` and `Simplified/lib/EventLog.py`; reading them: `ProcessLickData/library/hydrapurr_reader.py` and [`ProcessLickData/readme.md`](ProcessLickData/readme.md). The rest of this section is **v1**.
-
-### `licks.dat` (v1)
-
-CSV with columns (header auto-prepended by `MyStore`):
-
-- `time` — wall-clock timestamp of the event.
-- `mono_ms` — monotonic time in ms since boot at the event.
-- `cat_name` — detected cat name from the RFID reader (may be `"unknown"`).
-- `lick` — running count of valid licks within the current bout. Resets to 1 at the start of each new bout. On a bout-closure marker row, holds the total lick count of the just-closed bout.
-- `bout` — cumulative bout count for the active cat at that moment.
-- `water` — water level (V) sampled while in contact with the sensor.
-- `duration_ms` — for a lick row, the contact duration; for a bout-closure marker, the silent gap that triggered the close. Lick rows have `min_lick_ms ≤ duration_ms ≤ max_lick_ms`; rows outside that window are bout-closure markers.
-
-The device rotates `licks.dat` after `data_log_max_lines` lines, so a single recording may span multiple files in the same data folder.
-
-### `system.log`
-
-Comma-separated diagnostic log (same format in v1 and v2; the component labels differ):
-
-- `time` — wall-clock timestamp.
-- `mono_ms` — monotonic time in ms since boot.
-- `level` — log level (`INFO`, `WARN`, `ERROR`, `DEBUG`).
-- `message` — free-form text, typically prefixed with a bracketed component label like `[Main Loop]`, `[RFID]`, `[HydraPurr]`, or `[BoutTracker]`. The offline reader (`ProcessLickData/library/data_reader.read_system_log`) splits this prefix out into a derived `source` column. Notable lines include cat-switch events, per-state summaries (`unknown: state=1 licks=0 bouts=0`), per-lick durations, "Last bout: …" summaries, "Deployment bout count N reached, for X" events, and "bout dropped" rejection diagnostics.
-
-### Water-level vocabulary
-
-- `delta` — `end_water − start_water`. Negative means voltage dropped, which means the sensor moved further from the water (water level fell, i.e. water was consumed).
-- `extent` — `max(water) − min(water)` over the bout. Always positive — the total voltage swing, direction-agnostic. Used to filter out paw-touches: real drinking causes the water-level voltage to fluctuate.
+The board writes hourly raw files (`raw/<date>/<hour>.csv`, every sample: touch, baseline, contact, water) and a daily events file (`events/<date>.csv`: one row per contact, a status row every 15 min, restarts, settings) to its SD card, plus `system.log`. Columns: `Simplified/lib/RawRecorder.py` and `Simplified/lib/EventLog.py`. Reading, fetching and plotting: [`ProcessLickData/readme.md`](ProcessLickData/readme.md).
 
 ## Development
 
-- **`BoardCode`** runs on an Adafruit RP2040 Feather under CircuitPython and assumes the surrounding hardware (RFID reader, ADCs, OLED, relay, SD, BT module) is wired per the netlist in `HardwareDocs/`. You can't run it directly on a desktop without that hardware.
-- **Syncing code to the board.** Two options:
-  - `./sync2board Simplified` (or `BoardCode`) — repo-local script at the top of this folder. `rsync` from the chosen folder to the mounted CIRCUITPY drive (`/media/$USER/CIRCUITPY` by default; `-d` for another path, `-n` dry run). Mirrors with `--delete` but never touches the board's `settings.toml`; excludes Python caches and editor metadata, runs `sync` afterwards. On v2, once WiFi has been used, the board does not auto-reload: press Reset (or send Ctrl-C) after syncing.
-  - The standalone `DeviceSync` script at `/home/dieter/Dropbox/PythonRepos/DeviceSync` — bidirectional and supports more devices/projects.
-- **`ProcessLickData`** is desktop Python — use the `.venv` inside that folder. Entry points: `plot_hydrapurr_day.py` (v2) and `run_my_viz.py` (v1). Data lives in `ProcessLickData/data/v1_rp2040_transistor/` and `data/v2_esp32s3_touch/` (not in git).
-- **CircuitPython `lib/` convention.** CircuitPython auto-adds `/` and `/lib` to `sys.path` on boot, so any `.py` file or package directory directly under `lib/` is importable as a top-level module (`import adafruit_pcf8523`, `from components import MyADC`). Do **not** add `lib/__init__.py` — that turns `lib` into a package and breaks the standard CircuitPython import style. To get the same behaviour in PyCharm during desktop development, mark `lib/` as a Sources Root (Right-click → *Mark Directory as → Sources Root*).
-- The lick-processing logic is kept in sync between board and offline code: real-time detection lives in `BoardCode/lib/BoutDetection.py`; offline analysis of the resulting `licks.dat` lives in `ProcessLickData/analysis/BoutAnalyzer.py`. Both honour the same `Settings.py` parameters.
+- **Syncing code to the board:** `./sync2board Simplified` — `rsync` to the mounted CIRCUITPY drive (`/media/$USER/CIRCUITPY` by default; `-d` for another path, `-n` dry run). Mirrors with `--delete` but never touches the board's `settings.toml`; excludes Python caches and editor metadata, runs `sync` afterwards. Once WiFi has been used the board does not auto-reload: press Reset (or send Ctrl-C) after syncing.
+- **`ProcessLickData`** is desktop Python — use the `.venv` inside that folder. Entry point: `plot_hydrapurr_day.py`. Data lives in `ProcessLickData/data/` (not in git; one folder per hardware generation, each with a README).
+- **CircuitPython `lib/` convention.** CircuitPython auto-adds `/` and `/lib` to `sys.path` on boot, so any `.py` file or package directory directly under `lib/` is importable as a top-level module (`import adafruit_pcf8523`, `from components import MySD`). Do **not** add `lib/__init__.py` — that turns `lib` into a package and breaks the standard CircuitPython import style. To get the same behaviour in PyCharm during desktop development, mark `lib/` as a Sources Root (Right-click → *Mark Directory as → Sources Root*).
 
 ## Project notes
 
 - Notion workspace for organisation: <https://www.notion.so/PyCharm-25581ad79c6d8070aaf2cc3cb64adce6>
-- The older Raspberry Pi version of HydraPurr is archived (read-only reference): <https://github.com/habit-tech/Rpi_lickometer>. Local copy lives in this repo for archival purposes; the Pi codebase is unlikely to be developed further.
-- Open / deferred items live in [`todo.md`](todo.md).
-
-## Viewing the diagrams
-
-This README uses [Mermaid](https://mermaid.js.org/) for the flowcharts above. They render automatically on:
-
-- GitHub (when viewing the file in the web UI).
-- VS Code (built-in markdown preview).
-- PyCharm / IntelliJ (with the Mermaid plugin).
-- [mermaid.live](https://mermaid.live) (paste a single fenced block — without the ```mermaid wrapper).
-
-If you see raw `flowchart TD ...` text, your viewer doesn't render Mermaid — try one of the above.
+- The older Raspberry Pi version of HydraPurr is archived (read-only reference): <https://github.com/habit-tech/Rpi_lickometer>.
