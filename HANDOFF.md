@@ -1043,8 +1043,8 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   lens or inside. **Replaced by a new GP2Y0A51SK0F at ~12:40 lab time**:
   full bowl 1.134 V, noise 3.8 mV single / 0.4 mV for 1-s means, flat (old
   sensor before the drop: 1.158-1.160 V, 3.4-3.8 / 0.5-0.6 mV). The wet one
-  is kept aside, labelled; bench-test it once dry. Supply cap at the sensor:
-  10 µF (≥10 V) across Vcc/GND, close to the sensor.
+  is kept aside, labelled; bench-test it once dry. Both sensors have a
+  10 µF cap across Vcc/GND at the sensor, so the noise numbers compare.
 
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
