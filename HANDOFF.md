@@ -1032,6 +1032,12 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   board: `2026-11-23~2.csv` and `16~2.csv` created, morning untouched, the
   day plot shows both halves.
 
+- **2026-11-23** — Water sensor taken off and re-attached (12:10-~12:25 lab
+  time; readings 2.27 V, ~0.1 V, 0 meanwhile). Afterwards the full bowl
+  reads 1.094-1.101 V instead of 1.157 V: the mount moved slightly (~0.06 V,
+  ~35-40 ml by the fill table). The sensor needs a fixed mount; recalibrate
+  (empty + 50 ml steps) after any change, e.g. at the colleague's place.
+
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay
