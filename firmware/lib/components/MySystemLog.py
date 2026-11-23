@@ -161,7 +161,7 @@ class _SDSink:
                 self._line_count = 0
             if self.keep_open:
                 self._fh.write(line + "\n")
-                # Simplified build: autosync off in the recorder (a sync per
+                # This firmware: autosync off in the recorder (a sync per
                 # line stalls sampling); warnings and errors still go to the
                 # card at once, the rest with MainLoop's periodic flush().
                 if self.autosync or ",WARN," in line or ",ERROR," in line:
@@ -309,7 +309,7 @@ def teardown():
         obj = _sink
         if hasattr(obj, "close"): obj.close()
     except: pass
-    # Simplified build change: keep logging to the console after the SD file
+    # Change vs the v1 firmware: keep logging to the console after the SD file
     # is closed (e.g. the "[SD] unmounted" line during shutdown).
     _sink = _PrintSink()
 

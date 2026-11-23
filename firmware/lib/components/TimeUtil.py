@@ -8,7 +8,7 @@ boot_mono_ms = None
 boot_epoch = None
 
 # Fallback epoch when there is no usable RTC: 2000-01-01 00:00:00.
-# (Simplified build change: BoardCode uses 0, but CircuitPython on the
+# (Change vs the v1 firmware, which uses 0; but CircuitPython on the
 # ESP32-S3 raises OverflowError for localtime() before 2000.)
 FALLBACK_EPOCH = 946684800
 
@@ -96,7 +96,7 @@ def set_clock(utc_ms, mono_ms):
     step in ms (new wall time - old wall time for the same moment), or None
     when there was no timebase. Integers only (CircuitPython floats are too
     coarse for an epoch). Setting the PCF8523 also clears lost_power and
-    turns on battery switchover. (Simplified build addition, 2026-11-16.)"""
+    turns on battery switchover. (Added in this firmware, 2026-11-16.)"""
     global boot_epoch, boot_mono_ms, timebase_ready
     old_ms = None
     if timebase_ready and boot_epoch is not None:

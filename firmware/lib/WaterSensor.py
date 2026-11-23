@@ -4,7 +4,7 @@ WaterSensor.py - water level from a Sharp IR sensor above a float
 The float sits in a chimney connected to the bowl; the Sharp GP2Y0A51SK0F
 looks down at its flat top. Output voltage rises as the float comes closer,
 so a higher value means more water. Values stay in volts (no calibration to
-millilitres yet), like the water column in BoardCode's licks.dat.
+millilitres yet), like the water column in the v1 firmware's licks.dat.
 
 The recorder (MainLoop) takes one read_volts() per sample and stores it as
 is. update()/level are for the bout version: the sensor produces a new

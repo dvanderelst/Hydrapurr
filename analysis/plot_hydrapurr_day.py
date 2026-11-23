@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-plot_hydrapurr_day.py - fetch the Simplified HydraPurr's data and plot a day
+plot_hydrapurr_day.py - fetch the HydraPurr's data and plot a day
 
     python plot_hydrapurr_day.py                     # fetch, plot today
     python plot_hydrapurr_day.py --day 2026-11-16 --hours 15 16

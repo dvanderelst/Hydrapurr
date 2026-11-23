@@ -204,7 +204,7 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
 | Glue: sensor → binary state → BoutManager → `licks.dat` | `legacy/v1_firmware/lib/LickSensor.py` | **Yes, adapted.** Replace `lick_voltage < lick_threshold` with a touch-based contact state. The water-level reading stays (float sensor, see below). |
 | Deployment logic (cat-switch trigger, active-cat trigger, no-wait mode, `unknown` never fed) | `legacy/v1_firmware/MainLoop.py` | **Yes, slimmed.** Single-cat mode likely enough at first. |
 | Parameters | `legacy/v1_firmware/lib/Settings.py` | **Yes.** `lick_threshold` (volts) needs replacing with touch parameters. |
-| Cat registry / RFID | `Cats.py`, `TagReader.py` (UART rx D9, RST D11) | Only if the simplified build keeps RFID. |
+| Cat registry / RFID | `Cats.py`, `TagReader.py` (UART rx D9, RST D11) | Only if the device keeps RFID. |
 | Water level | `MyADC(0)` read in `LickSensor.update` during contact; `water_extent` gate in `BoutDetection.py` | **Yes.** New hardware (see below), same role. Remap `MyADC` to the chosen ADC1 pin. `min_water_extent_per_bout` (0.013 V) must be re-tuned for the float. |
 | Feeder relay | `HydraPurr.feeder_on/off`, D6 via NPN | **Later.** Probably a smaller relay than before (the old one was overkill). `feeder_on/off` stays as the interface; the pin must not clash with the touch pin. |
 | Logging + time | `MyStore`, `MySystemLog`, `TimeUtil`, `FileUtil`, `MySD`, `MyRTC`, `MyI2C`, `adafruit_pcf8523`, `adafruit_register` | **Yes, close to unchanged** (same Adalogger wing, verified on this board). Add a boot check of `rtc.lost_power` and flag timestamps as invalid when it is set. `SetTime.py` already ported. |

@@ -1,5 +1,5 @@
 """
-hydrapurr_reader.py - read the Simplified HydraPurr's SD card files
+hydrapurr_reader.py - read the HydraPurr's SD card files
 
 Folder layout (as fetched by hydrapurr_fetch.py, or copied from the card):
 

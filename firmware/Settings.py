@@ -1,4 +1,4 @@
-# Settings for the Simplified HydraPurr (Feather ESP32-S3 Reverse TFT +
+# Settings for the HydraPurr (Feather ESP32-S3 Reverse TFT +
 # Adalogger FeatherWing, capacitive water wire, Sharp float sensor).
 #
 # Names match legacy/v1_firmware/lib/Settings.py wherever the meaning is the same, so
@@ -150,7 +150,7 @@ watchdog_timeout_s = 60               # None = no watchdog
 # detection and feeding come back (LickSensor.py, BoutDetection.py).
 # =============================================================================
 
-# --- Lick / bout detection (same meaning as in BoardCode) ----------------------
+# --- Lick / bout detection (same meaning as in the v1 firmware) -----------
 min_lick_ms = 50
 max_lick_ms = 250
 min_licks_per_bout = 3

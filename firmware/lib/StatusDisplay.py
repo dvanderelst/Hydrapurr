@@ -1,7 +1,7 @@
 """
 StatusDisplay.py - status screen on the Reverse TFT's built-in 240x135 display
 
-Replaces BoardCode's SSD1306 OLED (MyOLED). Shows a few lines of text with
+Replaces the v1 firmware's SSD1306 OLED (MyOLED). Shows a few lines of text with
 the built-in terminalio font, scaled 2x. Taking over the display hides the
 serial console that CircuitPython normally shows on it; print() output still
 goes to USB serial.

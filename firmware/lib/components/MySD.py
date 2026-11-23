@@ -68,7 +68,7 @@ def mount_sd_card(cs_pin=DEFAULT_CS, spi=None, baudrate=8_000_000, quiet=False):
         MySystemLog.error("[SD] mount failed:", repr(e))
         print("[SD] mount failed:", repr(e))   # also before the log is set up
         _diag(f"FAIL: {repr(e)}")
-        # Simplified build change: release the card object so a later
+        # Change vs the v1 firmware: release the card object so a later
         # attempt doesn't fail with "D10 in use".
         try:
             sd.deinit()

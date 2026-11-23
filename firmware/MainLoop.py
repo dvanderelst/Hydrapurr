@@ -1,5 +1,5 @@
 """
-MainLoop.py - Simplified HydraPurr main loop (recording version)
+MainLoop.py - HydraPurr main loop (recording version)
 
 For now the device only records: the touch wire and the float sensor are
 sampled every raw_log_interval_ms and written to the SD card as one raw
@@ -425,7 +425,7 @@ def main_loop(level=INFO, sd_ok=True):
     # still go to the card at once, the rest with the 60-s flush() below.
     setup_system_log(autosync=False)
     set_mem_max(0)                   # no copy of the log in RAM
-    info('[Main Loop] Simplified HydraPurr start (recording version)')
+    info('[Main Loop] HydraPurr start (recording version)')
     try:
         p = start_up(sd_ok)
     except Exception as e:

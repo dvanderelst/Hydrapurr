@@ -1,4 +1,4 @@
-# Simplified HydraPurr - entry point.
+# HydraPurr - entry point.
 #
 # Runs the lick monitor (MainLoop.py). The standalone test scripts are run by
 # hand from Thonny instead of from here:
@@ -21,7 +21,7 @@ heartbeat_test = d2.value
 d2.deinit()
 
 if heartbeat_test:
-    print('Simplified HydraPurr: D2 held, heartbeat test')
+    print('HydraPurr: D2 held, heartbeat test')
     import TestHeartbeat
     TestHeartbeat.run()
 else:
@@ -29,6 +29,6 @@ else:
     from components.MySystemLog import INFO
     import MainLoop
 
-    print('Simplified HydraPurr: running...')
+    print('HydraPurr: running...')
     sd_ok = mount_sd_card()
     MainLoop.main_loop(level=INFO, sd_ok=sd_ok)

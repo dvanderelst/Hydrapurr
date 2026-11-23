@@ -6,7 +6,7 @@ any hardware itself. The caller passes in the contact state (from
 TouchSensor) and the water level (from WaterSensor), so the old
 `lick_voltage < lick_threshold` conversion is gone.
 
-licks.dat keeps BoardCode's columns (time, mono_ms, cat_name, lick, bout,
+licks.dat keeps the v1 firmware's columns (time, mono_ms, cat_name, lick, bout,
 water, duration_ms) so legacy/ProcessLickData can read it.
 """
 

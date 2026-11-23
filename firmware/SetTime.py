@@ -11,7 +11,7 @@
 # Setting the time through the library also turns on battery switchover, so
 # the coin cell keeps the clock running when USB is unplugged.
 #
-# Same behaviour as MyRTC.set_time in BoardCode, without the HydraPurr object.
+# Same behaviour as MyRTC.set_time in the v1 firmware, without the HydraPurr object.
 #
 # Since 2026-11-16 the recorder sets the RTC from NTP (UTC) at every boot
 # with WiFi. Only use this without WiFi, and then enter UTC, not local time.
