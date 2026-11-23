@@ -1037,6 +1037,14 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   reads 1.094-1.101 V instead of 1.157 V: the mount moved slightly (~0.06 V,
   ~35-40 ml by the fill table). The sensor needs a fixed mount; recalibrate
   (empty + 50 ml steps) after any change, e.g. at the colleague's place.
+  Cause found: the sensor had been **dropped into the bowl** (dried at
+  once; it has a 3D-printed cap over the electronics). After it the reading
+  crept up ~10 mV per minute (1.096 -> 1.117 V), likely water drying off the
+  lens or inside. **Replaced by a new GP2Y0A51SK0F at ~12:40 lab time**:
+  full bowl 1.134 V, noise 3.8 mV single / 0.4 mV for 1-s means, flat (old
+  sensor before the drop: 1.158-1.160 V, 3.4-3.8 / 0.5-0.6 mV). The wet one
+  is kept aside, labelled; bench-test it once dry. Supply cap at the sensor:
+  10 µF (≥10 V) across Vcc/GND, close to the sensor.
 
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
