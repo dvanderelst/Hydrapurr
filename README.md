@@ -11,8 +11,8 @@ A CircuitPython device that monitors cat drinking at a water bowl. It records ev
 
 ```
 HydraPurr/
-├── firmware/     The device's CircuitPython code. README.md = tester guide,
-│                 HANDOFF.md = development notes, open items and log.
+├── HANDOFF.md    Development notes, open items and log (whole project).
+├── firmware/     The device's CircuitPython code. README.md = tester guide.
 ├── analysis/     Data processing: fetch from the board, read, plot (own .venv).
 ├── pcb/          Carrier PCB (KiCad): board stack, feeder driver, connectors.
 ├── sync2board    Push the firmware to a connected board.
@@ -24,7 +24,7 @@ HydraPurr/
 
 ## Hardware
 
-Adafruit Feather ESP32-S3 Reverse TFT (built-in screen, WiFi) on an Adalogger FeatherWing (microSD, PCF8523 RTC), CircuitPython 10.3.1. Details, pin map and the reasoning behind each choice: [`firmware/HANDOFF.md`](firmware/HANDOFF.md).
+Adafruit Feather ESP32-S3 Reverse TFT (built-in screen, WiFi) on an Adalogger FeatherWing (microSD, PCF8523 RTC), CircuitPython 10.3.1. Details, pin map and the reasoning behind each choice: [`HANDOFF.md`](HANDOFF.md).
 
 - **Touch sensor:** a wire in the water on `D12`, read with `touchio`. A tongue (or finger) in the water raises the reading well above a slowly tracking baseline. Touching the outside of the 3D-printed resin bowl registers too, but much weaker.
 - **Water level:** a float in a chimney connected to the bowl; a Sharp GP2Y0A51SK0F IR distance sensor above it on `A5` (0.62 V empty to 1.16 V full in the current bowl).

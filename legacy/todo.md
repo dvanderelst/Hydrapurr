@@ -1,6 +1,6 @@
 # TODO (v1 prototype)
 
-Items for the first prototype; paths are relative to `legacy/` (`v1_firmware/` = the former `v1_firmware/`). Open items for the current device are in `firmware/HANDOFF.md`.
+Items for the first prototype; paths are relative to `legacy/` (`v1_firmware/` = the former `BoardCode/`). Open items for the current device are in `HANDOFF.md` at the repo root.
 
 ## Open
 

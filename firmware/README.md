@@ -2,7 +2,7 @@
 
 This folder is the firmware of the current HydraPurr test device. This page
 is for whoever runs the device: how to set it up, what the screen means, and
-how to get the data. Development notes are in [HANDOFF.md](HANDOFF.md).
+how to get the data. Development notes are in [HANDOFF.md](../HANDOFF.md).
 
 ## What the device does
 

@@ -42,7 +42,7 @@ Times: the `time` column is lab time (America/New_York). Since
 2026-11-16 21:46 UTC the board sets its clock from NTP and keeps UTC, so the
 card's file names are UTC days/hours and a lab day spans two board days;
 older rows were on a hand-set clock and are corrected where the offset is
-known (see `library/hydrapurr_reader.py` and `firmware/HANDOFF.md`).
+known (see `library/hydrapurr_reader.py` and `HANDOFF.md`).
 
 Water after a reset: the Sharp reading can spike for up to ~45 s after a
 reset, so the reader sets water values to NaN for the first 50 s of each

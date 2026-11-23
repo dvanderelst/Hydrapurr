@@ -1,10 +1,11 @@
-# Simplified HydraPurr — handoff
+# HydraPurr — handoff
 
-Running notes for the simplified build. Update this file at the end of every
+Running notes for the whole project (firmware, analysis, PCB; the device was
+first called the "Simplified" build). Update this file at the end of every
 working session: what changed, what was learned, what is next.
 
-**Repo layout since 2026-11-23:** this folder (was `Simplified/`) is
-`firmware/`; the v2 data processing is `analysis/` (reader, fetcher, plot;
+**Repo layout since 2026-11-23:** the device's code (was `Simplified/`) is
+`firmware/`; this file moved from there to the repo root; the v2 data processing is `analysis/` (reader, fetcher, plot;
 data in `analysis/data/v2_esp32s3_touch/`); the carrier PCB is `pcb/` (was
 `FeederController/`); everything of the first prototype is under `legacy/`
 (`legacy/v1_firmware/` = the former `BoardCode/`, `legacy/ProcessLickData/`,
@@ -83,7 +84,7 @@ Tools and tests (run by hand):
 | `TestTouch.py` | Multi-pin touch tester (A5, D5, D6, D9). Note: A5 is now the Sharp input. |
 | `sd/placeholder.txt` | Keeps the `/sd` mount point on CIRCUITPY. |
 
-`./sync2board firmware` pushes this folder (mirrors with `--delete`). It
+`./sync2board firmware` pushes `firmware/` (mirrors with `--delete`). It
 never touches the board's `settings.toml`, but it does overwrite the board's
 `SetTime.py` (which usually holds edited date/time values).
 To see output: Thonny, or `python3 -m serial.tools.miniterm /dev/ttyACM0
