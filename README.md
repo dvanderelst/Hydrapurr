@@ -1,5 +1,8 @@
 # HydraPurr
 
+> **Running the current test device?** See the tester guide:
+> [`Simplified/README.md`](Simplified/README.md) (set-up, the screen, getting the data).
+
 A CircuitPython-based device that monitors cat drinking behaviour at a shared water fountain and automatically dispenses food when a cat has completed enough drinking bouts. Each cat is identified by an RFID tag; bouts are detected from a contact sensor on the fountain; food is dispensed via a relay-controlled feeder.
 
 ## Project layout
