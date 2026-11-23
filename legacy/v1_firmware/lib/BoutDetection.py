@@ -2,7 +2,7 @@
 BoutDetection.py - Lick detection algorithm (board firmware)
 
 Core bout detection used by LickSensor on the device. Offline analysis
-lives in ProcessLickData/analysis/BoutAnalyzer.py and replays the same
+lives in legacy/ProcessLickData/analysis/BoutAnalyzer.py and replays the same
 rules over logged data.
 
 Key Features:

@@ -11,7 +11,7 @@ Usage:  python3 tools/gen_schematic.py [--force]
         python3 tools/gen_schematic.py --check   # compare exported netlist
 
 Design source: the "HydraPurr Carrier PCB" draft (sheet 1 feeder driver,
-sheet 2 sensors and connectors) and Simplified/HANDOFF.md, "Carrier PCB".
+sheet 2 sensors and connectors) and firmware/HANDOFF.md, "Carrier PCB".
 """
 import os
 import re

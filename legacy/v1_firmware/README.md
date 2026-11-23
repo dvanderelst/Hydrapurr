@@ -1,20 +1,20 @@
-# BoardCode — v1 firmware (RP2040 prototype)
+# v1 firmware (RP2040 prototype, formerly `BoardCode/`)
 
 The firmware of the **first HydraPurr prototype** (Dec 2025 – May 2026). The
-current device is the v2 recorder in [`../Simplified/`](../Simplified/); see
-the [main README](../README.md). This code is kept because v2 will reuse its
-bout logic (`Simplified/lib/BoutDetection.py` is a copy of `lib/BoutDetection.py`) and to read the v1 data
-(`ProcessLickData/data/v1_rp2040_transistor/`).
+current device is the v2 recorder in [`firmware/`](../../firmware/); see
+the [main README](../../README.md). This code is kept because v2 will reuse its
+bout logic (`firmware/lib/BoutDetection.py` is a copy of `lib/BoutDetection.py`) and to read the v1 data
+(`legacy/ProcessLickData/data/v1_rp2040_transistor/`).
 
 ## Hardware
 
-The device is built around an Adafruit RP2040 Feather running CircuitPython. Key peripherals (see `HardwareDocs/` for full schematic and reader Q&A):
+The device is built around an Adafruit RP2040 Feather running CircuitPython. Key peripherals (see `legacy/HardwareDocs/` for full schematic and reader Q&A):
 
 - **WL-134 RFID reader** on UART (`board.D9` rx). Reads pet implant tags at 134.2 kHz. The reader has a "one shot per reset" model (no time-based dedup in firmware), so we pulse its RST pin at ~3 Hz and immediately after each successful read to keep it scanning. Polarity is inverted in hardware: the Pico drives `board.D11` HIGH through a transistor that pulls the reader's RST line to GND, so software writing `True` means "assert reset". This also resolves the 5 V vs 3.3 V mismatch noted in the Q&A doc.
 - **Contact sensor** read via ADC channel 1 — a voltage signal where contact pulls the reading below `lick_threshold` (2.0 V).
 - **Water-level sensor** read via ADC channel 0 — used to confirm real drinking via voltage swing during a bout.
 - **Feeder relay** on `board.D6` via an NPN transistor — `feeder_on()` energises the relay for `deployment_duration_ms`.
-- **OLED, BT module, NeoPixel, RTC, SD card** — wrapped behind component classes in `BoardCode/lib/components/`.
+- **OLED, BT module, NeoPixel, RTC, SD card** — wrapped behind component classes in `legacy/v1_firmware/lib/components/`.
 
 ## Runtime flow — licks, bouts, deployment
 
@@ -211,9 +211,9 @@ Comma-separated diagnostic log:
 
 ## Development
 
-- `BoardCode` runs on an Adafruit RP2040 Feather under CircuitPython and assumes the surrounding hardware (RFID reader, ADCs, OLED, relay, SD, BT module) is wired per the netlist in `HardwareDocs/`. You can't run it directly on a desktop without that hardware.
-- Push it to a board with `./sync2board BoardCode` (from the repo root).
-- Offline: `ProcessLickData/run_my_viz.py` and `library/data_reader.py` read the v1 data folders. The lick-processing logic is kept in sync between board and offline code: real-time detection lives in `BoardCode/lib/BoutDetection.py`; offline analysis of the resulting `licks.dat` lives in `ProcessLickData/analysis/BoutAnalyzer.py`. Both honour the same `Settings.py` parameters.
+- `BoardCode` runs on an Adafruit RP2040 Feather under CircuitPython and assumes the surrounding hardware (RFID reader, ADCs, OLED, relay, SD, BT module) is wired per the netlist in `legacy/HardwareDocs/`. You can't run it directly on a desktop without that hardware.
+- Push it to a board with `./sync2board legacy/v1_firmware` (from the repo root).
+- Offline: `legacy/ProcessLickData/run_my_viz.py` and `library/data_reader.py` read the v1 data folders. The lick-processing logic is kept in sync between board and offline code: real-time detection lives in `legacy/v1_firmware/lib/BoutDetection.py`; offline analysis of the resulting `licks.dat` lives in `legacy/ProcessLickData/analysis/BoutAnalyzer.py`. Both honour the same `Settings.py` parameters.
 - Deferred v1 items (Bluetooth etc.) are in [`../todo.md`](../todo.md).
 
 ## Viewing the diagrams

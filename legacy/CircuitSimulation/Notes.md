@@ -218,7 +218,7 @@ real lick. **These three fight each other — no passive RC wins all three:**
   excitation + synchronous detection.
 
 ## To do
-- [ ] Run `BoardCode/TestLickADC.py` while a cat actually drinks to **measure the
+- [ ] Run `legacy/v1_firmware/TestLickADC.py` while a cat actually drinks to **measure the
       real lick voltage/resistance range** → sets `lick_threshold` and tells us
       where to put R6/R2 (trigger should sit *between* a real lick and a leak).
 - [ ] Validate 1 M/10 nF with a 6 Hz lick train (clean countable edges, quiet

@@ -1,0 +1,7 @@
+# Packages of the old ProcessLickData .venv (Python 3.12.3), recorded
+# 2026-11-23 before it was deleted. Recreate with:
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+matplotlib==3.10.8
+natsort==8.4.0
+pandas==3.0.1
+plotly==6.5.2

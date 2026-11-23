@@ -96,7 +96,7 @@ Times in the files and day names are in **UTC** (US Eastern winter time is
 UTC − 5 h). The board serves one download at a time: a second browser tab
 waits until the first is done.
 
-For Python: see [`ProcessLickData/readme.md`](../ProcessLickData/readme.md).
+For Python: see [`analysis/readme.md`](../analysis/readme.md).
 `plot_hydrapurr_day.py` fetches new data from the board and plots a day.
 
 ## Notes that help the analysis

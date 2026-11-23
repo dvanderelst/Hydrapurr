@@ -1,12 +1,21 @@
 """
-hydrapurr_fetch.py - mirror the Simplified HydraPurr's SD card over WiFi
+hydrapurr_fetch.py - copy the HydraPurr's SD card over WiFi
 
-The board serves its SD card at http://hydrapurr.local/files/ (Simplified/
+The board serves its SD card at http://hydrapurr.local/files/ (firmware/
 lib/FileServer.py), one HTML page per folder. fetch() walks those pages and
 downloads every file that is missing locally or whose size differs (the
 pages carry the exact size as data-size="..."). Finished hourly raw files
 never change, so after the first run only the current hour's raw file,
 today's events file and the logs are fetched again.
+
+Local files are never overwritten with different content (2026-11-23: a
+cleared card replaced the local events file of the day). A board file
+replaces the local one only when it starts with the local file's bytes,
+i.e. it is the same file grown longer. Otherwise (another card, a log that
+rotated, the same hour written again after a card swap) the local file
+stays and the board's one is saved next to it: `2026-11-23~2.csv`,
+`16~2.csv`, `system.log~2` (then ~3, ...). Later fetches grow that side copy
+the same way. hydrapurr_reader reads the side copies too.
 
 The board keeps recording while it serves (~125-150 KB/s, so a full hourly
 raw file takes ~1-2 min). Use include_raw=False to fetch only events and
@@ -21,7 +30,7 @@ ignores the request and serves at the normal speed.
     fetch(include_raw=False)                 # events + logs only
     fetch(pause=True)                        # faster, recording pauses
 
-Command line (from ProcessLickData/):
+Command line (from analysis/):
     python -m library.hydrapurr_fetch [--no-raw] [--pause] [--days 2026-11-16]
                                       [--url http://<board ip>/]
 """
@@ -100,6 +109,38 @@ def list_remote(url: str = DEFAULT_URL, path: str = "/files/") -> list[tuple[str
     return files
 
 
+def _side_name(local: Path, n: int) -> Path:
+    """2026-11-23.csv -> 2026-11-23~2.csv; system.log -> system.log~2."""
+    if local.suffix == ".csv":
+        return local.with_name(f"{local.stem}~{n}.csv")
+    return local.with_name(f"{local.name}~{n}")
+
+
+def _copies(local: Path) -> list[Path]:
+    """The local file and its existing side copies, in order."""
+    out = [local] if local.exists() else []
+    n = 2
+    while _side_name(local, n).exists():
+        out.append(_side_name(local, n))
+        n += 1
+    return out
+
+
+def _target(local: Path, data: bytes) -> tuple[Path | None, str]:
+    """Where the board's data goes: (path, how) with how 'new', 'grown' or
+    'side'; (None, 'same') when a local copy already holds exactly this."""
+    copies = _copies(local)
+    for c in copies:
+        old = c.read_bytes()
+        if old == data:
+            return None, "same"
+        if data.startswith(old):
+            return c, "grown"
+    if not copies:
+        return local, "new"
+    return _side_name(local, len(copies) + 1), "side"
+
+
 def fetch(dest: str | Path = DEFAULT_DEST, url: str = DEFAULT_URL,
           include_raw: bool = True, raw_days: list[str] | None = None,
           pause: bool = False, verbose: bool = True) -> list[Path]:
@@ -118,9 +159,12 @@ def fetch(dest: str | Path = DEFAULT_DEST, url: str = DEFAULT_URL,
             if raw_days is not None and path.split("/")[2] not in raw_days:
                 continue
         local = dest / path.lstrip("/")
-        if local.exists():
-            if size is not None and local.stat().st_size == size:
-                continue
+        copies = _copies(local)
+        if copies:
+            if size is not None and any(c.stat().st_size == size for c in copies):
+                continue          # a local copy has this size: assume the same
+                                  # (sizes are the only check without a download;
+                                  # a growing file is fetched once they differ)
             if size is None and _finished(path):
                 continue          # page without exact sizes: trust finished files
         todo.append((path, size, local))
@@ -130,16 +174,20 @@ def fetch(dest: str | Path = DEFAULT_DEST, url: str = DEFAULT_URL,
               f"({total / 1e6:.1f} MB)" + (", recording paused per raw file" if pause else ""))
     for path, size, local in todo:
         local.parent.mkdir(parents=True, exist_ok=True)
-        tmp = local.with_name(local.name + ".part")
         t0 = time.monotonic()
         query = "?pause=1" if pause and path.startswith("/raw/") else ""
         data = _get(url.rstrip("/") + path + query)
-        tmp.write_bytes(data)
-        tmp.replace(local)
-        fetched.append(local)
+        target, how = _target(local, data)
+        if target is not None:
+            tmp = target.with_name(target.name + ".part")
+            tmp.write_bytes(data)
+            tmp.replace(target)
+            fetched.append(target)
         if verbose:
             took = time.monotonic() - t0
-            print(f"  {path}  {len(data) / 1e6:.2f} MB  {took:.1f} s")
+            note = {"side": f"  -> kept the local file, saved as {target.name}",
+                    "same": "  (unchanged)"}.get(how, "")
+            print(f"  {path}  {len(data) / 1e6:.2f} MB  {took:.1f} s{note}")
     return fetched
 
 

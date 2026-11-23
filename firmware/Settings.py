@@ -1,7 +1,7 @@
 # Settings for the Simplified HydraPurr (Feather ESP32-S3 Reverse TFT +
 # Adalogger FeatherWing, capacitive water wire, Sharp float sensor).
 #
-# Names match BoardCode/lib/Settings.py wherever the meaning is the same, so
+# Names match legacy/v1_firmware/lib/Settings.py wherever the meaning is the same, so
 # the copied modules (BoutDetection, MyStore, MySystemLog) work unchanged.
 # Every setting is written to the event log at each boot (`settings` rows).
 
@@ -110,7 +110,7 @@ mdns_hostname = "hydrapurr"     # the board answers as hydrapurr.local
 # The RTC is set from a time server at boot (right after the WiFi join, before
 # anything is logged) and every ntp_interval_ms. The board keeps UTC: no
 # summer/winter time steps in the data, and the hourly file names are UTC
-# hours. ProcessLickData's reader converts to lab time.
+# hours. The reader in analysis/ converts to lab time.
 ntp_server = "pool.ntp.org"
 ntp_timeout_s = 2
 ntp_interval_ms = 24 * 60 * 60 * 1000
@@ -169,7 +169,7 @@ water_sample_ms = 20           # the Sharp updates every ~16.5 ms
 water_smooth_samples = 10      # moving average over this many samples (~200 ms)
 
 # (Feeder and deployment settings come back with the feeder; see
-# BoardCode/lib/Settings.py for the old ones.)
+# legacy/v1_firmware/lib/Settings.py for the old ones.)
 
 # =============================================================================
 

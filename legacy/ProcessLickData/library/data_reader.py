@@ -6,7 +6,7 @@ from typing import List, Optional, Union
 import pandas as pd
 import natsort
 
-# The v1 (RP2040, transistor circuit) data folders; relative to ProcessLickData/.
+# The v1 (RP2040, transistor circuit) data folders; relative to legacy/ProcessLickData/.
 V1_DATA_ROOT = "data/v1_rp2040_transistor"
 
 

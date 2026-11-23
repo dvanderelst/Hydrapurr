@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # sync2board — push one of the board-code folders to a connected CircuitPython device.
 #
-# The repo holds more than one program that can live on a board (BoardCode/ for
-# the full HydraPurr firmware, Simplified/ for the small test sketches), so the
-# source folder is now selected explicitly. Any top-level directory containing a
-# code.py counts as a source.
+# The repo holds more than one program that can live on a board (firmware/ for
+# the current device, legacy/v1_firmware/ for the first prototype), so the
+# source folder is selected explicitly. Any directory containing a code.py, at
+# the top level or in legacy/, counts as a source.
 #
 # The chosen folder is mirrored onto the mounted CIRCUITPY drive with --delete,
 # so files that are not in the source are removed from the device (including
@@ -12,10 +12,10 @@
 #
 # Usage:
 #   ./sync2board                      # pick a source from a menu
-#   ./sync2board Simplified           # push Simplified/
-#   ./sync2board BoardCode -d /mnt/x  # push to a specific mount point
-#   ./sync2board -n Simplified        # dry run, change nothing
-#   ./sync2board -y Simplified        # skip the deletion confirmation
+#   ./sync2board firmware             # push firmware/
+#   ./sync2board legacy/v1_firmware -d /mnt/x  # another source, another mount point
+#   ./sync2board -n firmware          # dry run, change nothing
+#   ./sync2board -y firmware          # skip the deletion confirmation
 #   ./sync2board /media/me/CIRCUITPY  # (old form) device path, source from menu
 
 set -euo pipefail
@@ -45,10 +45,12 @@ usage() {
     exit "${1:-0}"
 }
 
-# Sources are top-level directories holding a code.py.
+# Sources are directories holding a code.py: top level or in legacy/.
 SOURCES=()
-for dir in "$SCRIPT_DIR"/*/; do
-    [ -f "$dir/code.py" ] && SOURCES+=("$(basename "$dir")")
+for dir in "$SCRIPT_DIR"/*/ "$SCRIPT_DIR"/legacy/*/; do
+    [ -f "$dir/code.py" ] || continue
+    rel="${dir#"$SCRIPT_DIR"/}"
+    SOURCES+=("${rel%/}")
 done
 if [ ${#SOURCES[@]} -eq 0 ]; then
     echo "sync2board: no source folders found (a source is a directory with a code.py)" >&2
@@ -62,7 +64,11 @@ while [ $# -gt 0 ]; do
         -y|--yes)     ASSUME_YES=1 ;;
         -d|--device)  DEVICE="${2:?-d needs a path}"; shift ;;
         -*)           echo "sync2board: unknown option: $1" >&2; usage 1 ;;
-        */*|/*)       DEVICE="$1" ;;              # old form: a bare device path
+        */*|/*)       if [ -f "$SCRIPT_DIR/${1%/}/code.py" ]; then
+                          SOURCE_NAME="${1%/}"          # e.g. legacy/v1_firmware
+                      else
+                          DEVICE="$1"                   # old form: a bare device path
+                      fi ;;
         *)            SOURCE_NAME="$1" ;;
     esac
     shift

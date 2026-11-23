@@ -25,7 +25,7 @@ they are UTC days and hours: a lab day spans two board days
     ev = read_events(folder)                          # all days
     c = contacts(ev)                                  # contact table
 
-File formats: Simplified/lib/RawRecorder.py and Simplified/lib/EventLog.py.
+File formats: firmware/lib/RawRecorder.py and firmware/lib/EventLog.py.
 """
 
 from __future__ import annotations
@@ -106,7 +106,8 @@ def board_days_for(day: str) -> list[str]:
 def raw_files(folder: str | Path, day: str | list[str] | None = None,
               hours: list[int] | None = None) -> list[Path]:
     """Hourly raw files under folder/raw, sorted; optionally board day(s)
-    and board hours (file names, so UTC since the switch)."""
+    and board hours (file names, so UTC since the switch). Includes the
+    fetcher's side copies (`16~2.csv`: same name, other card or boot)."""
     root = Path(folder) / "raw"
     if day is None:
         days = sorted(p for p in root.iterdir() if p.is_dir())
@@ -116,7 +117,7 @@ def raw_files(folder: str | Path, day: str | list[str] | None = None,
     files = []
     for d in days:
         for f in sorted(d.glob("*.csv")):
-            if hours is None or int(f.stem) in hours:
+            if hours is None or int(f.stem.split("~")[0]) in hours:
                 files.append(f)
     return files
 
@@ -196,7 +197,7 @@ def read_events(folder: str | Path, days: list[str] | None = None) -> pd.DataFra
     root = Path(folder) / "events"
     files = sorted(root.glob("*.csv"))
     if days is not None:
-        files = [f for f in files if f.stem in days]
+        files = [f for f in files if f.stem.split("~")[0] in days]
     frames = []
     for f in files:
         df = pd.read_csv(f, dtype=str, keep_default_na=False, on_bad_lines="skip")

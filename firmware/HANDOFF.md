@@ -3,6 +3,14 @@
 Running notes for the simplified build. Update this file at the end of every
 working session: what changed, what was learned, what is next.
 
+**Repo layout since 2026-11-23:** this folder (was `Simplified/`) is
+`firmware/`; the v2 data processing is `analysis/` (reader, fetcher, plot;
+data in `analysis/data/v2_esp32s3_touch/`); the carrier PCB is `pcb/` (was
+`FeederController/`); everything of the first prototype is under `legacy/`
+(`legacy/v1_firmware/` = the former `BoardCode/`, `legacy/ProcessLickData/`,
+`legacy/CircuitSimulation/`, `legacy/HardwareDocs/`, `legacy/todo.md`). Log
+entries below may still use the old names; paths have been updated.
+
 ## Goal
 
 A simpler HydraPurr built on the **Adafruit Feather ESP32-S3 Reverse TFT**.
@@ -13,7 +21,7 @@ pin's raw touch value.
 
 ## Why we dropped the transistor circuit
 
-Background is in `CircuitSimulation/Notes.md` and the Notion page "HydraPurr
+Background is in `legacy/CircuitSimulation/Notes.md` and the Notion page "HydraPurr
 prototype". In short:
 
 - The detector was far too sensitive: it tripped at ~20 MΩ of leakage, so damp
@@ -75,7 +83,7 @@ Tools and tests (run by hand):
 | `TestTouch.py` | Multi-pin touch tester (A5, D5, D6, D9). Note: A5 is now the Sharp input. |
 | `sd/placeholder.txt` | Keeps the `/sd` mount point on CIRCUITPY. |
 
-`./sync2board Simplified` pushes this folder (mirrors with `--delete`). It
+`./sync2board firmware` pushes this folder (mirrors with `--delete`). It
 never touches the board's `settings.toml`, but it does overwrite the board's
 `SetTime.py` (which usually holds edited date/time values).
 To see output: Thonny, or `python3 -m serial.tools.miniterm /dev/ttyACM0
@@ -123,7 +131,7 @@ Offline: the first row(s) after each `# start` line can be off (water read
   then tries to join that network at boot (the first attempt used a
   non-existent network and led to resets). Our own keys are named
   `WIFI_*`, which CircuitPython ignores at boot. `.gitignore`
-  covers `Simplified/settings.toml*`. (The old `settings.toml.off` with the
+  covers `firmware/settings.toml*`. (The old `settings.toml.off` with the
   web-workflow keys was removed 2026-10-28.)
 - A large download through the library's static file serving at full radio
   power hard-faulted the board (safe mode, `HARD_FAULT`). With 8.5 dBm both
@@ -186,22 +194,22 @@ Sharp power: 5 V from the USB pin (only when USB-powered) + GND, with a
 
 ## What carries over from BoardCode
 
-The lick → bout → deploy logic in `BoardCode/` has nothing to do with the
+The lick → bout → deploy logic in `legacy/v1_firmware/` has nothing to do with the
 sensor hardware. It only needs a binary contact state (0/1) per sample.
 
 | Piece | File | Carry over? |
 | --- | --- | --- |
-| Lick/bout state machine (debounce, 50–250 ms lick window, bout gap, eligibility gates, `try_finalize_in_progress`) | `BoardCode/lib/BoutDetection.py` | **Yes, unchanged.** Pure logic with timestamp inputs; only depends on `MySystemLog.info`. |
-| Glue: sensor → binary state → BoutManager → `licks.dat` | `BoardCode/lib/LickSensor.py` | **Yes, adapted.** Replace `lick_voltage < lick_threshold` with a touch-based contact state. The water-level reading stays (float sensor, see below). |
-| Deployment logic (cat-switch trigger, active-cat trigger, no-wait mode, `unknown` never fed) | `BoardCode/MainLoop.py` | **Yes, slimmed.** Single-cat mode likely enough at first. |
-| Parameters | `BoardCode/lib/Settings.py` | **Yes.** `lick_threshold` (volts) needs replacing with touch parameters. |
+| Lick/bout state machine (debounce, 50–250 ms lick window, bout gap, eligibility gates, `try_finalize_in_progress`) | `legacy/v1_firmware/lib/BoutDetection.py` | **Yes, unchanged.** Pure logic with timestamp inputs; only depends on `MySystemLog.info`. |
+| Glue: sensor → binary state → BoutManager → `licks.dat` | `legacy/v1_firmware/lib/LickSensor.py` | **Yes, adapted.** Replace `lick_voltage < lick_threshold` with a touch-based contact state. The water-level reading stays (float sensor, see below). |
+| Deployment logic (cat-switch trigger, active-cat trigger, no-wait mode, `unknown` never fed) | `legacy/v1_firmware/MainLoop.py` | **Yes, slimmed.** Single-cat mode likely enough at first. |
+| Parameters | `legacy/v1_firmware/lib/Settings.py` | **Yes.** `lick_threshold` (volts) needs replacing with touch parameters. |
 | Cat registry / RFID | `Cats.py`, `TagReader.py` (UART rx D9, RST D11) | Only if the simplified build keeps RFID. |
 | Water level | `MyADC(0)` read in `LickSensor.update` during contact; `water_extent` gate in `BoutDetection.py` | **Yes.** New hardware (see below), same role. Remap `MyADC` to the chosen ADC1 pin. `min_water_extent_per_bout` (0.013 V) must be re-tuned for the float. |
 | Feeder relay | `HydraPurr.feeder_on/off`, D6 via NPN | **Later.** Probably a smaller relay than before (the old one was overkill). `feeder_on/off` stays as the interface; the pin must not clash with the touch pin. |
 | Logging + time | `MyStore`, `MySystemLog`, `TimeUtil`, `FileUtil`, `MySD`, `MyRTC`, `MyI2C`, `adafruit_pcf8523`, `adafruit_register` | **Yes, close to unchanged** (same Adalogger wing, verified on this board). Add a boot check of `rtc.lost_power` and flag timestamps as invalid when it is set. `SetTime.py` already ported. |
 | Display | `MyOLED` (SSD1306 over I²C) | Replace with the built-in TFT (`board.DISPLAY` + `displayio`). |
 | BT | `MyBT` (HC-05 UART) | No. ESP32-S3 has BLE only; the BT swap is planned separately. |
-| Offline analysis | `ProcessLickData/` | Works if `licks.dat` keeps the same columns. |
+| Offline analysis | `legacy/ProcessLickData/` (v1 `licks.dat`) | Works if `licks.dat` keeps the same columns. |
 
 ## Water-level sensor: float in a chimney
 
@@ -264,7 +272,7 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
 1. Does RFID stay? (Decided: Adalogger, float water sensor, a smaller relay
    later.)
 2. Is this meant to become the main firmware eventually, or stay a separate
-   lightweight variant next to `BoardCode/`?
+   lightweight variant next to `legacy/v1_firmware/`?
 3. Which relay? (Touch pin = D12 and Sharp = GP2Y0A51SK0F are decided.)
 4. Upload destination for the automatic upload (Next steps 5): own HTTP
    endpoint, MQTT broker, or a hosted service?
@@ -331,7 +339,7 @@ sensor hardware. It only needs a binary contact state (0/1) per sample.
 
 A through-hole PCB that carries the Adalogger (on stacking headers) with the
 Reverse TFT on top, adds the feeder driver, and gives every peripheral a
-connector. KiCad project: `FeederController/` (empty so far). Draft
+connector. KiCad project: `pcb/` (empty so far). Draft
 schematics, pin map and parts lists (sheet 1 feeder driver, sheet 2
 sensors/connectors): claude.ai artifact "HydraPurr Carrier PCB"
 (https://claude.ai/artifact/9ND6r2CwRtsV6qfNW5XWaY).
@@ -392,7 +400,7 @@ Decided with the user:
 
 **Status (end of 2026-11-13):** schematic passes ERC; board 80 × 60 mm,
 2 layers, fully routed (Freerouting), DRC: 0 errors, 0 unconnected, only
-silkscreen warnings. Quote Gerbers in `FeederController/fab/` (git-ignored;
+silkscreen warnings. Quote Gerbers in `pcb/fab/` (git-ignored;
 `HydraPurr_carrier_gerbers.zip`, made with `kicad-cli pcb export gerbers`
 + `drill --excellon-separate-th`). Finish: lead-free HASL suggested (OSP is
 lead-free too but has a short shelf life).
@@ -415,13 +423,13 @@ lead-free too but has a short shelf life).
 
 ERC run by the user in eeschema (2026-11-13): no errors.
 
-**KiCad schematic (2026-11-13, draft 1):** `FeederController/FeederController.kicad_sch`
+**KiCad schematic (2026-11-13, draft 1):** `pcb/FeederController.kicad_sch`
 (KiCad 7, one A3 sheet, both "sheets" of the draft on it), generated by
-`FeederController/tools/gen_schematic.py`: PARTS table (values, footprints,
+`pcb/tools/gen_schematic.py`: PARTS table (values, footprints,
 pin -> net) plus `build()` (placement and wires per block, power symbols,
 auto junctions; net labels only where a block meets the Feather; global
 labels for power on J6/J7). Draft 2 (2026-11-13) is fully wired. Custom symbols in
-`FeederController/HydraPurr.kicad_sym` (registered in `sym-lib-table`):
+`pcb/HydraPurr.kicad_sym` (registered in `sym-lib-table`):
 `Feather_ESP32S3_ReverseTFT` (KiCad's Adafruit_Feather_Generic with this
 board's pin names, footprint `Module:Adafruit_Feather_WithMountingHoles`) and
 `Pololu_U3V16F12` (pins 1 VOUT, 2 GND, 3 VIN). `gen_schematic.py --check`
@@ -480,8 +488,8 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
 
 ## Log
 
-- **2026-10-19** — Started this handoff. Reviewed `Simplified/`, `BoardCode/`,
-  `CircuitSimulation/Notes.md` and the Notion page "HydraPurr prototype" (it
+- **2026-10-19** — Started this handoff. Reviewed `firmware/`, `legacy/v1_firmware/`,
+  `legacy/CircuitSimulation/Notes.md` and the Notion page "HydraPurr prototype" (it
   doesn't mention the touch approach yet).
 - **2026-10-19** — Decided: keep the Adalogger FeatherWing (SD + PCF8523
   RTC). That takes SDA, SCL and D10 out of the pool of touch pins.
@@ -560,7 +568,7 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   pauses fall in quiet periods. Status line `max_gap` will therefore show
   ~160 ms even though no samples are lost during drinking.
   Confirmed by the user: screen clean after a cold boot.
-- **2026-10-20** — Committed `Simplified/`, `sync2board` and `.gitignore`
+- **2026-10-20** — Committed `firmware/`, `sync2board` and `.gitignore`
   on branch `simplified-recorder`. `sd/placeholder.txt` had to be
   force-added: the `.gitignore` rule `*old*` matches "placeholder".
 - **2026-10-20** — Wireless data retrieval: first tried joining the home
@@ -714,7 +722,7 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   (internal flash writes block the CPU): max_gap 662 ms and 1466 ms in the
   minutes of a delete and a small copy, back to 165 ms after. Copy files
   to the board only when gaps don't matter.
-- **2026-11-16** — **Offline reader** (`ProcessLickData/`):
+- **2026-11-16** — **Offline reader** (`ProcessLickData/`, now `analysis/`):
   `library/hydrapurr_fetch.py` (mirrors the card over WiFi into
   `data/simplified/`, only new/changed files; folder pages now carry
   `data-size` with the exact byte count, `FileServer.py` updated on the
@@ -1001,6 +1009,27 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   copy of the SD card taken 2026-11-23 ~11:18, 1.9 GB). Each has a
   README.md (not in git: `data/` is ignored). Fetcher default and
   `data_reader.V1_DATA_ROOT` updated.
+
+- **2026-11-23** — **Repo reorganised** (see the note at the top): the
+  touch-wire version is now *the* code. `git mv` throughout (history kept:
+  `git log --follow`). `sync2board` finds sources at the top level and in
+  `legacy/` (`./sync2board firmware`, `./sync2board legacy/v1_firmware`).
+  `analysis/` has a fresh `.venv` (pandas, matplotlib; `requirements.txt`);
+  the old ProcessLickData `.venv` (322 MB) was deleted, its package list is
+  `legacy/ProcessLickData/requirements.txt`. PyCharm projects need
+  re-opening at the new paths.
+
+- **2026-11-23** — **Fetcher overwrote local data; fixed.** After the card
+  was copied and put back (now holding only data from 11:32 lab time on), a
+  fetch replaced the local `events/2026-11-23.csv` (the whole morning: fill,
+  taps) with the board's shorter new one; restored from Dropbox's version
+  history. Cause: the fetcher mirrored by size and replaced any differing
+  file. Now a board file replaces a local one only if it starts with the
+  local bytes (same file, grown); otherwise the local file stays and the
+  board's is saved as `name~2.csv` (`16~2.csv`, `system.log~2`, ...), which
+  later fetches grow. The reader reads the side copies. Checked on the
+  board: `2026-11-23~2.csv` and `16~2.csv` created, morning untouched, the
+  day plot shows both halves.
 
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.

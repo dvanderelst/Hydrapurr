@@ -9,34 +9,37 @@ old/
 *old.zip
 Archive.zip
 # Generated analysis pages
-ProcessLickData/*.html
+legacy/ProcessLickData/*.html
 *System Volume Information*
-BluetoothDownloader/builds/
-ProcessLickData/data/
+legacy/BluetoothDownloader/builds/
+legacy/ProcessLickData/data/
+analysis/data/
+# Python virtual environments (recreate from requirements.txt)
+.venv/
 
-BoardCode/sd_mount.log
+legacy/v1_firmware/sd_mount.log
 
 .sync2board_last
 
-# WiFi and web-workflow passwords for the Simplified board
-Simplified/settings.toml*
+# WiFi and web-workflow passwords for the board
+firmware/settings.toml*
 
 # KiCad: cache, backups, per-user project state
-FeederController/fp-info-cache
+pcb/fp-info-cache
 *-backups/
 *.kicad_prl
 *.lck
 
 # Freerouting exchange files
-FeederController/*.dsn
-FeederController/*.ses
-FeederController/freerouting*.json
-FeederController/*.rpt
-FeederController/fab/
+pcb/*.dsn
+pcb/*.ses
+pcb/freerouting*.json
+pcb/*.rpt
+pcb/fab/
 
 # Circuit simulation: outputs, old drafts, local files (sources are tracked)
-CircuitSimulation/*.raw
-CircuitSimulation/*.log
-CircuitSimulation/OLD/
-CircuitSimulation/.claude/
-CircuitSimulation/.windows-serial
+legacy/CircuitSimulation/*.raw
+legacy/CircuitSimulation/*.log
+legacy/CircuitSimulation/OLD/
+legacy/CircuitSimulation/.claude/
+legacy/CircuitSimulation/.windows-serial

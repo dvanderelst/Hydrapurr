@@ -1,32 +1,32 @@
-# Where data lives
-`:~/Dropbox/HabitTechnology/Prototype_of_Hydropurr/testing/data/device_data$`
-# Data folders (`data/`, not in git)
+# analysis — data processing for the HydraPurr
 
-- `data/v1_rp2040_transistor/`: the first prototype (RP2040, transistor lick
-  circuit, RFID), Dec 2025 - May 2026, one folder per download. Read with
-  `library/data_reader.py` (`run_my_viz.py`).
-- `data/v2_esp32s3_touch/`: the Simplified board (ESP32-S3, touch wire +
-  float), Oct 2026 on. Read with `library/hydrapurr_reader.py`; the fetcher
-  and the plot script use it by default.
+Reading, fetching and plotting the data of the current device (`firmware/`).
+This is the place for the new data processing; the old v1 analysis is in
+`legacy/ProcessLickData/`.
 
-Each has a README.md saying what the device was and what the data holds
-(for v2: dry-bowl days, the water fill and the bowl-vs-water tap test).
-Different devices: don't pool v1 and v2 without care.
+Set up once (Python 3.12+), from this folder:
 
-# Simplified HydraPurr (touch wire + float, 2026-11)
+    python3 -m venv .venv
+    .venv/bin/pip install -r requirements.txt
 
-The Simplified board serves its SD card on the lab WiFi at
+Data: `data/v2_esp32s3_touch/` (not in git; its README.md says what the
+device was and what the data holds: dry-bowl days, the water fill, the
+bowl-vs-water tap test).
+
+## Getting and plotting the data
+
+The board serves its SD card on the WiFi at
 `http://hydrapurr.local/` while it keeps recording. Without Python, open
 that address in a browser: one row per (UTC) day with the events file and
 the day's raw data as one CSV (`raw, fast` pauses recording during that
 download, ~2.5x faster). Read such a day file with
 `read_raw_file(path)` from `library/hydrapurr_reader.py`.
 
-    python plot_hydrapurr_day.py                  # fetch new data, plot today
-    python plot_hydrapurr_day.py --day 2026-11-16 --hours 15 16
-    python plot_hydrapurr_day.py --no-raw         # events only (fast)
-    python -m library.hydrapurr_fetch --no-raw    # fetch only, no plot
-    python -m library.hydrapurr_fetch --pause     # faster (~310 KB/s): the board
+    .venv/bin/python plot_hydrapurr_day.py                  # fetch new data, plot today
+    .venv/bin/python plot_hydrapurr_day.py --day 2026-11-16 --hours 15 16
+    .venv/bin/python plot_hydrapurr_day.py --no-raw         # events only (fast)
+    .venv/bin/python -m library.hydrapurr_fetch --no-raw    # fetch only, no plot
+    .venv/bin/python -m library.hydrapurr_fetch --pause     # faster (~310 KB/s): the board
                                                   # stops recording per raw file
 
 - `library/hydrapurr_fetch.py` mirrors the card into `data/v2_esp32s3_touch/`
@@ -42,7 +42,7 @@ Times: the `time` column is lab time (America/New_York). Since
 2026-11-16 21:46 UTC the board sets its clock from NTP and keeps UTC, so the
 card's file names are UTC days/hours and a lab day spans two board days;
 older rows were on a hand-set clock and are corrected where the offset is
-known (see `library/hydrapurr_reader.py` and `Simplified/HANDOFF.md`).
+known (see `library/hydrapurr_reader.py` and `firmware/HANDOFF.md`).
 
 Water after a reset: the Sharp reading can spike for up to ~45 s after a
 reset, so the reader sets water values to NaN for the first 50 s of each

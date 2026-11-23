@@ -12,7 +12,7 @@ Pages:
                            other as a single file (nothing is stored twice)
     /files/                the card's folders, one page each, every file's
                            exact size as data-size="..." (for
-                           ProcessLickData/library/hydrapurr_fetch.py)
+                           analysis/library/hydrapurr_fetch.py)
     /raw/..., /events/...  the folders and files themselves
 
 Days are the board's days, so UTC days (MainLoop keeps the RTC on UTC).

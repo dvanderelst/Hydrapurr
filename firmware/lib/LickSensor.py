@@ -1,13 +1,13 @@
 """
 LickSensor.py - glue between the sensors, BoutDetection and licks.dat
 
-Adapted from BoardCode/lib/LickSensor.py. The difference: it no longer reads
+Adapted from legacy/v1_firmware/lib/LickSensor.py. The difference: it no longer reads
 any hardware itself. The caller passes in the contact state (from
 TouchSensor) and the water level (from WaterSensor), so the old
 `lick_voltage < lick_threshold` conversion is gone.
 
 licks.dat keeps BoardCode's columns (time, mono_ms, cat_name, lick, bout,
-water, duration_ms) so ProcessLickData can read it.
+water, duration_ms) so legacy/ProcessLickData can read it.
 """
 
 import time
