@@ -943,6 +943,65 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   it, no attempt on the first. Not yet seen: a join on the second
   network after the first refuses (desktop stub test only).
 
+- **2026-11-23** — Fast download checked on the board: confirm dialog, red
+  `NOT REC: download` on the screen, `paused` / `resumed done` rows; today's
+  ~210 MB took 9.6 min (~365 KB/s; the page estimated ~12 min).
+- **2026-11-23** — **Touching the bowl also gives a contact.** Bowl is 3D
+  printed in Formlabs Grey 4 resin (a dielectric): a finger on the outside
+  couples to the water through the wall. 10 taps on the outside: peaks
+  44 900-46 900 = **+18 to +23 %** over a baseline of ~38 200, 140-270 ms.
+  10 taps on the water: all **65 535** (saturated, +71 %), 140-240 ms. So
+  duration doesn't separate them, the peak does (nothing between 47 k and
+  65 k; a cut near +40 % would split these two sets). But an earlier
+  mixed group (user unsure: bowl and water) gave +51 % (770 ms), +71 %,
+  +12 %, +22 %: wet surfaces and touches near the water line land in
+  between. Decision: keep the live threshold at +10 % (record every
+  contact), classify offline by `peak_touch_raw` once cat data exists; a
+  tongue may well not saturate, and a chin on the rim during a bout is the
+  realistic mixed case. Saturation also hides how strong water contacts
+  are (lower gain = smaller wire or series resistor, if ever needed).
+  **Bowl design options if cat data shows bowl contacts near lick values**
+  (user designs the bowl): coupling ∝ area × εr / distance, so a double
+  wall with an air gap is the strongest lever (2 mm resin + 3 mm air ≈
+  5-6× less than 2 mm resin), then a thicker wall (∝ 1/d), a wide or
+  hollow rim (where a chin touches, close to the water line); other
+  plastics change little (PP/PE εr ~2.3 vs resin ~3-4). A grounded shield
+  also lowers the lick signal; a driven guard is not possible with
+  touchio. Cheap checks first: thick vs thin spot, a foam spacer as a
+  stand-in air gap.
+
+- **2026-11-23** — **Bug: false 5-s contacts from single-sample dips.** On
+  the dry-bowl days (11-18..22) 1-2 contacts a day of 5007-5012 ms with
+  nobody there. Raw (2026-11-23 02:43:50 UTC): one sample dips 25 929 ->
+  23 105 (-11 %) for 10 ms; the "big drops are followed at once" rule sets
+  the baseline to it; the next normal sample is +12 % = contact, held until
+  `rebaseline stuck` at 5 s. Fix to do in `TouchSensor.py`: follow a drop
+  only once it lasts several samples (e.g. 3 = 30 ms) or use the median of
+  the last few. Offline: recognisable by ~5010 ms, peak = normal raw,
+  baseline before it well below normal (noted in the v2 data README).
+  **Fixed** the same day: `touch_drop_samples = 3`; shorter dips are
+  ignored (no slow tracking from them either). Replay of every raw sample
+  2026-11-17..23 through old and new `TouchSensor`: contacts 90 -> 81,
+  ~5-s contacts 13 -> 4; the 9 removed are exactly the board's false ones,
+  the 4 left are real (two holds 11-17, today's fill and hold); today's
+  fill/tap hour identical (18 contacts, same stuck/drop). Deployed.
+- **2026-11-23** — **Damaged spots in the raw files.** 6 of ~145 hourly
+  files (11-18 07 h and 21 h, 11-19 23 h, 11-20 04 h, 11-21 16 h, 11-22
+  20 h UTC; about once a day) hold one place where ~1 s of rows is written
+  twice and 3-6 lines are cut off or have bad bytes; the row count is
+  normal (~307 k/h). The board noticed nothing (no write errors, normal
+  status lines, no download at the time). Cause unknown: candidates are
+  the card or FatFs/CircuitPython writing a sector twice. The reader now
+  drops the repeated rows (they also counted as extra boots). Worth
+  checking: does it happen on another card; does it line up with flushes
+  (every 5 s) or with hourly file switches (no: mid-hour).
+- **2026-11-23** — Data folders renamed by hardware generation:
+  `ProcessLickData/data/v1_rp2040_transistor/` (old dated folders) and
+  `data/v2_esp32s3_touch/` (was `data/simplified/`, now merged with a full
+  copy of the SD card taken 2026-11-23 ~11:18, 1.9 GB). Each has a
+  README.md (not in git: `data/` is ignored). Fetcher default and
+  `data_reader.V1_DATA_ROOT` updated.
+
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
 - **2026-11-13** — R2 and R9 (base pulldowns) 47 kΩ → 4.7 kΩ, so Q2/Q3 stay

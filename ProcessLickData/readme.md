@@ -1,5 +1,18 @@
 # Where data lives
 `:~/Dropbox/HabitTechnology/Prototype_of_Hydropurr/testing/data/device_data$`
+# Data folders (`data/`, not in git)
+
+- `data/v1_rp2040_transistor/`: the first prototype (RP2040, transistor lick
+  circuit, RFID), Dec 2025 - May 2026, one folder per download. Read with
+  `library/data_reader.py` (`run_my_viz.py`).
+- `data/v2_esp32s3_touch/`: the Simplified board (ESP32-S3, touch wire +
+  float), Oct 2026 on. Read with `library/hydrapurr_reader.py`; the fetcher
+  and the plot script use it by default.
+
+Each has a README.md saying what the device was and what the data holds
+(for v2: dry-bowl days, the water fill and the bowl-vs-water tap test).
+Different devices: don't pool v1 and v2 without care.
+
 # Simplified HydraPurr (touch wire + float, 2026-11)
 
 The Simplified board serves its SD card on the lab WiFi at
@@ -16,14 +29,14 @@ download, ~2.5x faster). Read such a day file with
     python -m library.hydrapurr_fetch --pause     # faster (~310 KB/s): the board
                                                   # stops recording per raw file
 
-- `library/hydrapurr_fetch.py` mirrors the card into `data/simplified/`
+- `library/hydrapurr_fetch.py` mirrors the card into `data/v2_esp32s3_touch/`
   (gitignored), fetching only new or changed files (~150 KB/s; a full
   hourly raw file takes ~2 min). The plot script fetches raw files only for
   the day it plots.
 - `library/hydrapurr_reader.py`: `read_raw(folder, day, hours)`,
   `read_events(folder)`, `contacts(events)`, `water(events)`,
   `event_table(events, name)`, `settings_at_boots(events)`.
-- Plots go to `data/simplified/plots/`.
+- Plots go to `data/v2_esp32s3_touch/plots/`.
 
 Times: the `time` column is lab time (America/New_York). Since
 2026-11-16 21:46 UTC the board sets its clock from NTP and keeps UTC, so the

@@ -17,7 +17,7 @@ fetched alongside recording. A board with fileserver_allow_pause = False
 ignores the request and serves at the normal speed.
 
     from library.hydrapurr_fetch import fetch
-    fetch()                                  # -> data/simplified/
+    fetch()                                  # -> data/v2_esp32s3_touch/
     fetch(include_raw=False)                 # events + logs only
     fetch(pause=True)                        # faster, recording pauses
 
@@ -36,7 +36,7 @@ import urllib.request
 from pathlib import Path
 
 DEFAULT_URL = "http://hydrapurr.local/"
-DEFAULT_DEST = Path(__file__).resolve().parent.parent / "data" / "simplified"
+DEFAULT_DEST = Path(__file__).resolve().parent.parent / "data" / "v2_esp32s3_touch"
 TIMEOUT_S = 30
 
 _ROW = re.compile(r"<tr>(.*?)</tr>")

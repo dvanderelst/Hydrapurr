@@ -6,6 +6,9 @@ from typing import List, Optional, Union
 import pandas as pd
 import natsort
 
+# The v1 (RP2040, transistor circuit) data folders; relative to ProcessLickData/.
+V1_DATA_ROOT = "data/v1_rp2040_transistor"
+
 
 @dataclass(frozen=True)
 class DataFolderStatus:
@@ -21,7 +24,7 @@ def check_time_increases(df):
     return df
 
 
-def list_data_folders(data_root: str | Path = "data") -> List[DataFolderStatus]:
+def list_data_folders(data_root: str | Path = V1_DATA_ROOT) -> List[DataFolderStatus]:
     data_root = Path(data_root)
     if not data_root.exists():
         return []
@@ -41,7 +44,7 @@ def list_data_folders(data_root: str | Path = "data") -> List[DataFolderStatus]:
     return statuses
 
 
-def print_data_folders_table(data_root: str | Path = "data") -> None:
+def print_data_folders_table(data_root: str | Path = V1_DATA_ROOT) -> None:
     rows = list_data_folders(data_root)
     print('Data Folders:')
     print(f"{'Index':>5}  {'Folder':<30}  Licks  System Log")
@@ -123,7 +126,7 @@ def _resolve_data_folder(
 
 
 def read_data_folder(
-    folder: Union[str, Path, int], data_root: str | Path = "data"
+    folder: Union[str, Path, int], data_root: str | Path = V1_DATA_ROOT
 ) -> DataFolderContents:
     folder_path = _resolve_data_folder(folder, data_root)
     if folder_path is None:

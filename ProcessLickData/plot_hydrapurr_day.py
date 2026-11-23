@@ -15,8 +15,8 @@ Panels (shared time axis):
 Restarts (boot events) are dashed vertical lines, WiFi losses dotted,
 recording paused for a fast download shaded grey.
 
-The PNG goes to data/simplified/plots/<day>[_<hours>].png. Data comes from
-data/simplified/ (see library/hydrapurr_fetch.py).
+The PNG goes to data/v2_esp32s3_touch/plots/<day>[_<hours>].png. Data comes from
+data/v2_esp32s3_touch/ (see library/hydrapurr_fetch.py).
 """
 
 from __future__ import annotations

@@ -169,6 +169,10 @@ def _finish_raw(frames: list[pd.DataFrame]) -> pd.DataFrame:
     df = pd.concat(frames, ignore_index=True)
     df[["epoch_ms", "mono_ms", "touch_raw", "contact"]] = (
         df[["epoch_ms", "mono_ms", "touch_raw", "contact"]].astype("int64"))
+    # Damaged spots on the card (2026-11, ~once a day): a stretch of ~1 s is
+    # written twice, with a few broken lines (dropped above). Drop the
+    # repeated rows, or mono_ms stepping back there counts as a boot.
+    df = df.drop_duplicates(["epoch_ms", "mono_ms"]).reset_index(drop=True)
     # A restart shows as mono_ms jumping back. Counted in recording order
     # (files by name, rows as written), before sorting by time: after a
     # backward clock step (NTP) the time order interleaves a few rows, which

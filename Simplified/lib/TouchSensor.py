@@ -18,6 +18,11 @@ event log by MainLoop; BoutDetection uses it in the bout version):
   ~25 760), so for touch_drop_settle_ms after it the baseline follows every
   lower value at once; otherwise it took ~2 min at tau to come back, with
   the threshold 14-20 % above rest instead of 10 %.
+- a drop is only followed once it lasts touch_drop_samples readings in a
+  row (2026-11-23): single-sample dips of ~10 % happen 1-2 times a day; the
+  baseline used to follow them at once and the next normal reading then
+  counted as a contact until the 5-s stuck rule (false ~5010 ms contacts).
+  Shorter dips are ignored (no slow tracking from them either).
 """
 
 import time
@@ -38,7 +43,9 @@ class TouchSensor:
         self.tau_ms = Settings.touch_baseline_tau_ms
         self.stuck_ms = Settings.touch_stuck_ms
         self.drop_settle_ms = Settings.touch_drop_settle_ms
+        self.drop_samples = Settings.touch_drop_samples
         self._settle_until_ms = None
+        self._low_count = 0     # readings in a row below the drop level
 
         self.raw = 0
         self.contact = 0
@@ -72,6 +79,10 @@ class TouchSensor:
         self.raw = raw
         self.rebaseline = None
 
+        low = raw < self.baseline * (1 - self.on_fraction)
+        if not low:
+            self._low_count = 0
+
         if self.contact:
             if raw < self.off_level():
                 self.contact = 0
@@ -92,12 +103,16 @@ class TouchSensor:
                 # Still coming down after a drop: follow, but no new `drop`
                 # event (a release in steps gave four within 50 ms).
                 self.baseline = raw
-            elif raw < self.baseline * (1 - self.on_fraction):
+            elif low:
                 # Big drop (e.g. after a re-baseline during a long contact):
-                # follow it at once instead of over tau_ms.
-                self.rebaseline = ('drop', raw, self.baseline, raw)
-                self.baseline = raw
-                self._settle_until_ms = t_ms + self.drop_settle_ms
+                # follow it at once instead of over tau_ms, but only once it
+                # lasts drop_samples readings (a single-sample dip is noise).
+                self._low_count += 1
+                if self._low_count >= self.drop_samples:
+                    self._low_count = 0
+                    self.rebaseline = ('drop', raw, self.baseline, raw)
+                    self.baseline = raw
+                    self._settle_until_ms = t_ms + self.drop_settle_ms
             elif self._last_ms is not None:
                 # Track slow drift only while untouched.
                 dt = t_ms - self._last_ms

@@ -32,6 +32,9 @@ touch_baseline_tau_ms = 30000  # time constant of the baseline tracker; it
                                # follows slow drift (water level, humidity)
 touch_drop_settle_ms = 500     # after a `drop` re-baseline, follow lower values
                                # at once for this long (it is caught mid-fall)
+touch_drop_samples = 3         # a drop must last this many readings (30 ms)
+                               # before the baseline follows it (single-sample
+                               # dips gave false 5-s contacts, 2026-11-23)
 touch_stuck_ms = 5000          # contact longer than this is not a lick (paw
                                # resting, level step): re-take the baseline
 
