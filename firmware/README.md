@@ -110,6 +110,8 @@ session, with the time visible, is very useful too.
 ## Don'ts
 
 - Don't take the SD card out while the board has power.
+- **Unplug the USB before (dis)connecting a sensor.** Plugging one in while the
+  board runs can upset the SD card for minutes (nothing gets recorded then).
 - Don't hold the **D2** button while the board starts (it runs a test
   program instead of recording); don't press **D0/BOOT** together with Reset.
 - Don't use "raw, fast" during an experiment.

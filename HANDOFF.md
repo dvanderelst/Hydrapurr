@@ -1045,6 +1045,16 @@ a P2N2222A is C-B-E, so check the transistors bought. The old relay library (G6R
   sensor before the drop: 1.158-1.160 V, 3.4-3.8 / 0.5-0.6 mV). The wet one
   is kept aside, labelled; bench-test it once dry. Both sensors have a
   10 µF cap across Vcc/GND at the sensor, so the noise numbers compare.
+  **SD failure while re-connecting the wet sensor (12:21-12:28 lab time,
+  board powered):** every raw write failed after ~1.5-2 s (`slowest_write`
+  1501 ms), 215 times, so ~7 min with ~5 000 rows instead of ~36 000; no
+  warnings survived (system.log is on the same card). Recovered by itself
+  (no reboot), clean since; the heartbeat flagged `sd_errors` (rate 50/s,
+  just not `low_rate`). Likely a supply dip on USB 5 V (wet sensor and/or
+  hot-plugging its 10 µF cap) upsetting the card. Rule (in the tester
+  guide): unplug USB before (dis)connecting sensors. Firmware idea: after a
+  failed write, wait longer before the next try (e.g. back off to 5-10 s)
+  so a dead card doesn't stall sampling ~2 s per try.
 
 - **2026-11-13** — Started the carrier PCB design (see "Carrier PCB"). Feeder
   driver decided: high-side P-MOSFET + NPN, PTC fuse, on A0.
